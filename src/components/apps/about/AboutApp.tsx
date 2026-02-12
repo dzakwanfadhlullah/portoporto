@@ -1,3 +1,5 @@
-export const AboutApp = () => {
+const AboutApp = () => {
     return <div>AboutApp</div>;
 };
+
+export default AboutApp;
