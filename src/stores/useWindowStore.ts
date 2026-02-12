@@ -36,7 +36,13 @@ interface WindowManagerState {
     nextZIndex: number;
 
     // Actions
-    openWindow: (appId: AppId, title: string, defaultWidth: number, defaultHeight: number) => void;
+    openWindow: (
+        appId: AppId,
+        title: string,
+        defaultWidth: number,
+        defaultHeight: number,
+        metadata?: any
+    ) => void;
     closeWindow: (windowId: WindowId) => void;
     minimizeWindow: (windowId: WindowId) => void;
     unminimizeWindow: (windowId: WindowId) => void;
@@ -73,12 +79,12 @@ export const useWindowStore = create<WindowManagerState>()(
             setSnapPreview: (snap) => set({ snapPreview: snap }),
 
             // ── Open ───────────────────────────────────────────────────────────
-            openWindow: (appId, title, defaultWidth, defaultHeight) => {
+            openWindow: (appId, title, defaultWidth, defaultHeight, metadata) => {
                 const state = get();
 
-                // If this app already has a window open, just focus it
+                // If this app already has a window open with SAME metadata, just focus it
                 const existing = Object.values(state.windows).find(
-                    (w) => w.appId === appId
+                    (w) => w.appId === appId && JSON.stringify(w.metadata) === JSON.stringify(metadata)
                 );
                 if (existing) {
                     if (existing.isMinimized) {
@@ -106,6 +112,7 @@ export const useWindowStore = create<WindowManagerState>()(
                     previousPosition: null,
                     previousSize: null,
                     snapPosition: null,
+                    metadata,
                 };
 
                 // Unfocus all other windows

@@ -52,6 +52,8 @@ export interface WindowState {
     previousSize: Size | null;
     /** Current snap state */
     snapPosition: SnapPosition;
+    /** Optional metadata for the app instance (e.g. projectId) */
+    metadata?: any;
 }
 
 /**

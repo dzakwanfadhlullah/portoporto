@@ -57,7 +57,7 @@ export const Window = ({ windowId }: WindowProps) => {
     };
 
     return (
-        <WindowContext.Provider value={{ setHeaderActions }}>
+        <WindowContext.Provider value={{ setHeaderActions, metadata: win.metadata }}>
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}

@@ -9,7 +9,8 @@ export type AppId =
     | "about"
     | "lab"
     | "leadership"
-    | "contact";
+    | "contact"
+    | "project-detail";
 
 /** Desktop grid position for icon placement */
 export interface DesktopPosition {
@@ -34,7 +35,7 @@ export interface AppMetadata {
     /** Default window size/behavior constraints */
     defaultWindowConfig: WindowConfig;
     /** Order of appearance in the dock (lower = further left) */
-    dockOrder: number;
+    dockOrder?: number;
     /** Optional grid position on the desktop */
     desktopPosition?: DesktopPosition;
 }

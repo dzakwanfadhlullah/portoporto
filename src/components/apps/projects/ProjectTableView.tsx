@@ -2,12 +2,25 @@
 
 import type { Project } from "./data";
 import Image from "next/image";
+import { useWindowStore } from "@/stores/useWindowStore";
 
 interface ProjectTableViewProps {
     projects: Project[];
 }
 
 export const ProjectTableView = ({ projects }: ProjectTableViewProps) => {
+    const openWindow = useWindowStore((s) => s.openWindow);
+
+    const handleOpenDetail = (project: Project) => {
+        openWindow(
+            "project-detail",
+            `Project: ${project.name}`,
+            1024,
+            720,
+            { projectId: project.id }
+        );
+    };
+
     return (
         <div className="w-full h-full overflow-hidden flex flex-col">
             {/* Header */}
@@ -25,7 +38,7 @@ export const ProjectTableView = ({ projects }: ProjectTableViewProps) => {
                     <div
                         key={project.id}
                         className="group flex items-center px-6 py-3.5 hover:bg-muted-foreground/5 cursor-pointer transition-colors duration-150"
-                        onClick={() => console.log("Open project:", project.id)}
+                        onClick={() => handleOpenDetail(project)}
                     >
                         {/* Thumbnail */}
                         <div className="w-12 h-12 relative rounded-lg overflow-hidden mr-4 border border-border/20 bg-muted shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200">

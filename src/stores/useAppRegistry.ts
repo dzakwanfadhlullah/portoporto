@@ -54,6 +54,14 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
         resizable: true,
         draggable: true,
     },
+    "project-detail": {
+        minWidth: 800,
+        minHeight: 600,
+        defaultWidth: 1024,
+        defaultHeight: 720,
+        resizable: true,
+        draggable: true,
+    },
 };
 
 // ─── Lazy component loaders ──────────────────────────────────────────────────
@@ -64,6 +72,9 @@ import { lazy } from "react";
 
 const ProjectsApp = lazy(
     () => import("@/components/apps/projects/ProjectsApp")
+);
+const ProjectDetail = lazy(
+    () => import("@/components/apps/projects/ProjectDetail")
 );
 const AboutApp = lazy(() => import("@/components/apps/about/AboutApp"));
 const LabApp = lazy(() => import("@/components/apps/lab/LabApp"));
@@ -137,6 +148,16 @@ const appRegistry = new Map<AppId, AppMetadata>([
             desktopPosition: { row: 2, col: 0 },
         },
     ],
+    [
+        "project-detail",
+        {
+            id: "project-detail",
+            name: "Project Detail",
+            icon: createElement(FolderKanban, { size: 20 }),
+            component: ProjectDetail,
+            defaultWindowConfig: defaultConfigs["project-detail"],
+        },
+    ],
 ]);
 
 // ─── Store ───────────────────────────────────────────────────────────────────
@@ -162,7 +183,7 @@ export const useAppRegistry = create<AppRegistryState>()((set, get) => ({
 
     getDockApps: () => {
         return Array.from(get().apps.values()).sort(
-            (a, b) => a.dockOrder - b.dockOrder
+            (a, b) => (a.dockOrder ?? 999) - (b.dockOrder ?? 999)
         );
     },
 

@@ -2,19 +2,32 @@
 
 import type { Project } from "./data";
 import Image from "next/image";
+import { useWindowStore } from "@/stores/useWindowStore";
 
 interface ProjectGridViewProps {
     projects: Project[];
 }
 
 export const ProjectGridView = ({ projects }: ProjectGridViewProps) => {
+    const openWindow = useWindowStore((s) => s.openWindow);
+
+    const handleOpenDetail = (project: Project) => {
+        openWindow(
+            "project-detail",
+            `Project: ${project.name}`,
+            1024,
+            720,
+            { projectId: project.id }
+        );
+    };
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
             {projects.map((project) => (
                 <div
                     key={project.id}
                     className="group bg-muted/30 rounded-2xl border border-border/40 overflow-hidden cursor-pointer hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
-                    onClick={() => console.log("Open project:", project.id)}
+                    onClick={() => handleOpenDetail(project)}
                 >
                     {/* Thumbnail */}
                     <div className="aspect-video relative overflow-hidden bg-muted">

@@ -4,6 +4,7 @@ import { createContext, useContext, ReactNode } from "react";
 
 interface WindowContextType {
     setHeaderActions: (actions: ReactNode) => void;
+    metadata?: any;
 }
 
 export const WindowContext = createContext<WindowContextType | null>(null);
