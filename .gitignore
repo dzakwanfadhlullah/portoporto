@@ -1,0 +1,18 @@
+# Sensitive Info
+information.txt
+*.png
+*.pdf
+
+# Temp files
+cv_text_output.txt
+
+# OS/System files
+.DS_Store
+Thumbs.db
+
+# Dependencies (for later)
+node_modules/
+.next/
+dist/
+build/
+.env*
