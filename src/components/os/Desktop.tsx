@@ -8,6 +8,9 @@ import { useWindowStore } from "@/stores/useWindowStore";
 import { useAppRegistry } from "@/stores/useAppRegistry";
 import { useZIndex, Z_LAYERS } from "@/hooks/useZIndex";
 import { DesktopIcon } from "./DesktopIcon";
+import { MenuBar } from "./MenuBar";
+import { Dock } from "./Dock";
+import { InfoCard } from "./InfoCard";
 
 // ─── Desktop Component ──────────────────────────────────────────────────────
 
@@ -141,6 +144,11 @@ export const Desktop = () => {
                     </AnimatePresence>
                 </Suspense>
             </div>
+
+            {/* ── Shell Components ─────────────────────────────────────────── */}
+            <MenuBar />
+            <InfoCard />
+            <Dock />
         </div>
     );
 };
