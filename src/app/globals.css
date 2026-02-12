@@ -9,12 +9,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  
+
   /* DzakOS Custom Colors */
   --color-cream-50: #FBF9F5;
   --color-cream-100: #F5EFE6;
   --color-cream-200: #EDE4D3;
-  
+
   --color-accent-terracotta: #C67B5C;
   --color-accent-sage: #8B9E7E;
   --color-accent-dustyBlue: #7C9CB5;
@@ -68,57 +68,62 @@
 }
 
 :root {
-  --background: #F5EFE6; /* Cream 100 */
-  --foreground: #3D3229; /* Warm dark brown */
-  
+  --background: #F5EFE6;
+  /* Cream 100 */
+  --foreground: #3D3229;
+  /* Warm dark brown */
+
   --card: #FDFBF7;
   --card-foreground: #3D3229;
-  
+
   --popover: #FDFBF7;
   --popover-foreground: #3D3229;
-  
-  --primary: #C67B5C; /* Terracotta */
+
+  --primary: #C67B5C;
+  /* Terracotta */
   --primary-foreground: #FBF9F5;
-  
-  --secondary: #EDE4D3; /* Cream 200 */
+
+  --secondary: #EDE4D3;
+  /* Cream 200 */
   --secondary-foreground: #3D3229;
-  
+
   --muted: #EDE4D3;
   --muted-foreground: #7C6D5E;
-  
+
   --accent: #FBF9F5;
   --accent-foreground: #C67B5C;
-  
+
   --destructive: oklch(0.577 0.245 27.325);
   --border: #E8DFD1;
   --input: #E8DFD1;
   --ring: #C67B5C;
-  
+
   --radius: 1rem;
 }
 
 .dark {
   --background: #1C1917;
   --foreground: #F5EFE6;
-  
+
   --card: #292524;
   --card-foreground: #F5EFE6;
-  
+
   --popover: #292524;
   --popover-foreground: #F5EFE6;
-  
-  --primary: #D4A574; /* Warm accent for dark */
+
+  --primary: #D4A574;
+  /* Warm accent for dark */
   --primary-foreground: #1C1917;
-  
+
   --secondary: #44403C;
   --secondary-foreground: #F5EFE6;
-  
+
   --muted: #44403C;
   --muted-foreground: #A8A29E;
-  
+
   --accent: #44403C;
   --accent-foreground: #F5EFE6;
-  
+
   --border: #44403C;
   --input: #44403C;
   --ring: #D4A574;
@@ -138,6 +143,7 @@
 
 @utility grain {
   position: relative;
+
   &::after {
     content: "";
     position: absolute;
@@ -154,12 +160,47 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    @apply border-border outline-ring/50;
-    @apply border-border outline-ring/50;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
+
+  html {
+    scrollbar-gutter: stable;
+  }
+
   body {
-    @apply bg-background text-foreground;
-    @apply bg-background text-foreground;
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased grain;
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* System UI stack for that OS feel */
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-terracotta);
+    color: var(--color-cream-50);
+  }
+
+  .dark ::selection {
+    background-color: var(--color-accent-warm);
+    color: var(--background);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 }
