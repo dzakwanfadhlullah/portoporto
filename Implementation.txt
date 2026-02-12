@@ -67,7 +67,7 @@ Tujuan: Menyiapkan fondasi proyek, konfigurasi tooling, folder structure,
   Theme:
     pnpm add next-themes
 
-  Optional (install jika dibutuhkan):
+  install juga: 
     pnpm add react-selecto react-virtuoso @use-gesture/react
 
   SUBPHASE 1.3 — Konfigurasi TypeScript Strict Mode
