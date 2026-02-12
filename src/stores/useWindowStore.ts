@@ -47,6 +47,10 @@ interface WindowManagerState {
     resizeWindow: (windowId: WindowId, size: Size) => void;
     snapWindow: (windowId: WindowId, snapPos: SnapPosition) => void;
 
+    // Snap Preview
+    snapPreview: SnapPosition;
+    setSnapPreview: (snap: SnapPosition) => void;
+
     // Computed
     getVisibleWindows: () => WindowState[];
     getMinimizedWindows: () => WindowState[];
@@ -64,6 +68,9 @@ export const useWindowStore = create<WindowManagerState>()(
             activeWindowId: null,
             windowOrder: [],
             nextZIndex: 1,
+            snapPreview: null,
+
+            setSnapPreview: (snap) => set({ snapPreview: snap }),
 
             // ── Open ───────────────────────────────────────────────────────────
             openWindow: (appId, title, defaultWidth, defaultHeight) => {

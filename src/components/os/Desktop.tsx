@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 
+import { AnimatePresence } from "framer-motion";
 import { useDesktopStore } from "@/stores/useDesktopStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { Z_LAYERS } from "@/hooks/useZIndex";
@@ -10,6 +11,7 @@ import { MenuBar } from "./MenuBar";
 import { Dock } from "./Dock";
 import { InfoCard } from "./InfoCard";
 import { Window } from "./Window";
+import { SnapOverlay } from "./SnapOverlay";
 
 // ─── Desktop Component ──────────────────────────────────────────────────────
 
@@ -98,14 +100,17 @@ export const Desktop = () => {
                 className="absolute inset-0 pointer-events-none"
                 style={{ zIndex: Z_LAYERS.WINDOWS_BASE }}
             >
-                {visibleWindows.map((win) => (
-                    <Window key={win.id} windowId={win.id} />
-                ))}
+                <AnimatePresence>
+                    {visibleWindows.map((win) => (
+                        <Window key={win.id} windowId={win.id} />
+                    ))}
+                </AnimatePresence>
             </div>
 
             {/* ── Shell Components ─────────────────────────────────────────── */}
             <MenuBar />
             <InfoCard />
+            <SnapOverlay />
             <Dock />
         </div>
     );
