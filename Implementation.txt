@@ -1,0 +1,1010 @@
+================================================================================
+  IMPLEMENTATION PLAN — "DzakOS" Portfolio
+  Dzakwan Fadhlullah — Frontend & Mobile Engineer
+  OS-Inspired Interactive Portfolio Website
+  "Soft Cream Minimal OS" Design Direction
+================================================================================
+
+Dokumen ini berisi rencana implementasi super detail untuk membangun
+portfolio website bergaya Operating System di dalam browser.
+Disusun berdasarkan: information.txt, frame 1-4 (referensi UI), dan CV Dzakwan.
+
+Total: 8 Phase Utama, 52 Subphase.
+
+================================================================================
+PHASE 1: PROJECT SCAFFOLDING & CORE INFRASTRUCTURE
+================================================================================
+Tujuan: Menyiapkan fondasi proyek, konfigurasi tooling, folder structure,
+        dan semua dependency yang dibutuhkan agar development bisa berjalan
+        lancar dari awal.
+
+  SUBPHASE 1.1 — Inisialisasi Proyek Next.js
+  ---------------------------------------------------------------------------
+  - Jalankan: npx create-next-app@latest ./ --typescript --tailwind --eslint
+              --app --src-dir --import-alias "@/*" --use-pnpm
+  - Pastikan menggunakan App Router (bukan Pages Router)
+  - Validasi: folder src/app/ terbentuk, tsconfig.json strict mode ON
+  - Set pnpm sebagai default package manager
+
+  SUBPHASE 1.2 — Instalasi Seluruh Dependency
+  ---------------------------------------------------------------------------
+  Core Styling:
+    pnpm add tailwindcss-animate class-variance-authority tailwind-merge clsx
+
+  Motion & Animation:
+    pnpm add framer-motion
+
+  State Management:
+    pnpm add zustand
+
+  UI Primitives (Radix UI via shadcn/ui):
+    npx shadcn-ui@latest init
+    Lalu tambahkan komponen: dropdown-menu, context-menu, dialog, tooltip,
+    popover, tabs, menubar, scroll-area, separator, command, button, input,
+    badge, avatar, sheet, card
+
+  Icons:
+    pnpm add lucide-react
+
+  Command System:
+    pnpm add cmdk fuse.js
+
+  Window System:
+    pnpm add react-rnd
+
+  Layout System:
+    pnpm add react-resizable-panels
+
+  Keyboard Shortcuts:
+    pnpm add react-hotkeys-hook
+
+  Notifications:
+    pnpm add sonner
+
+  Persistence:
+    pnpm add dexie
+
+  Theme:
+    pnpm add next-themes
+
+  Optional (install jika dibutuhkan):
+    pnpm add react-selecto react-virtuoso @use-gesture/react
+
+  SUBPHASE 1.3 — Konfigurasi TypeScript Strict Mode
+  ---------------------------------------------------------------------------
+  - tsconfig.json:
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true
+  - Path aliases: @/components, @/stores, @/lib, @/hooks, @/types, @/data,
+    @/apps, @/styles
+
+  SUBPHASE 1.4 — Arsitektur Folder (Feature-Based)
+  ---------------------------------------------------------------------------
+  src/
+  ├── app/
+  │   ├── layout.tsx              ← Root layout + providers
+  │   ├── page.tsx                ← Desktop entry point
+  │   └── globals.css             ← Global styles + CSS variables
+  ├── components/
+  │   ├── os/                     ← OS-level shell components
+  │   │   ├── Desktop.tsx
+  │   │   ├── MenuBar.tsx
+  │   │   ├── Dock.tsx
+  │   │   ├── Window.tsx
+  │   │   ├── WindowControls.tsx
+  │   │   ├── DesktopIcon.tsx
+  │   │   ├── Spotlight.tsx
+  │   │   ├── ContextMenu.tsx
+  │   │   └── NotificationCenter.tsx
+  │   ├── apps/                   ← Application window contents
+  │   │   ├── projects/
+  │   │   │   ├── ProjectsApp.tsx
+  │   │   │   ├── ProjectTable.tsx
+  │   │   │   ├── ProjectGrid.tsx
+  │   │   │   ├── ProjectDetail.tsx
+  │   │   │   └── ProjectFilter.tsx
+  │   │   ├── about/
+  │   │   │   ├── AboutApp.tsx
+  │   │   │   └── AboutSidebar.tsx
+  │   │   ├── lab/
+  │   │   │   └── LabApp.tsx
+  │   │   ├── leadership/
+  │   │   │   └── LeadershipApp.tsx
+  │   │   └── contact/
+  │   │       └── ContactApp.tsx
+  │   └── ui/                     ← shadcn/ui generated components
+  ├── stores/
+  │   ├── useWindowStore.ts       ← Window Manager state
+  │   ├── useAppRegistry.ts       ← App metadata registry
+  │   ├── useDesktopStore.ts      ← Desktop icons & layout
+  │   ├── useThemeStore.ts        ← Theme preferences
+  │   └── useSpotlightStore.ts    ← Spotlight open/close + search
+  ├── hooks/
+  │   ├── useKeyboardShortcuts.ts
+  │   ├── useZIndex.ts
+  │   ├── useWindowSnap.ts
+  │   ├── usePersistence.ts
+  │   └── useClickOutside.ts
+  ├── lib/
+  │   ├── utils.ts                ← cn() helper, misc utilities
+  │   ├── db.ts                   ← Dexie database setup
+  │   ├── constants.ts            ← Design tokens, app IDs
+  │   └── animations.ts           ← Shared Framer Motion variants
+  ├── types/
+  │   ├── window.ts               ← WindowState, WindowConfig types
+  │   ├── app.ts                  ← AppMetadata, AppId types
+  │   └── project.ts              ← Project data types
+  ├── data/
+  │   ├── projects.ts             ← Project entries (dari CV)
+  │   ├── about.ts                ← About content (dari CV)
+  │   ├── leadership.ts           ← Leadership data (dari CV)
+  │   └── skills.ts               ← Skills & tech stack (dari CV)
+  └── styles/
+      └── fonts.ts                ← Font configuration
+
+  SUBPHASE 1.5 — Konfigurasi Tailwind CSS + Design Tokens
+  ---------------------------------------------------------------------------
+  - Extend tailwind.config.ts dengan custom colors:
+    cream: { 50: '#FBF9F5', 100: '#F5EFE6', 200: '#EDE4D3', ... }
+    accent: {
+      terracotta: '#C67B5C',
+      sage: '#8B9E7E',
+      dustyBlue: '#7C9CB5',
+      warm: '#D4A574'
+    }
+  - Border radius: 16px, 20px defaults
+  - Shadow tokens: soft, medium, lifted
+  - Glassmorphism utility classes
+  - tailwindcss-animate integration
+  - Dark mode via class strategy (next-themes compatible)
+
+  SUBPHASE 1.6 — CSS Variables & Global Styles
+  ---------------------------------------------------------------------------
+  - globals.css:
+    - Root CSS variables untuk semua design tokens
+    - Grain texture overlay (pseudo-element dengan noise SVG)
+    - Custom scrollbar styling (thin, cream-toned)
+    - Selection highlight color
+    - Font face declarations
+    - Dark mode variable overrides
+    - Base transition defaults
+  - Pastikan no hard contrast, semua warna muted dan warm
+
+  SUBPHASE 1.7 — Provider Setup (Root Layout)
+  ---------------------------------------------------------------------------
+  - layout.tsx:
+    - ThemeProvider (next-themes) wrapping seluruh app
+    - Metadata: title "Dzakwan — Frontend & Mobile Engineer"
+    - Font loading (system UI stack + optional Inter/Outfit from Google Fonts)
+    - Toaster component (sonner)
+    - Viewport meta untuk responsive
+
+================================================================================
+PHASE 2: OS CORE SYSTEM — WINDOW MANAGER & STATE ARCHITECTURE
+================================================================================
+Tujuan: Membangun fondasi "Operating System" — state management untuk
+        window lifecycle, z-index layering, focus tracking, dan app registry.
+        Ini adalah jantung dari seluruh sistem.
+
+  SUBPHASE 2.1 — Type Definitions
+  ---------------------------------------------------------------------------
+  types/window.ts:
+    - WindowId (branded string type)
+    - WindowState: {
+        id, appId, title, position: {x, y}, size: {w, h},
+        isMinimized, isMaximized, isFocused, zIndex,
+        previousPosition (untuk restore dari maximize),
+        previousSize (untuk restore dari maximize),
+        snapPosition: 'left' | 'right' | 'full' | null
+      }
+    - WindowConfig: { minWidth, minHeight, maxWidth, maxHeight,
+        defaultWidth, defaultHeight, resizable, draggable }
+
+  types/app.ts:
+    - AppId: enum atau union type dari semua app IDs
+      ('projects' | 'about' | 'lab' | 'leadership' | 'contact')
+    - AppMetadata: {
+        id: AppId, name: string, icon: ReactNode,
+        component: ComponentType, defaultWindowConfig: WindowConfig,
+        dockOrder: number, desktopPosition?: {row, col}
+      }
+
+  SUBPHASE 2.2 — App Registry Store (Zustand)
+  ---------------------------------------------------------------------------
+  stores/useAppRegistry.ts:
+    - State: Map<AppId, AppMetadata>
+    - Mendaftarkan semua 5 app: Projects, About, Lab, Leadership, Contact
+    - Method: getApp(id), getAllApps(), getDockApps(), getDesktopApps()
+    - Setiap app memiliki icon (lucide-react), display name, dan
+      default window config (ukuran, posisi default)
+
+  SUBPHASE 2.3 — Window Manager Store (Zustand) — CRITICAL
+  ---------------------------------------------------------------------------
+  stores/useWindowStore.ts:
+    State:
+      - windows: Map<WindowId, WindowState>
+      - activeWindowId: WindowId | null
+      - windowOrder: WindowId[] (untuk z-index stack)
+      - nextZIndex: number
+
+    Actions:
+      - openWindow(appId): Buat WindowState baru, set sebagai focused,
+        assign z-index tertinggi. Jika app sudah terbuka, focus ke window
+        yang ada (bukan buka duplikat).
+      - closeWindow(windowId): Hapus dari state, update focus ke window
+        berikutnya di stack.
+      - minimizeWindow(windowId): Set isMinimized = true, update focus
+        ke window berikutnya.
+      - maximizeWindow(windowId): Simpan posisi/size sekarang ke
+        previousPosition/previousSize, set ke fullscreen dimension.
+      - restoreWindow(windowId): Kembalikan ke previousPosition/previousSize,
+        set isMaximized = false.
+      - focusWindow(windowId): Set sebagai activeWindowId, ambil z-index
+        tertinggi baru, pindahkan ke atas stack.
+      - moveWindow(windowId, position): Update posisi {x, y}.
+      - resizeWindow(windowId, size): Update ukuran {w, h}.
+      - snapWindow(windowId, snapPosition): Snap ke left-half, right-half,
+        atau full. Simpan posisi sebelumnya untuk restore.
+      - unminimizeWindow(windowId): Set isMinimized = false, focus window.
+
+    Computed:
+      - getVisibleWindows(): Windows yang tidak minimized
+      - getMinimizedWindows(): Windows yang minimized (untuk dock indicator)
+      - getFocusedWindow(): Window yang aktif saat ini
+      - getWindowsByZIndex(): Sorted berdasarkan z-index
+
+    Persist:
+      - Zustand persist middleware ke localStorage sebagai fallback cepat
+
+  SUBPHASE 2.4 — Desktop Store (Zustand)
+  ---------------------------------------------------------------------------
+  stores/useDesktopStore.ts:
+    State:
+      - icons: Array<{appId, position: {x, y}, label}>
+      - selectedIcons: AppId[]
+      - wallpaper: string (path atau gradient definition)
+
+    Actions:
+      - moveIcon(appId, position)
+      - selectIcon(appId)
+      - deselectAll()
+      - setWallpaper(wallpaper)
+
+  SUBPHASE 2.5 — Spotlight Store (Zustand)
+  ---------------------------------------------------------------------------
+  stores/useSpotlightStore.ts:
+    State:
+      - isOpen: boolean
+      - query: string
+      - results: SearchResult[]
+
+    Actions:
+      - open(), close(), toggle()
+      - setQuery(query): Trigger Fuse.js search across apps, projects,
+        commands
+      - executeResult(result): Open app/project/run command
+
+  SUBPHASE 2.6 — Z-Index Management Hook
+  ---------------------------------------------------------------------------
+  hooks/useZIndex.ts:
+    - Maintain global z-index counter
+    - bringToFront(windowId): Assign next available z-index
+    - Base layers: Desktop=0, Windows=100-999, Dock=1000, MenuBar=1001,
+      Spotlight=1100, ContextMenu=1200, Notifications=1300
+
+================================================================================
+PHASE 3: OS SHELL COMPONENTS — DESKTOP, MENU BAR, & DOCK
+================================================================================
+Tujuan: Membangun visual shell OS — elemen-elemen yang membentuk tampilan
+        desktop environment. Mengacu pada Frame 1 sebagai referensi utama.
+
+  SUBPHASE 3.1 — Desktop Component
+  ---------------------------------------------------------------------------
+  components/os/Desktop.tsx:
+    - Full viewport container dengan background:
+      - Soft cream gradient (#F5EFE6 → #EDE4D3) sebagai base
+      - Subtle warm waves (CSS gradient layers) terinspirasi Frame 1
+        tapi BUKAN copy macOS Ventura wallpaper
+      - Light grain texture overlay (opacity rendah, ~3-5%)
+    - Render desktop icons dalam grid layout
+    - Handle click pada area kosong → deselect semua icons
+    - Right-click → trigger context menu
+    - Render semua open windows di atasnya
+    - Layout: MenuBar di top, Desktop area di tengah, Dock di bottom
+
+  SUBPHASE 3.2 — Desktop Icons
+  ---------------------------------------------------------------------------
+  components/os/DesktopIcon.tsx:
+    - Referensi Frame 1: Icons ditampilkan dalam grid di sisi kanan desktop
+    - Setiap icon: thumbnail image/icon + label di bawah
+    - Apps yang ditampilkan sebagai desktop icons:
+      * Projects (grid icon)
+      * About (person icon)
+      * Lab (flask icon)
+      * Leadership (award icon)
+      * Contact (mail icon)
+    - Double-click → openWindow(appId) via Window Manager
+    - Single-click → select (highlight state)
+    - Draggable via react-rnd atau custom drag logic
+    - Hover state: subtle lift shadow
+    - Selected state: light highlight background
+    - Icon design: Rounded square thumbnails (16-20px radius) sesuai
+      design direction "Soft Cream Minimal OS"
+
+  SUBPHASE 3.3 — Menu Bar (Top Bar)
+  ---------------------------------------------------------------------------
+  components/os/MenuBar.tsx:
+    - Referensi Frame 1: Top bar dengan "Steve Mac" di kiri, menu items di kanan
+    - Adaptasi untuk Dzakwan:
+      Left side:
+        - Bold text: "Dzakwan" (brand name)
+      Right side menu items:
+        - Projects, Archive (atau Lab), About, Contact
+      Far right status area:
+        - Search icon (trigger Spotlight)
+        - Theme toggle button (sun/moon)
+        - System time display (HH:MM format, live update)
+    - Styling:
+      - Glassmorphism: backdrop-blur-xl + semi-transparent cream background
+      - Height: ~36-40px
+      - Fixed position di top
+      - Very subtle bottom border
+      - z-index: 1001
+    - Menggunakan Radix Menubar untuk dropdown behavior (opsional)
+
+  SUBPHASE 3.4 — Dock Component
+  ---------------------------------------------------------------------------
+  components/os/Dock.tsx:
+    - Referensi Frame 1: Floating translucent dock di bottom center
+    - Glassmorphism container:
+      - backdrop-blur-2xl
+      - Background rgba cream dengan opacity ~60-70%
+      - Rounded corners ~20px
+      - Very subtle border
+      - Subtle shadow beneath
+    - App icons dalam horizontal row:
+      * Projects, About, Lab, Leadership, Contact
+      * Setiap icon ~48-56px
+    - Hover magnification animation (Framer Motion):
+      - Icon yang di-hover membesar ~1.4x
+      - Icons bersebelahan membesar ~1.15x
+      - Icons dua posisi jauh membesar ~1.05x
+      - Smooth spring transition (stiffness: 400, damping: 25)
+    - Minimized window indicator:
+      - Dot kecil di bawah icon app yang memiliki window terbuka
+      - Dot berbeda untuk minimized vs active
+    - Click → openWindow(appId) atau focus jika sudah terbuka
+    - Click pada minimized window → unminimize dan focus
+
+  SUBPHASE 3.5 — Info Card Overlay (Desktop Widget)
+  ---------------------------------------------------------------------------
+  Referensi Frame 1: Card di kiri atas desktop dengan info personal
+    - Semi-transparent cream card (glassmorphism light)
+    - Avatar/photo icon di atas
+    - Name: "Dzakwan — Frontend & Mobile Engineer"
+    - Tagline: "Crafting seamless digital experiences with
+      precision and purpose."
+    - Status indicator: green dot + "Available for work"
+    - Rounded corners, subtle shadow
+    - Bisa di-drag (opsional) atau fixed position
+
+================================================================================
+PHASE 4: WINDOW SYSTEM — DRAGGABLE, RESIZABLE, SNAPPABLE WINDOWS
+================================================================================
+Tujuan: Implementasi window component yang fully interactive — bisa
+        di-drag, di-resize, di-minimize/maximize/close, snap ke edges,
+        dengan animasi yang smooth dan polished.
+
+  SUBPHASE 4.1 — Base Window Component
+  ---------------------------------------------------------------------------
+  components/os/Window.tsx:
+    - Menggunakan react-rnd (Rnd component) untuk drag + resize
+    - Props: windowId, memperoleh WindowState dari useWindowStore
+    - Structure:
+      ┌──────────────────────────────────────────────┐
+      │ ● ● ●    Window Title            [info] [link]│  ← Title bar
+      ├──────────────────────────────────────────────┤
+      │                                               │
+      │           App Content Area                    │  ← Children/App
+      │           (rendered via appId lookup)          │
+      │                                               │
+      └──────────────────────────────────────────────┘
+    - Styling:
+      - Background: white/cream (#FFFFFF atau #FDFBF7)
+      - Border-radius: 16px (top corners) — sesuai Frame 2, 3, 4
+      - Subtle shadow (multiple layers untuk depth)
+      - Border: 1px solid sangat light gray
+    - Click anywhere pada window → focusWindow(windowId)
+    - Drag handler hanya pada title bar area
+    - Resize dari semua edges dan corners
+    - Min size constraints dari WindowConfig
+
+  SUBPHASE 4.2 — Window Title Bar & Controls
+  ---------------------------------------------------------------------------
+  components/os/WindowControls.tsx:
+    - Traffic light buttons di kiri (referensi semua Frame):
+      ● Red (close) — closeWindow()
+      ● Yellow (minimize) — minimizeWindow()
+      ● Green (maximize/restore toggle) — maximizeWindow() / restoreWindow()
+    - Hover behavior:
+      - Default: solid colored circles
+      - Hover reveal: ✕ pada red, − pada yellow, ↗ pada green
+    - Window title di tengah (bold text)
+    - Optional right-side action buttons:
+      - Info button (ℹ) — referensi Frame 3
+      - Link button (🔗) — referensi Frame 3
+      - View toggle (list/grid) — referensi Frame 4
+
+  SUBPHASE 4.3 — Window Open/Close Animations
+  ---------------------------------------------------------------------------
+  Framer Motion AnimatePresence:
+    Open animation:
+      - Scale from 0.85 → 1.0
+      - Opacity from 0 → 1
+      - Spring curve (stiffness: 300, damping: 25)
+      - Origin: center of window
+      - Duration: ~300ms feel
+
+    Close animation:
+      - Scale from 1.0 → 0.85
+      - Opacity from 1 → 0
+      - Spring curve
+      - Duration: ~200ms feel
+
+    Minimize animation:
+      - Scale down
+      - Move toward dock position of corresponding app icon
+      - Opacity fade
+      - Duration: ~400ms
+
+    Maximize animation:
+      - Smooth position interpolation ke 0,0
+      - Smooth size interpolation ke viewport size
+      - Spring transition
+
+  SUBPHASE 4.4 — Window Snap Logic
+  ---------------------------------------------------------------------------
+  hooks/useWindowSnap.ts:
+    - Detect saat user drag window mendekati screen edge:
+      - Left edge (< 20px dari kiri) → snap left half
+      - Right edge (> viewport - 20px) → snap right half
+      - Top edge (< 20px dari top) → snap maximize
+    - Visual snap guide overlay:
+      - Semi-transparent cream area yang muncul saat approach edge
+      - Smooth animation appear/disappear
+    - Snap positions:
+      - Left half: x=0, y=menuBarHeight, w=50vw, h=viewport-menuBar-dockHeight
+      - Right half: x=50vw, y=menuBarHeight, w=50vw, h=viewport-menuBar-dockHeight
+      - Full: x=0, y=menuBarHeight, w=100vw, h=viewport-menuBar-dockHeight
+    - Double-click title bar → toggle maximize/restore
+    - Store previous position/size untuk restore
+
+  SUBPHASE 4.5 — Multi-Window Management
+  ---------------------------------------------------------------------------
+  - Support multiple windows open simultaneously
+  - Z-index reordering: click pada window → naik ke atas
+  - Focus visual indicator: focused window lebih opaque shadow,
+    unfocused windows slightly dimmed
+  - Keyboard navigation: opsional Cmd/Ctrl+` untuk cycle windows
+  - Render order berdasarkan windowOrder array di store
+
+================================================================================
+PHASE 5: APPLICATION WINDOWS — CONTENT UNTUK SETIAP APP
+================================================================================
+Tujuan: Membangun konten internal dari setiap application window,
+        menggunakan data dari CV Dzakwan dan mengacu pada design Frame 2-4.
+
+  SUBPHASE 5.1 — Projects App (Referensi Frame 4)
+  ---------------------------------------------------------------------------
+  components/apps/projects/ProjectsApp.tsx:
+    - Referensi Frame 4: Window "Projects" dengan tabel list view
+    - Dual view mode:
+      a) Table/List View (default — sesuai Frame 4):
+         Kolom: [Thumbnail] Name | Role | Brand | Year
+         Rows dari data proyek Dzakwan
+      b) Grid View (toggle via icon di title bar):
+         Card grid dengan thumbnail besar, title, tags
+    - View toggle buttons di title bar (list icon + grid icon)
+    - Data proyek dari CV Dzakwan:
+      1. LiftNode — Flutter/Dart — Mobile App Dev & UI/UX — Dec 2025
+         "Personal workout app with offline-first architecture,
+          Bento-grid dashboard, real-time charts"
+      2. LuminaCal — Kotlin/Compose — Android Dev & UI/UX — Dec 2025
+         "AI calorie tracker with CameraX + ML Kit food recognition,
+          Glassmorphism UI, Activity Ring animations"
+      3. Kelas Kampus — Next.js/Tailwind — Frontend Dev & UI/UX — Sep-Dec 2025
+         "SNBT preparation platform with CBT simulation, analytics
+          dashboard, 20+ responsive screens"
+      4. KPI Dashboard (Bukit Asam) — Next.js/FastAPI — Software Dev — Jan-Feb 2026
+         "Real-time KPI dashboard with smart Excel ingestion,
+          bottleneck heatmap, DEV calculation engine"
+      5. Maqdis Design System — Figma — UI/UX Designer — Oct 2025-Jan 2026
+         "50+ reusable components, 20+ wireframes, usability testing"
+    - Hover row → subtle highlight
+    - Click row → buka Project Detail window baru
+
+  SUBPHASE 5.2 — Project Detail Window (Referensi Frame 3)
+  ---------------------------------------------------------------------------
+  components/apps/projects/ProjectDetail.tsx:
+    - Referensi Frame 3: Window dengan hero image + floating info panel
+    - Bisa terbuka sebagai window terpisah (child window)
+    - Layout:
+      Top area: Hero image/screenshot dari project (full width)
+      Floating Info Panel (kanan atas, sesuai Frame 3):
+        - Title: "Info"
+        - Year: 2025
+        - Role: "Frontend Developer"
+        - Brand/Platform: "Personal" / "Bukit Asam" / etc
+        - Description: short summary
+        - Glassmorphism card style
+      Main scrollable content (Radix ScrollArea):
+        - Project Title (large heading)
+        - Overview / Problem Statement
+        - My Approach / Solution
+        - Technical Implementation details
+        - Tech Stack badges (pill-shaped tags)
+        - Result & Impact (metrics jika ada)
+        - Screenshots gallery (opsional)
+    - Navigation arrows (< >) di title bar untuk prev/next project
+    - Smooth scroll behavior
+
+  SUBPHASE 5.3 — About App (Referensi Frame 2)
+  ---------------------------------------------------------------------------
+  components/apps/about/AboutApp.tsx:
+    - Referensi Frame 2: Window "About me" dengan sidebar navigation
+    - Layout menggunakan react-resizable-panels:
+      Left Panel (sidebar ~200px):
+        - Title: "About me"
+        - Navigation items (vertical list):
+          * "I'm Dzakwan" (active highlight: accent terracotta/sage pill)
+          * "What I Build"
+          * "Awards & Press"
+          * "Skills & Tools"
+      Right Panel (main content, scrollable):
+        Section "I'm Dzakwan":
+          - Heading: "Hello, my name is [Dzakwan] — I'm a [frontend & mobile engineer.]"
+            (nama dan role di-highlight dengan warna accent, sesuai Frame 2)
+          - Photo gallery (3 photos horizontal — sesuai Frame 2 layout)
+            ATAU avatar/illustration
+          - "What I Do" section:
+            "Final-year Computer Science student at Universitas Padjadjaran
+             specializing in Front-End and Mobile Development..."
+            (dari CV Summary, diadaptasi)
+          - "My Approach" section:
+            "I believe technology should serve human needs elegantly.
+             I start by understanding the user and project goals,
+             then iterate concepts until I find the perfect balance
+             of form and function."
+          - "Social" links:
+            LinkedIn, Portfolio, Email, GitHub
+        Section "What I Build":
+          - Deskripsi area expertise
+          - Tech categories dengan icons/badges
+        Section "Awards & Press":
+          - UBB National Trading Competition 3.0 — 1st Place (July 2023)
+        Section "Skills & Tools":
+          - Programming: Python, C++, JavaScript, Kotlin, Dart, TypeScript
+          - Frameworks: Flutter, Jetpack Compose, Next.js, React.js,
+            Tailwind CSS, ML Kit
+          - Tools: Git, GitHub, Supabase, MySQL, VSCode, Android Studio
+          - Design: Figma (UI/UX Design, Prototyping, Wireframing)
+          - Languages: Indonesian (Native), English (Working Proficiency)
+    - Active nav item: pill-shaped highlight (accent color)
+    - Smooth section transitions saat switch nav
+
+  SUBPHASE 5.4 — Lab App
+  ---------------------------------------------------------------------------
+  components/apps/lab/LabApp.tsx:
+    - Window untuk experimental/showcase UI components
+    - Grid layout dari interactive demos:
+      * Glassmorphism card demo
+      * Spring animation playground
+      * Bento grid layout demo
+      * Activity ring animation (dari LuminaCal)
+      * Hover interaction showcase
+      * Dark/Light theme transition demo
+    - Setiap demo item: thumbnail card, click untuk expand/interact
+    - Purpose: menunjukkan technical creativity dan passion for craft
+    - Clean minimal layout, banyak whitespace
+
+  SUBPHASE 5.5 — Leadership App
+  ---------------------------------------------------------------------------
+  components/apps/leadership/LeadershipApp.tsx:
+    - Timeline-based layout (vertical timeline)
+    - Data dari CV:
+      1. BEM Kema FMIPA Unpad
+         Head of Internal Relations (Feb 2024 - Feb 2025)
+         - Led 4 programs, 200+ participants
+         - Managed 15+ student institutions
+         - Designed internal platforms
+      2. DPA Himatif FMIPA Unpad
+         Head of Commission IV (Feb 2024 - Feb 2025)
+         - Established evaluation standards
+         - Directed legislative oversight
+         - Monitored operational timelines
+    - Card-based design per entry
+    - Timeline line connecting cards
+    - Accent colors untuk different organizations
+    - Tags: "Leadership", "Management", "Strategy"
+
+  SUBPHASE 5.6 — Contact App
+  ---------------------------------------------------------------------------
+  components/apps/contact/ContactApp.tsx:
+    - Clean minimal layout
+    - Contact information:
+      * Email: dzakwanfadlullah@gmail.com (clickable mailto)
+      * Phone: (+62)85947527937
+      * LinkedIn: linkedin.com/DzakwanFadhlullah
+      * Portfolio: bit.ly/Dzakwan-Portofolio
+      * Location: Bandung, Indonesia
+    - CV Download button:
+      - Primary CTA button
+      - Download Dzakwan's CV as PDF
+      - Button style: accent color, rounded, dengan download icon
+    - Optional: minimal contact form
+      - Name, Email, Message fields
+      - Submit button
+      - Styled with cream/warm tones
+      - Sukses state: sonner toast notification
+
+================================================================================
+PHASE 6: SPOTLIGHT, CONTEXT MENU, & KEYBOARD SHORTCUTS
+================================================================================
+Tujuan: Implementasi power-user features yang membuat sistem terasa
+        intelligent dan responsive — command palette, right-click menus,
+        dan keybindings global.
+
+  SUBPHASE 6.1 — Spotlight / Command Palette
+  ---------------------------------------------------------------------------
+  components/os/Spotlight.tsx:
+    - Menggunakan cmdk (Command component)
+    - Trigger: Ctrl+K atau Cmd+K (keyboard shortcut)
+    - Juga bisa trigger dari search icon di MenuBar
+    - UI:
+      - Centered overlay dialog
+      - Glassmorphism background
+      - Search input di atas
+      - Results list di bawah (grouped)
+      - Backdrop blur behind
+    - Searchable items (via Fuse.js indexing):
+      Apps: Projects, About, Lab, Leadership, Contact
+      Projects: LiftNode, LuminaCal, Kelas Kampus, KPI Dashboard, Maqdis
+      Commands: Toggle Theme, Close All Windows, Minimize All,
+                Open Projects, Open About, etc.
+    - Search behavior:
+      - Fuzzy matching
+      - Instant results saat mengetik
+      - Arrow keys untuk navigate
+      - Enter untuk execute
+      - Escape untuk close
+    - Item groups: "Applications", "Projects", "Commands"
+    - Icon + label + shortcut hint di setiap item
+
+  SUBPHASE 6.2 — Context Menu System
+  ---------------------------------------------------------------------------
+  components/os/ContextMenu.tsx:
+    - Menggunakan Radix ContextMenu
+    - Right-click pada Desktop:
+      * "Change Wallpaper" (opsional)
+      * "Sort Icons By → Name / Type"
+      * "Toggle Grid"
+      * "About This OS"
+      * Separator
+      * "Open Spotlight" (Ctrl+K)
+    - Right-click pada Desktop Icon:
+      * "Open"
+      * "Get Info"
+      * Separator
+      * "Move to Dock"
+    - Right-click pada Window:
+      * "Close Window"
+      * "Minimize"
+      * "Maximize"
+      * Separator
+      * "Snap Left"
+      * "Snap Right"
+    - Styling:
+      - Cream/white background
+      - Subtle shadow
+      - Rounded corners
+      - Hover highlight
+      - Icons di kiri, shortcut hints di kanan
+
+  SUBPHASE 6.3 — Global Keyboard Shortcuts
+  ---------------------------------------------------------------------------
+  hooks/useKeyboardShortcuts.ts (via react-hotkeys-hook):
+    - Ctrl/Cmd + K → Open Spotlight
+    - Ctrl/Cmd + W → Close active window
+    - Ctrl/Cmd + M → Minimize active window
+    - Ctrl/Cmd + Shift + F → Toggle maximize active window
+    - Ctrl/Cmd + ` → Cycle between open windows
+    - Ctrl/Cmd + D → Toggle dark/light mode
+    - Ctrl/Cmd + , → Open About (preferences-like)
+    - Escape → Close Spotlight / deselect icons
+    - Arrow keys → Navigate between desktop icons (jika desktop focused)
+    - Enter → Open selected desktop icon
+
+================================================================================
+PHASE 7: PERSISTENCE, THEMING, & ANIMATIONS POLISH
+================================================================================
+Tujuan: Memastikan layout persistent, theme switching smooth,
+        dan seluruh animasi terpolish pada 60fps.
+
+  SUBPHASE 7.1 — Dexie.js Database Setup
+  ---------------------------------------------------------------------------
+  lib/db.ts:
+    - Database schema:
+      windowPositions: { id, appId, x, y, width, height }
+      userPreferences: { key, value }
+        - theme: 'cream' | 'dark'
+        - dockPosition: 'bottom'
+        - wallpaper: string
+      desktopLayout: { appId, x, y }
+      recentApps: { appId, lastOpened: timestamp }
+    - Migration versioning
+
+  SUBPHASE 7.2 — Persistence Hook
+  ---------------------------------------------------------------------------
+  hooks/usePersistence.ts:
+    - On window move/resize → debounced save ke Dexie
+    - On app open → update recentApps
+    - On theme change → save ke Dexie + localStorage
+    - On page load → restore semua dari Dexie:
+      - Window positions & sizes
+      - Active windows (re-open)
+      - Desktop icon positions
+      - Theme selection
+    - Fallback ke defaults jika no stored data (first visit)
+    - Debounce interval: 500ms untuk position saves
+
+  SUBPHASE 7.3 — Theme System (Dual Mode)
+  ---------------------------------------------------------------------------
+  Light mode (default — "Soft Cream"):
+    - Background: cream gradients (#F5EFE6)
+    - Text: warm dark brown (#3D3229)
+    - Cards: white with subtle cream tint
+    - Borders: very light tan
+    - Accents: terracotta, sage, dusty blue
+
+  Dark mode:
+    - Background: deep warm charcoal (#1C1917 atau #292524)
+    - Text: cream white (#F5EFE6)
+    - Cards: dark warm gray
+    - Borders: subtle warm gray
+    - Accents: lighter versions of terracotta, sage, dusty blue
+    - Glassmorphism: darker glass effect
+
+  Toggle:
+    - Smooth transition (CSS transition pada background, color, border)
+    - next-themes handles class toggling
+    - Persist choice ke Dexie + localStorage
+
+  SUBPHASE 7.4 — Animation Fine-Tuning & Performance
+  ---------------------------------------------------------------------------
+  lib/animations.ts:
+    Shared Framer Motion variants:
+
+    windowOpen: {
+      initial: { scale: 0.85, opacity: 0 },
+      animate: { scale: 1, opacity: 1 },
+      transition: { type: 'spring', stiffness: 300, damping: 25 }
+    }
+
+    windowClose: {
+      exit: { scale: 0.85, opacity: 0 },
+      transition: { type: 'spring', stiffness: 400, damping: 30 }
+    }
+
+    dockMagnify: {
+      scale calculation berdasarkan distance dari mouse position
+      using useMotionValue + useTransform
+    }
+
+    fadeIn: { initial: { opacity: 0 }, animate: { opacity: 1 } }
+    slideUp: { initial: { y: 20, opacity: 0 }, animate: { y: 0, opacity: 1 } }
+
+  Performance rules:
+    - will-change: transform pada dragged elements
+    - GPU acceleration via transform3d(0,0,0)
+    - No layout-triggering animations (avoid animating width/height directly)
+    - Use transform: scale() instead
+    - Lazy load app content yang belum pernah dibuka
+    - RequestAnimationFrame untuk custom animations
+    - Target: consistent 60fps
+
+  SUBPHASE 7.5 — Loading & Initial Boot Sequence (Nice-to-Have)
+  ---------------------------------------------------------------------------
+  - Optional "boot" animation saat pertama kali load:
+    - Brief blank screen
+    - "Dzakwan OS" logo/text fade in
+    - Progress bar atau spinner
+    - Desktop fade in dengan stagger animation (icons appear one by one)
+  - Subsequent visits: restore instantly dari persistence (skip boot)
+
+================================================================================
+PHASE 8: FINAL POLISH, DATA POPULATION, & QUALITY ASSURANCE
+================================================================================
+Tujuan: Mengisi semua konten real dari CV, polish semua edge cases,
+        responsive behavior, accessibility, dan final testing.
+
+  SUBPHASE 8.1 — Data Population dari CV
+  ---------------------------------------------------------------------------
+  data/projects.ts:
+    - Semua 5 proyek dengan full detail:
+      title, role, year, platform, techStack[], description,
+      problem, approach, implementation, result, images[]
+    - Data diambil dari CV Dzakwan (sudah di-extract di Phase 5)
+
+  data/about.ts:
+    - name: "Dzakwan Fadhlullah"
+    - title: "Frontend & Mobile Engineer"
+    - location: "Bandung, Indonesia"
+    - university: "Universitas Padjadjaran"
+    - summary: (dari CV)
+    - approach: (personal statement)
+    - social links: LinkedIn, GitHub, Email, Portfolio
+
+  data/leadership.ts:
+    - 2 leadership entries dengan full bullets
+
+  data/skills.ts:
+    - Categorized skill data
+
+  SUBPHASE 8.2 — Asset Preparation
+  ---------------------------------------------------------------------------
+  - Project hero images/screenshots (generate atau placeholder):
+    - LiftNode app screenshots
+    - LuminaCal app screenshots
+    - Kelas Kampus screenshots
+    - KPI Dashboard screenshots
+    - Maqdis Design System screens
+  - Desktop icon designs (custom atau styled lucide icons)
+  - Dock app icons
+  - Avatar/photo untuk About section
+  - Grain texture SVG untuk overlay
+  - Custom wallpaper gradient (NOT macOS wallpaper)
+  - CV PDF file untuk download di Contact app
+  - Favicon dan OG image
+
+  SUBPHASE 8.3 — Responsive Behavior
+  ---------------------------------------------------------------------------
+  - Desktop (>1024px): Full OS experience
+  - Tablet (768-1024px):
+    - Slightly smaller windows
+    - Dock icons smaller
+    - Snap zones adjusted
+  - Mobile (<768px):
+    - Opsi 1: Simplified single-window mode (windows max-width 100%)
+    - Opsi 2: Fallback ke scroll-based portfolio layout
+    - Dock tetap ada di bottom
+    - Drag disabled, tap to open
+    - MenuBar simplified
+  - Harus diputuskan: apakah mobile tetap OS-style atau fallback
+    ke layout konvensional. Rekomendasi: OS-style tapi simplified.
+
+  SUBPHASE 8.4 — Accessibility (a11y)
+  ---------------------------------------------------------------------------
+  - Semua interactive elements: proper aria-labels
+  - Radix UI primitives sudah built-in accessible
+  - Focus trap di modals/spotlight
+  - Keyboard navigasi untuk semua menus
+  - Skip-to-content link (hidden)
+  - Color contrast: minimal 4.5:1 ratio untuk text
+  - Reduced motion preference support:
+    prefers-reduced-motion → disable spring animations, use opacity only
+  - Screen reader announcements untuk window open/close events
+  - Semantic HTML: main, nav, section, article
+
+  SUBPHASE 8.5 — SEO & Meta Tags
+  ---------------------------------------------------------------------------
+  - Title: "Dzakwan Fadhlullah — Frontend & Mobile Engineer"
+  - Meta description: "Interactive OS-inspired portfolio of Dzakwan
+    Fadhlullah, a Frontend & Mobile Engineer specializing in React,
+    Next.js, Flutter, and Kotlin."
+  - OG tags: title, description, image
+  - Twitter card meta
+  - Canonical URL
+  - robots.txt dan sitemap.xml (jika deployed)
+  - Structured data (JSON-LD) untuk Person schema
+
+  SUBPHASE 8.6 — Performance Optimization
+  ---------------------------------------------------------------------------
+  - Next.js Image component untuk semua images
+  - Dynamic imports untuk app content (lazy load windows):
+    const ProjectsApp = dynamic(() => import('@/components/apps/projects/ProjectsApp'))
+  - Font optimization via next/font
+  - Bundle analysis: pastikan < 200KB initial JS
+  - Lighthouse audit target: Performance 90+, Accessibility 90+
+  - Core Web Vitals: LCP < 2.5s, FID < 100ms, CLS < 0.1
+
+  SUBPHASE 8.7 — Cross-Browser Testing
+  ---------------------------------------------------------------------------
+  - Chrome (primary target)
+  - Firefox
+  - Safari (pastikan backdrop-filter support)
+  - Edge
+  - Mobile Safari (iOS)
+  - Chrome Mobile (Android)
+  - Test items:
+    - Window drag & resize
+    - Dock magnification
+    - Spotlight search
+    - Theme switching
+    - Persistence (reload test)
+    - Animation smoothness
+    - Context menus
+
+  SUBPHASE 8.8 — Deployment Preparation
+  ---------------------------------------------------------------------------
+  - Vercel deployment (recommended untuk Next.js)
+  - Environment variables setup (jika ada)
+  - Custom domain configuration (opsional)
+  - Analytics setup (opsional: Vercel Analytics atau umami)
+  - Error tracking (opsional: Sentry)
+  - Final production build test: pnpm build && pnpm start
+  - Validate: no console errors, no hydration mismatches,
+    smooth performance, semua windows functional
+
+================================================================================
+RINGKASAN PHASE
+================================================================================
+
+  Phase 1: PROJECT SCAFFOLDING & CORE INFRASTRUCTURE       (7 subphases)
+           → Fondasi proyek, dependencies, folder structure, design tokens
+
+  Phase 2: OS CORE SYSTEM — WINDOW MANAGER & STATE         (6 subphases)
+           → Type system, Zustand stores, z-index management
+
+  Phase 3: OS SHELL — DESKTOP, MENU BAR, & DOCK            (5 subphases)
+           → Visual shell components berdasarkan Frame 1
+
+  Phase 4: WINDOW SYSTEM — DRAG, RESIZE, SNAP              (5 subphases)
+           → Interactive window behavior + animations
+
+  Phase 5: APPLICATION WINDOWS — CONTENT                    (6 subphases)
+           → Semua 5 app + project detail berdasarkan Frame 2-4 + CV
+
+  Phase 6: SPOTLIGHT, CONTEXT MENU, & SHORTCUTS             (3 subphases)
+           → Power-user features, command palette, keybindings
+
+  Phase 7: PERSISTENCE, THEMING, & ANIMATION POLISH         (5 subphases)
+           → Dexie persistence, dual theme, 60fps animations
+
+  Phase 8: FINAL POLISH & QUALITY ASSURANCE                 (8 subphases)
+           → Data population, responsive, a11y, SEO, testing, deploy
+
+  TOTAL: 8 Phases, 45 Subphases
+
+================================================================================
+CATATAN PENTING
+================================================================================
+
+1. Semua konten personal (nama, proyek, leadership, skills) diambil dari
+   CV Dzakwan Fadhlullah yang sudah dibaca.
+
+2. Design direction mengacu pada Frame 1-4 sebagai visual reference
+   TAPI harus diinterpretasi ulang dalam estetika "Soft Cream Minimal OS",
+   bukan copy macOS.
+
+3. Prioritas implementasi:
+   - Phase 1-2: Paling kritis (fondasi)
+   - Phase 3-4: Core experience (desktop + windows)
+   - Phase 5: Konten (value utama portfolio)
+   - Phase 6-7: Enhancement (UX polish)
+   - Phase 8: Quality assurance (production-ready)
+
+4. Estimasi development time:
+   - Phase 1: 1-2 hari
+   - Phase 2: 2-3 hari
+   - Phase 3: 2-3 hari
+   - Phase 4: 3-4 hari
+   - Phase 5: 4-5 hari
+   - Phase 6: 2-3 hari
+   - Phase 7: 2-3 hari
+   - Phase 8: 3-4 hari
+   TOTAL ESTIMASI: ~20-27 hari kerja
+
+================================================================================
+END OF IMPLEMENTATION PLAN
+================================================================================

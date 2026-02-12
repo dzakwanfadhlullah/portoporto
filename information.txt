@@ -1,0 +1,372 @@
+INFORMATION FOR THIS PROJECT
+
+This project is to build a high-end, OS-inspired personal portfolio website for “Dzakwan — Frontend & Mobile Engineer”. The goal is to recreate a realistic desktop-like operating system environment inside a browser, not as a gimmick, but as a fully interactive UI system with window management, dock, spotlight search, context menus, keyboard shortcuts, split panels, draggable and resizable windows, layered z-index control, persistent layout memory, and polished animations.
+
+This is not a basic portfolio. This is a simulated desktop UI environment engineered as a web application.
+
+The design direction is “Soft Cream Minimal OS” — warm, premium, calm, and elegant. It must not copy macOS UI directly, but reinterpret the concept into a refined cream/beige aesthetic with subtle depth, muted accent colors, and clean editorial typography.
+
+The system must feel intelligent, fluid, intentional, and engineered with care.
+
+CORE TECH STACK (NON-NEGOTIABLE)
+
+Framework & Runtime:
+
+Next.js (latest stable version)
+
+React (latest stable version)
+
+TypeScript (strict mode enabled)
+
+pnpm as package manager
+
+Styling:
+
+Tailwind CSS
+
+tailwindcss-animate
+
+CSS variables for theme tokens
+
+class-variance-authority (CVA)
+
+tailwind-merge
+
+clsx
+
+Motion & Animation:
+
+Framer Motion (for spring-based animations, window transitions, dock hover magnification, fade/scale transitions, layout transitions)
+
+State Management:
+
+Zustand (for window manager, app registry, focus state, layout state, desktop configuration, active windows, minimized windows)
+
+Zustand persist middleware
+
+OS-LIKE UI FOUNDATION (CRITICAL LIBRARIES)
+
+Component Primitives:
+
+Radix UI (DropdownMenu, ContextMenu, Dialog, Tooltip, Popover, Tabs, Menubar, ScrollArea, Separator)
+
+shadcn/ui (as a component layer built on top of Radix)
+
+lucide-react (icons)
+
+Command System:
+
+cmdk (for Spotlight-style command palette)
+
+Fuse.js (for fuzzy searching apps, projects, files)
+
+Window System:
+
+react-rnd (draggable + resizable windows)
+
+Custom snap logic (left half, right half, maximize, restore)
+
+Z-index layering system
+
+Layout System:
+
+react-resizable-panels (Finder-like sidebar + main panel split)
+
+Optional: @use-gesture/react for advanced gesture behavior
+
+Keyboard Shortcuts:
+
+react-hotkeys-hook or tinykeys
+
+Notifications:
+
+sonner (toast notifications)
+
+Data Persistence:
+
+Dexie.js (IndexedDB) for:
+
+Desktop layout
+
+Window positions
+
+User preferences
+
+Theme settings
+
+Recently opened apps
+
+Search & Indexing:
+
+Fuse.js for fuzzy search inside spotlight
+
+Optional Advanced Desktop Features:
+
+react-selecto (drag-to-select desktop items)
+
+moveable (if advanced interaction needed)
+
+react-virtuoso (virtualized list for project tables)
+
+Theme Management:
+
+next-themes (for soft cream / dark mode toggle)
+
+SYSTEM ARCHITECTURE REQUIREMENTS
+
+This project must implement a modular OS-like structure:
+
+AppRegistry (metadata for each app)
+
+WindowManager (open, close, minimize, maximize, focus, snap, restore)
+
+Desktop layer
+
+Dock component
+
+Spotlight system
+
+MenuBar component
+
+Context menu system
+
+Persistent layout manager
+
+Z-index focus management
+
+Global keyboard shortcut manager
+
+All windows must be independent components but controlled by a central window store.
+
+The system must allow:
+
+Multiple windows open simultaneously
+
+Focus switching
+
+Z-index reordering
+
+Dragging across screen
+
+Resizing with constraints
+
+Snap to screen edges
+
+Minimize to dock
+
+Restore from dock
+
+Close animation
+
+Bring-to-front on click
+
+UI DESIGN REQUIREMENTS
+
+Design Theme:
+
+Background: Soft cream tone (#F5EFE6 range)
+
+Subtle beige gradient layers
+
+Very soft shadow depth
+
+16–20px rounded corners
+
+Muted accent colors (terracotta, sage, dusty blue)
+
+Light grain texture overlay
+
+Minimal border strokes
+
+Soft blur glassmorphism for dock and top bar
+
+Typography:
+
+System UI font stack
+
+Strong hierarchy
+
+Generous whitespace
+
+Editorial but modern
+
+No hard contrasts. No overly saturated colors.
+
+DESKTOP ENVIRONMENT STRUCTURE
+
+Top Menu Bar:
+
+Brand name (Dzakwan)
+
+Menu items (File, Edit, View style reinterpretation or Projects, About, Lab, Contact)
+
+Right-side status icons (search, theme toggle, system time optional)
+
+Desktop:
+
+Draggable icons (Projects, About, Lab, Leadership, Contact)
+
+Optional right-click context menu
+
+Dock:
+
+Floating translucent panel
+
+App icons
+
+Hover magnification animation
+
+Minimized windows appear here
+
+APPLICATION WINDOWS TO BUILD
+
+Projects App:
+
+Grid or table of projects
+
+Click opens Project Detail window
+
+Sidebar optional filter
+
+Tag system
+
+Role, year, tech stack badges
+
+Project Detail Window:
+
+Hero image area
+
+Info panel
+
+Problem section
+
+Approach section
+
+Technical Implementation
+
+Result & Impact
+
+Scrollable area using Radix ScrollArea
+
+About App:
+
+Sidebar navigation
+
+Sections (Who I Am, What I Build, Philosophy, Skills)
+
+Clean editorial layout
+
+Lab App:
+
+Experimental UI components
+
+Animation demos
+
+Interactive components
+
+Possibly embedded demos
+
+Leadership App:
+
+Timeline layout
+
+Structured highlights
+
+Card-based design
+
+Contact App:
+
+Contact links
+
+CV download button
+
+Clean minimal form optional
+
+Spotlight:
+
+Opens via keyboard shortcut
+
+Search apps, projects, commands
+
+Instant open behavior
+
+ANIMATION PRINCIPLES
+
+All motion must follow:
+
+Natural spring curves
+
+No linear transitions
+
+Subtle fade + scale on window open
+
+Smooth dock hover magnification
+
+Dragging with frictionless feel
+
+Minimize animation toward dock
+
+Snap animation with visual guide overlay
+
+Performance must remain smooth at 60fps.
+
+PERSISTENCE SYSTEM
+
+Using Dexie (IndexedDB), store:
+
+Window positions
+
+Window size
+
+Active apps
+
+Last opened apps
+
+Theme selection
+
+Desktop layout
+
+On reload, layout must restore.
+
+ENGINEERING STANDARDS
+
+Strict TypeScript
+
+Clean folder architecture
+
+Feature-based structure
+
+Reusable components
+
+No inline messy logic
+
+Strong separation between UI and state logic
+
+Clean animation orchestration
+
+Accessibility via Radix primitives
+
+END GOAL
+
+The final result must feel like:
+
+A real lightweight operating system inside a browser
+
+Polished and intentional
+
+Premium and elegant
+
+Calm but powerful
+
+Technical and design-driven
+
+Not gimmicky
+
+Not cartoonish
+
+Not copied from macOS
+
+A product-level experience
+
+This is not a template portfolio.
+This is a crafted interactive system.
