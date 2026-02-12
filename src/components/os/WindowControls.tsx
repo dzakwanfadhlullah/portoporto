@@ -12,6 +12,7 @@ interface WindowControlsProps {
     windowId: WindowId;
     title: string;
     isMaximized: boolean;
+    headerActions?: React.ReactNode;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -20,6 +21,7 @@ export const WindowControls = ({
     windowId,
     title,
     isMaximized,
+    headerActions,
 }: WindowControlsProps) => {
     const closeWindow = useWindowStore((s) => s.closeWindow);
     const minimizeWindow = useWindowStore((s) => s.minimizeWindow);
@@ -125,8 +127,10 @@ export const WindowControls = ({
                 </span>
             </div>
 
-            {/* ── Right spacer (balances traffic lights) ─────────────────── */}
-            <div className="w-[52px]" />
+            {/* ── Header Actions (Slot for Sub-apps) ────────────────────────── */}
+            <div className="flex items-center gap-1.5 min-w-[52px] justify-end">
+                {headerActions}
+            </div>
         </div>
     );
 };
