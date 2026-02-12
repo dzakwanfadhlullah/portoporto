@@ -402,7 +402,6 @@ export const useWindowStore = create<WindowManagerState>()(
         {
             name: "dzakos-window-store",
             storage: createJSONStorage(() => localStorage),
-            partialState: true,
             // Only persist layout-critical state, not focus/z-index
             partialize: (state) => ({
                 windows: state.windows,

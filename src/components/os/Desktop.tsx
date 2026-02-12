@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, Suspense } from "react";
+import { useCallback, useMemo, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useDesktopStore } from "@/stores/useDesktopStore";
@@ -12,12 +12,19 @@ import { DesktopIcon } from "./DesktopIcon";
 // ─── Desktop Component ──────────────────────────────────────────────────────
 
 export const Desktop = () => {
-    const { icons, deselectAll, wallpaper } = useDesktopStore();
-    const { getWindowsByZIndex } = useWindowStore();
-    const { getApp } = useAppRegistry();
+    const icons = useDesktopStore((s) => s.icons);
+    const deselectAll = useDesktopStore((s) => s.deselectAll);
+    const wallpaper = useDesktopStore((s) => s.wallpaper);
+    const windows = useWindowStore((s) => s.windows);
+    const getApp = useAppRegistry((s) => s.getApp);
     const { getWindowZIndex } = useZIndex();
 
-    const visibleWindows = useWindowStore((s) => s.getVisibleWindows());
+    // Derive visible windows from raw state instead of calling a computed
+    // function inside a selector (which creates new refs → infinite loop)
+    const visibleWindows = useMemo(
+        () => Object.values(windows).filter((w) => !w.isMinimized),
+        [windows]
+    );
 
     const handleDesktopClick = useCallback(
         (e: React.MouseEvent) => {
