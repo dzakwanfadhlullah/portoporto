@@ -65,7 +65,7 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
         <motion.div
             className="absolute flex flex-col items-center gap-2 cursor-pointer group"
             style={{
-                left: icon.position.x + 48, // 48 is generic desktop padding
+                right: icon.position.x + 48, // Now relative to the right edge
                 top: icon.position.y,
                 width: 100,
             }}
