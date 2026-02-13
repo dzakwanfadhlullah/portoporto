@@ -6,18 +6,11 @@ import { Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function ThemeDemo() {
-    const { theme, setTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => setMounted(true), []);
-    if (!mounted) return null;
-
-    const isDark = theme === "dark";
+    const isDark = false;
 
     return (
         <div className="w-full h-full flex items-center justify-center bg-muted/5">
-            <motion.button
-                onClick={() => setTheme(isDark ? "light" : "dark")}
+            <motion.div
                 className="relative w-24 h-12 rounded-full bg-muted border border-border/40 p-1 flex items-center shadow-inner"
             >
                 <motion.div
@@ -32,7 +25,7 @@ export function ThemeDemo() {
                     <Sun size={14} />
                     <Moon size={14} />
                 </div>
-            </motion.button>
+            </motion.div>
         </div>
     );
 }

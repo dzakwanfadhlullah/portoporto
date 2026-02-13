@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Sun, Moon } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Search } from "lucide-react";
 import { AppleIcon } from "./AppleIcon";
 
 import { useWindowStore } from "@/stores/useWindowStore";
@@ -25,7 +24,6 @@ export const MenuBar = () => {
     const openWindow = useWindowStore((s) => s.openWindow);
     const getApp = useAppRegistry((s) => s.getApp);
     const toggleSpotlight = useSpotlightStore((s) => s.toggle);
-    const { theme, setTheme } = useTheme();
 
     // Live clock
     const [time, setTime] = useState("");
@@ -63,9 +61,6 @@ export const MenuBar = () => {
         [getApp, openWindow]
     );
 
-    const toggleTheme = useCallback(() => {
-        setTheme(theme === "dark" ? "light" : "dark");
-    }, [theme, setTheme]);
 
     return (
         <motion.header
@@ -107,19 +102,6 @@ export const MenuBar = () => {
                         <AppleIcon icon={Search} style="symbol" size={14} />
                     </button>
 
-                    {/* Theme */}
-                    {mounted && (
-                        <button
-                            onClick={toggleTheme}
-                            className="text-foreground/40 hover:text-foreground/70 transition-colors"
-                        >
-                            {theme === "dark" ? (
-                                <AppleIcon icon={Sun} style="symbol" size={14} />
-                            ) : (
-                                <AppleIcon icon={Moon} style="symbol" size={14} />
-                            )}
-                        </button>
-                    )}
 
                     {/* Clock */}
                     {mounted && (

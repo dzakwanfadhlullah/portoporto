@@ -37,10 +37,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F5EFE6" },
-    { media: "(prefers-color-scheme: dark)", color: "#1C1917" },
-  ],
+  themeColor: "#F5EFE6",
 };
 
 export default function RootLayout({
@@ -54,6 +51,7 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
+          forcedTheme="light"
           enableSystem={false}
           disableTransitionOnChange={false}
         >

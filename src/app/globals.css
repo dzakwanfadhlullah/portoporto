@@ -102,33 +102,6 @@
   --radius: 1rem;
 }
 
-.dark {
-  --background: #1C1917;
-  --foreground: #F5EFE6;
-
-  --card: #292524;
-  --card-foreground: #F5EFE6;
-
-  --popover: #292524;
-  --popover-foreground: #F5EFE6;
-
-  --primary: #D4A574;
-  /* Warm accent for dark */
-  --primary-foreground: #1C1917;
-
-  --secondary: #44403C;
-  --secondary-foreground: #F5EFE6;
-
-  --muted: #44403C;
-  --muted-foreground: #A8A29E;
-
-  --accent: #44403C;
-  --accent-foreground: #F5EFE6;
-
-  --border: #44403C;
-  --input: #44403C;
-  --ring: #D4A574;
-}
 
 @utility glass {
   background-color: rgba(255, 255, 255, 0.45);
@@ -137,12 +110,6 @@
   box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.05);
 }
 
-@utility glass-dark {
-  background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(32px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-}
 
 /* Vibrant Mesh Gradient (Frame 1-4 Style) */
 @utility vibrant-wallpaper {
@@ -223,10 +190,6 @@
     color: var(--color-cream-50);
   }
 
-  .dark ::selection {
-    background-color: var(--color-accent-warm);
-    color: var(--background);
-  }
 
   /* Custom Scrollbar */
   ::-webkit-scrollbar {

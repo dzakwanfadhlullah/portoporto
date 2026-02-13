@@ -16,12 +16,12 @@ import { useWindowStore } from "@/stores/useWindowStore";
 import { useAppRegistry } from "@/stores/useAppRegistry";
 import { AppleIcon } from "./AppleIcon";
 import { projects } from "../apps/projects/data";
-import { useTheme } from "next-themes";
 
 export const Spotlight = () => {
     const { isOpen, close, query, setQuery, results } = useSpotlightStore();
     const openWindow = useWindowStore((s) => s.openWindow);
     const allApps = useAppRegistry((s) => s.getAllApps());
+    const apps = useAppRegistry((s) => s.apps);
     const searchableApps = allApps.filter(a => a.id !== "project-detail");
 
     const handleSelect = (item: any) => {
@@ -36,8 +36,6 @@ export const Spotlight = () => {
                     item.metadata
                 );
             }
-        } else if (item.id === "cmd-toggle-theme") {
-            setTheme(theme === "dark" ? "light" : "dark");
         }
         close();
     };
@@ -52,7 +50,7 @@ export const Spotlight = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={close}
-                        className="absolute inset-0 bg-background/40 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/20 backdrop-blur-md"
                     />
 
                     {/* Spotlight Dialog */}
@@ -61,7 +59,7 @@ export const Spotlight = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: -20 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative w-full max-w-2xl bg-background/80 backdrop-blur-2xl rounded-3xl border border-border/40 shadow-2xl overflow-hidden"
+                        className="relative w-full max-w-2xl bg-white rounded-3xl border border-black/5 shadow-[0_20px_70px_-10px_rgba(0,0,0,0.15),0_10px_30px_-5px_rgba(0,0,0,0.1)] overflow-hidden"
                     >
                         <Command className="w-full">
                             <div className="flex items-center border-b border-border/20 px-6 py-4">
@@ -70,7 +68,7 @@ export const Spotlight = () => {
                                     value={query}
                                     onValueChange={setQuery}
                                     placeholder="Search apps, projects, or commands..."
-                                    className="flex-1 bg-transparent border-none outline-none text-lg font-medium placeholder:text-muted-foreground/30 py-2"
+                                    className="flex-1 bg-transparent border-none outline-none text-xl font-bold tracking-tight text-black placeholder:text-black/15 py-2"
                                 />
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-muted/30 border border-border/40">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">ESC</span>
@@ -83,7 +81,7 @@ export const Spotlight = () => {
                                 </Command.Empty>
 
                                 {/* Apps Group */}
-                                <Command.Group heading="Applications" className="px-2 py-3 overflow-hidden text-muted-foreground text-[11px] uppercase tracking-wider font-bold opacity-40">
+                                <Command.Group heading="Applications" className="px-2 py-3 overflow-hidden text-black/25 text-[11px] uppercase tracking-tight font-bold">
                                     <div className="flex flex-col gap-1 mt-2">
                                         {searchableApps.map(app => (
                                             <CommandItem
@@ -98,7 +96,7 @@ export const Spotlight = () => {
                                 </Command.Group>
 
                                 {/* Projects Group */}
-                                <Command.Group heading="Projects" className="px-2 py-3 overflow-hidden text-muted-foreground text-[11px] uppercase tracking-wider font-bold opacity-40 mt-2 border-t border-border/10">
+                                <Command.Group heading="Projects" className="px-2 py-3 overflow-hidden text-black/25 text-[11px] uppercase tracking-tight font-bold mt-2 border-t border-black/5">
                                     <div className="flex flex-col gap-1 mt-2">
                                         {projects.map(p => (
                                             <CommandItem
@@ -114,15 +112,8 @@ export const Spotlight = () => {
                                 </Command.Group>
 
                                 {/* Commands Group */}
-                                <Command.Group heading="Commands" className="px-2 py-3 overflow-hidden text-muted-foreground text-[11px] uppercase tracking-wider font-bold opacity-40 mt-2 border-t border-border/10">
+                                <Command.Group heading="Commands" className="px-2 py-3 overflow-hidden text-black/25 text-[11px] uppercase tracking-tight font-bold mt-2 border-t border-black/5">
                                     <div className="flex flex-col gap-1 mt-2">
-                                        <CommandItem
-                                            title="Toggle Theme"
-                                            desc="Switch between light and dark mode"
-                                            iconConfig={{ icon: Zap, color: "#8E8E93" }}
-                                            shortcut="⌘ D"
-                                            onSelect={() => handleSelect({ id: "cmd-toggle-theme" })}
-                                        />
                                         <CommandItem
                                             title="Minimize All Windows"
                                             desc="Hide all open windows"
@@ -146,8 +137,8 @@ export const Spotlight = () => {
                             </Command.List>
 
                             {/* Footer */}
-                            <div className="px-6 py-3 bg-muted/20 border-t border-border/10 flex items-center justify-between">
-                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">
+                            <div className="px-6 py-4 bg-[#F9F9FB] border-t border-black/5 flex items-center justify-between">
+                                <p className="text-[10px] font-bold uppercase tracking-tight text-black/25">
                                     Spotlight Search
                                 </p>
                                 <div className="flex items-center gap-4">
@@ -169,7 +160,7 @@ function CommandItem({ title, desc, iconConfig, shortcut, onSelect, style }: any
     return (
         <Command.Item
             onSelect={onSelect}
-            className="flex items-center gap-4 px-4 py-3 rounded-2xl cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground group transition-colors duration-200"
+            className="flex items-center gap-4 px-4 py-3 rounded-2xl cursor-pointer aria-selected:bg-[#FFD600] aria-selected:text-black group transition-all duration-200"
         >
             <div className="w-10 h-10 rounded-xl bg-muted group-aria-selected:bg-primary-foreground/10 flex items-center justify-center transition-colors">
                 <AppleIcon {...iconConfig} style={style || "symbol"} size={18} />
@@ -190,10 +181,10 @@ function CommandItem({ title, desc, iconConfig, shortcut, onSelect, style }: any
 function FooterAction({ label, keys }: { label: string; keys: string[] }) {
     return (
         <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-muted-foreground/60">{label}</span>
+            <span className="text-[10px] font-bold text-black/40 uppercase tracking-tight">{label}</span>
             <div className="flex gap-1">
                 {keys.map(k => (
-                    <div key={k} className="w-5 h-5 rounded bg-muted border border-border/40 flex items-center justify-center text-[10px] font-black text-muted-foreground/80">
+                    <div key={k} className="w-5 h-5 rounded-md bg-white border border-black/5 flex items-center justify-center text-[10px] font-bold text-black shadow-sm">
                         {k}
                     </div>
                 ))}
