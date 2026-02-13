@@ -75,8 +75,6 @@ export const Desktop = () => {
                 className="absolute inset-0"
                 style={{
                     zIndex: Z_LAYERS.DESKTOP_ICONS,
-                    paddingTop: 56,
-                    paddingBottom: 80,
                 }}
                 onClick={handleDesktopClick}
                 onContextMenu={handleContextMenu}

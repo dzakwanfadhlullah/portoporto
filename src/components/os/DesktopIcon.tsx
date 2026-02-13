@@ -65,9 +65,9 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
         <motion.div
             className="absolute flex flex-col items-center gap-2 cursor-pointer group"
             style={{
-                right: 24, // Strictly on the right sidebar as per Frame 1
+                left: icon.position.x + 48, // 48 is generic desktop padding
                 top: icon.position.y,
-                width: 80,
+                width: 100,
             }}
             onClick={handleClick}
             whileHover={{ scale: 1.02 }}
@@ -77,21 +77,21 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
             <div
                 className={`
           relative flex items-center justify-center
-          w-[72px] h-[72px] rounded-lg
+          w-[84px] h-[84px] rounded-lg
           transition-all duration-300
           ${isSelected
-                        ? "shadow-[0_0_0_2px_rgba(0,0,0,0.8)] border-2 border-white"
+                        ? "shadow-[0_0_0_2px_rgba(255,255,255,0.8)] border-2 border-black/20"
                         : "group-hover:translate-y-[-2px]"
                     }
         `}
             >
                 {/* Premium Project Card (Photo Frame style) */}
-                <div className="w-[68px] h-[68px]">
+                <div className="w-[80px] h-[80px]">
                     <AppleIcon
                         {...app.iconConfig}
                         image={thumbnail}
                         style="photo"
-                        size={32}
+                        size={40}
                     />
                 </div>
             </div>
@@ -99,12 +99,12 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
             {/* Label */}
             <span
                 className={`
-          text-[12px] text-center font-bold tracking-tight
-          max-w-[80px] truncate select-none
+          text-[13px] text-center font-bold tracking-tight
+          max-w-[90px] truncate select-none
           transition-colors duration-200
           ${isSelected
-                        ? "text-black"
-                        : "text-black/60 group-hover:text-black/90"
+                        ? "text-white bg-white/30 backdrop-blur-md px-2 py-0.5 rounded-md"
+                        : "text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] group-hover:text-white/90"
                     }
         `}
             >

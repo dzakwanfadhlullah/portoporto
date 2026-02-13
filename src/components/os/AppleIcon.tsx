@@ -50,31 +50,33 @@ export const AppleIcon: FC<AppleIconProps> = ({
     if (style === "photo") {
         return (
             <motion.div
-                className="relative flex items-center justify-center p-1 bg-white shadow-[0_10px_20px_rgba(0,0,0,0.15),0_4px_6px_rgba(0,0,0,0.1)] rounded-sm"
+                className="relative flex items-center justify-center p-[6px] bg-white shadow-[0_12px_24px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.1)] rounded-[4px] border border-black/5"
                 style={{
                     width: "100%",
                     height: "100%",
                 }}
-                whileHover={{ y: -2, scale: 1.05, rotate: -1 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -2, scale: 1.04, rotate: -0.5 }}
+                whileTap={{ scale: 0.98 }}
             >
                 {/* Outer Frame (Polaroid-ish) */}
-                <div className="w-full h-full bg-slate-100 overflow-hidden rounded-[2px] border border-black/5">
+                <div className="w-full h-full bg-slate-100 overflow-hidden rounded-[2px] border border-black/10 relative">
                     {image ? (
                         <img
                             src={image}
                             alt="Project Thumbnail"
-                            className="w-full h-full object-cover grayscale-[0.2] contrast-[1.1]"
+                            className="w-full h-full object-cover grayscale-[0.1] contrast-[1.05]"
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-slate-200">
                             {icon && createElement(icon, { size: size * 1.5, className: "text-slate-400" })}
                         </div>
                     )}
+                    {/* Subtle Inner Gloss */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
                 </div>
 
                 {/* Subtle Grain/Texture Overlay */}
-                <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay grain" />
+                <div className="absolute inset-0 pointer-events-none opacity-[0.08] mix-blend-overlay grain" />
             </motion.div>
         );
     }

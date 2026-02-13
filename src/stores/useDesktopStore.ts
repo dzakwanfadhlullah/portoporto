@@ -30,32 +30,32 @@ interface DesktopState {
 const GRID_GAP = 100;
 const GRID_PADDING = 24;
 
-/** Default icon positions on the desktop grid (Aligned for Right Sidebar as per Safari Chrome Ref) */
+/** Default icon positions on the desktop grid (Aligned for Grid Layout as per Safari Chrome Ref) */
 const defaultIcons: DesktopIcon[] = [
     {
         appId: "projects",
         label: "LiftNode",
-        position: { x: 0, y: 72 }, // Grid handled by Right Sidebar logic in DesktopIcon
+        position: { x: 0, y: 72 },
     },
     {
         appId: "about",
         label: "LuminaCal",
-        position: { x: 0, y: 72 + 110 },
+        position: { x: 120, y: 72 },
     },
     {
         appId: "lab",
         label: "Archive",
-        position: { x: 0, y: 72 + 110 * 2 },
+        position: { x: 240, y: 72 },
     },
     {
         appId: "leadership",
         label: "KPI Dashboard",
-        position: { x: 0, y: 72 + 110 * 3 },
+        position: { x: 0, y: 72 + 130 },
     },
     {
         appId: "contact",
         label: "Maqdis System",
-        position: { x: 0, y: 72 + 110 * 4 },
+        position: { x: 120, y: 72 + 130 },
     },
 ];
 
