@@ -65,7 +65,7 @@ export const MenuBar = () => {
     return (
         <motion.header
             className="absolute top-0 left-0 right-0 h-10 flex items-center justify-between px-6
-                 bg-transparent backdrop-blur-sm border-b border-black/5"
+                 bg-transparent backdrop-blur-sm border-b border-white/10"
             style={{ zIndex: Z_LAYERS.MENUBAR }}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -73,7 +73,7 @@ export const MenuBar = () => {
         >
             {/* ── Left: Brand ───────────────────────────────────────── */}
             <div className="flex items-center">
-                <span className="text-[13px] font-semibold tracking-tight text-foreground/80">
+                <span className="text-[13px] font-semibold tracking-tight text-white/90">
                     Dzakwan
                 </span>
             </div>
@@ -85,19 +85,19 @@ export const MenuBar = () => {
                         <button
                             key={item.appId}
                             onClick={() => handleNavClick(item.appId)}
-                            className="text-[12.5px] font-medium text-foreground/50
-                         hover:text-foreground/90 transition-colors duration-200"
+                            className="text-[12.5px] font-medium text-white/60
+                         hover:text-white/90 transition-colors duration-200"
                         >
                             {item.label}
                         </button>
                     ))}
                 </nav>
 
-                <div className="flex items-center gap-3 pl-2 border-l border-black/5">
+                <div className="flex items-center gap-3 pl-2 border-l border-white/10">
                     {/* Spotlight */}
                     <button
                         onClick={toggleSpotlight}
-                        className="text-foreground/40 hover:text-foreground/70 transition-colors"
+                        className="text-white/50 hover:text-white/80 transition-colors"
                     >
                         <AppleIcon icon={Search} style="symbol" size={14} />
                     </button>
@@ -105,7 +105,7 @@ export const MenuBar = () => {
 
                     {/* Clock */}
                     {mounted && (
-                        <span className="text-[12px] font-semibold text-foreground/60 tabular-nums min-w-[36px] text-right">
+                        <span className="text-[12px] font-semibold text-white/70 tabular-nums min-w-[36px] text-right">
                             {time}
                         </span>
                     )}

@@ -111,17 +111,12 @@
 }
 
 
-/* Vibrant Mesh Gradient (Frame 1-4 Style) */
+/* Vibrant macOS Background */
 @utility vibrant-wallpaper {
-  background-color: #ff9d6c;
-  background-image:
-    radial-gradient(at 0% 0%, #ff9d6c 0, transparent 50%),
-    radial-gradient(at 50% 0%, #ff7e5f 0, transparent 50%),
-    radial-gradient(at 100% 0%, #feb47b 0, transparent 50%),
-    radial-gradient(at 0% 100%, #1e3c72 0, transparent 50%),
-    radial-gradient(at 50% 100%, #2a5298 0, transparent 50%),
-    radial-gradient(at 100% 100%, #72a1e5 0, transparent 50%);
-  background-size: 100% 100%;
+  background-image: url("/macos-big.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 

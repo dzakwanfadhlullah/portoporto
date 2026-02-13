@@ -123,10 +123,10 @@ const DockIcon = ({ appId, mouseX, index }: DockIconProps) => {
                 <div className="absolute -bottom-1.5 flex gap-0.5">
                     <div
                         className={`w-1 h-1 rounded-full transition-colors duration-200 ${windowState.hasActive
-                            ? "bg-accent-terracotta"
+                            ? "bg-white"
                             : windowState.hasMinimized
-                                ? "bg-muted-foreground/40"
-                                : "bg-foreground/30"
+                                ? "bg-white/30"
+                                : "bg-white/60"
                             }`}
                     />
                 </div>
