@@ -107,7 +107,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "about",
             name: "About Me",
-            iconConfig: { icon: UserCircle, color: "#FF3B30" }, // Red for personal
+            iconConfig: { image: "/profile.png", style: "3d", color: "transparent" },
             component: AboutApp,
             defaultWindowConfig: defaultConfigs.about,
             dockOrder: 2,

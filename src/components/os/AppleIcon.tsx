@@ -84,13 +84,24 @@ export const AppleIcon: FC<AppleIconProps> = ({
     // 3D / Big Sur Style
     return (
         <motion.div
-            className="relative flex items-center justify-center overflow-hidden"
+            className={`relative flex items-center justify-center ${color === "transparent" ? "" : "overflow-hidden"}`}
             style={{
                 width: "100%",
                 height: "100%",
-                borderRadius: "22.5%", // Precision Apple Squircle
-                background: `linear-gradient(180deg, ${color} 0%, ${getDarkerColor(color)} 100%)`,
-                boxShadow: `
+                borderRadius: color === "transparent" ? "0%" : "22.5%",
+                backgroundColor: color === "transparent" ? "transparent" : color,
+                backgroundImage:
+                    image && color !== "transparent"
+                        ? `url(${image})`
+                        : color === "transparent"
+                            ? "none"
+                            : `linear-gradient(180deg, ${color} 0%, ${getDarkerColor(color)} 100%)`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                boxShadow:
+                    color === "transparent"
+                        ? "none"
+                        : `
           0 1px 1px rgba(255,255,255,0.5) inset,
           0 10px 20px rgba(0,0,0,0.15),
           0 4px 6px rgba(0,0,0,0.1),
@@ -101,24 +112,37 @@ export const AppleIcon: FC<AppleIconProps> = ({
             whileTap={{ scale: 0.95 }}
         >
             {/* 3D Depth Layer */}
-            <div
-                className="absolute inset-0 rounded-[inherit] opacity-10"
-                style={{
-                    background: "radial-gradient(circle at 50% 0%, white 0%, transparent 70%)"
-                }}
-            />
+            {color !== "transparent" && (
+                <div
+                    className="absolute inset-0 rounded-[inherit] opacity-10"
+                    style={{
+                        background: "radial-gradient(circle at 50% 0%, white 0%, transparent 70%)"
+                    }}
+                />
+            )}
 
             {/* Gloss Overlay */}
-            <div
-                className="absolute inset-0 rounded-[inherit] opacity-30 pointer-events-none"
-                style={{
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 45%, rgba(0,0,0,0.1) 100%)"
-                }}
-            />
+            {color !== "transparent" && (
+                <div
+                    className="absolute inset-0 rounded-[inherit] opacity-30 pointer-events-none"
+                    style={{
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 45%, rgba(0,0,0,0.1) 100%)"
+                    }}
+                />
+            )}
 
-            {/* Glyph / Emoji / Icon */}
+            {/* Glyph / Emoji / Icon / Image Content */}
             <div className="relative z-10 select-none flex items-center justify-center w-full h-full text-white">
-                {icon ? (
+                {image && color === "transparent" ? (
+                    <img
+                        src={image}
+                        alt="Icon"
+                        className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)] scale-[1.45] translate-y-[4px]"
+                    />
+                ) : image ? (
+                    // If image is used as background in 3D style, we don't necessarily need a child 
+                    null
+                ) : icon ? (
                     createElement(icon, {
                         size: size * 1.5,
                         strokeWidth: 2,

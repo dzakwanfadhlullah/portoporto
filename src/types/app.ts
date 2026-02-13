@@ -23,7 +23,9 @@ export interface DesktopPosition {
 export interface AppIconConfig {
     icon?: LucideIcon;
     char?: string;
-    color: string;
+    image?: string;
+    style?: "3d" | "symbol" | "photo";
+    color?: string;
 }
 
 /**
