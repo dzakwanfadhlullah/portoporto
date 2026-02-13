@@ -14,26 +14,26 @@ export default function ProjectsApp() {
     // Register header actions on mount
     useEffect(() => {
         setHeaderActions(
-            <div className="flex items-center gap-1.5 bg-muted/30 p-1 rounded-lg border border-border/20">
+            <div className="flex items-center gap-1 bg-muted/20 p-0.5 rounded-md border border-border/10">
                 <button
                     onClick={() => setViewMode("list")}
-                    className={`p-1 rounded transition-all duration-200 ${viewMode === "list"
-                            ? "bg-muted-foreground/10 text-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/5"
+                    className={`p-1 rounded-[4px] transition-all duration-200 ${viewMode === "list"
+                        ? "bg-white shadow-sm text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-white/40"
                         }`}
                     title="List View"
                 >
-                    <List size={14} />
+                    <List size={13} strokeWidth={2.5} />
                 </button>
                 <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-1 rounded transition-all duration-200 ${viewMode === "grid"
-                            ? "bg-muted-foreground/10 text-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/5"
+                    className={`p-1 rounded-[4px] transition-all duration-200 ${viewMode === "grid"
+                        ? "bg-white shadow-sm text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-white/40"
                         }`}
                     title="Grid View"
                 >
-                    <LayoutGrid size={14} />
+                    <LayoutGrid size={13} strokeWidth={2.5} />
                 </button>
             </div>
         );

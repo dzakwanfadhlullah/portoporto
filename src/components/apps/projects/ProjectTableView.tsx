@@ -22,56 +22,54 @@ export const ProjectTableView = ({ projects }: ProjectTableViewProps) => {
     };
 
     return (
-        <div className="w-full h-full overflow-hidden flex flex-col">
+        <div className="w-full h-full overflow-hidden flex flex-col bg-white">
             {/* Header */}
-            <div className="flex items-center px-6 py-2 border-b border-border/40 bg-muted/20 text-[10px] uppercase tracking-wider font-bold text-muted-foreground/80">
-                <div className="w-12 mr-4">Icon</div>
-                <div className="flex-1">Name</div>
-                <div className="w-48">Role</div>
+            <div className="flex items-center px-10 pt-4 pb-2 text-[13px] font-medium text-black/90 border-b border-black/[0.03]">
+                <div className="flex-1 pl-12">Name</div>
+                <div className="w-40">Role</div>
                 <div className="w-32">Brand</div>
-                <div className="w-16 text-right">Year</div>
+                <div className="w-20 text-right">Year</div>
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-auto divide-y divide-border/20">
-                {projects.map((project) => (
+            <div className="flex-1 overflow-auto">
+                {projects.map((project, index) => (
                     <div
                         key={project.id}
-                        className="group flex items-center px-6 py-3.5 hover:bg-muted-foreground/5 cursor-pointer transition-colors duration-150"
+                        className={`
+                            group flex items-center px-10 py-1.5 cursor-pointer transition-colors duration-100
+                            ${index % 2 === 1 ? "bg-black/[0.02]" : "bg-transparent"}
+                            hover:bg-blue-500/5
+                        `}
                         onClick={() => handleOpenDetail(project)}
                     >
-                        {/* Thumbnail */}
-                        <div className="w-12 h-12 relative rounded-lg overflow-hidden mr-4 border border-border/20 bg-muted shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200">
-                            <Image
-                                src={project.thumbnail}
-                                alt={project.name}
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
-
-                        {/* Name */}
-                        <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-semibold text-foreground truncate">
+                        {/* Thumbnail & Name Area */}
+                        <div className="flex-1 flex items-center gap-4 min-w-0">
+                            <div className="w-9 h-9 relative rounded-[4px] overflow-hidden border border-black/5 shrink-0 bg-neutral-100">
+                                <Image
+                                    src={project.thumbnail}
+                                    alt={project.name}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <h3 className="text-[14px] font-bold text-black/90 truncate">
                                 {project.name}
                             </h3>
-                            <p className="text-[11px] text-muted-foreground truncate opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                {project.description}
-                            </p>
                         </div>
 
-                        {/* Role */}
-                        <div className="w-48 text-xs text-muted-foreground/90 truncate mr-2">
+                        {/* Role Area */}
+                        <div className="w-40 text-[14px] font-medium text-black/40 truncate">
                             {project.role}
                         </div>
 
-                        {/* Brand */}
-                        <div className="w-32 text-xs text-muted-foreground/90 truncate mr-2">
+                        {/* Brand Area */}
+                        <div className="w-32 text-[14px] font-medium text-black/40 truncate">
                             {project.brand}
                         </div>
 
-                        {/* Year */}
-                        <div className="w-16 text-[11px] font-mono text-muted-foreground/70 text-right">
+                        {/* Year Area */}
+                        <div className="w-20 text-[14px] font-medium text-black/40 text-right">
                             {project.year}
                         </div>
                     </div>
