@@ -52,10 +52,16 @@ interface WindowManagerState {
     moveWindow: (windowId: WindowId, position: Position) => void;
     resizeWindow: (windowId: WindowId, size: Size) => void;
     snapWindow: (windowId: WindowId, snapPos: SnapPosition) => void;
+    minimizeAll: () => void;
+    closeAll: () => void;
 
     // Snap Preview
     snapPreview: SnapPosition;
     setSnapPreview: (snap: SnapPosition) => void;
+
+    // Desktop Bounds
+    desktopSize: Size;
+    setDesktopSize: (size: Size) => void;
 
     // Computed
     getVisibleWindows: () => WindowState[];
@@ -75,8 +81,10 @@ export const useWindowStore = create<WindowManagerState>()(
             windowOrder: [],
             nextZIndex: 1,
             snapPreview: null,
+            desktopSize: { w: 1440, h: 900 },
 
             setSnapPreview: (snap) => set({ snapPreview: snap }),
+            setDesktopSize: (size) => set({ desktopSize: size }),
 
             // ── Open ───────────────────────────────────────────────────────────
             openWindow: (appId, title, defaultWidth, defaultHeight, metadata) => {
@@ -223,6 +231,8 @@ export const useWindowStore = create<WindowManagerState>()(
                 const win = state.windows[windowId];
                 if (!win) return;
 
+                const { desktopSize } = state;
+
                 set({
                     windows: {
                         ...state.windows,
@@ -232,11 +242,8 @@ export const useWindowStore = create<WindowManagerState>()(
                             previousSize: win.isMaximized ? win.previousSize : win.size,
                             position: { x: 0, y: DESKTOP_PADDING },
                             size: {
-                                w: typeof window !== "undefined" ? window.innerWidth : 1440,
-                                h:
-                                    (typeof window !== "undefined" ? window.innerHeight : 900) -
-                                    DESKTOP_PADDING -
-                                    DOCK_HEIGHT,
+                                w: desktopSize.w,
+                                h: desktopSize.h - DESKTOP_PADDING - DOCK_HEIGHT,
                             },
                             isMaximized: true,
                             snapPosition: null,
@@ -346,11 +353,9 @@ export const useWindowStore = create<WindowManagerState>()(
                 const win = state.windows[windowId];
                 if (!win) return;
 
-                const screenW =
-                    typeof window !== "undefined" ? window.innerWidth : 1440;
-                const screenH =
-                    typeof window !== "undefined" ? window.innerHeight : 900;
-                const usableH = screenH - DESKTOP_PADDING - DOCK_HEIGHT;
+                const { desktopSize } = state;
+                const screenW = desktopSize.w;
+                const usableH = desktopSize.h - DESKTOP_PADDING - DOCK_HEIGHT;
 
                 let newPosition: Position;
                 let newSize: Size;
@@ -386,6 +391,24 @@ export const useWindowStore = create<WindowManagerState>()(
                         },
                     },
                 });
+            },
+
+            // ── Bulk Actions ──────────────────────────────────────────────────
+            minimizeAll: () => {
+                const state = get();
+                const updatedWindows = { ...state.windows };
+                for (const id of Object.keys(updatedWindows)) {
+                    updatedWindows[id] = {
+                        ...updatedWindows[id]!,
+                        isMinimized: true,
+                        isFocused: false
+                    };
+                }
+                set({ windows: updatedWindows, activeWindowId: null });
+            },
+
+            closeAll: () => {
+                set({ windows: {}, activeWindowId: null, windowOrder: [] });
             },
 
             // ── Computed ───────────────────────────────────────────────────────

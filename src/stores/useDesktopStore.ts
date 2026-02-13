@@ -30,32 +30,32 @@ interface DesktopState {
 const GRID_GAP = 100;
 const GRID_PADDING = 24;
 
-/** Default icon positions on the desktop grid */
+/** Default icon positions on the desktop grid (Aligned for Right Sidebar as per Safari Chrome Ref) */
 const defaultIcons: DesktopIcon[] = [
     {
         appId: "projects",
-        label: "Projects",
-        position: { x: GRID_PADDING, y: GRID_PADDING + 48 },
+        label: "LiftNode",
+        position: { x: 0, y: 72 }, // Grid handled by Right Sidebar logic in DesktopIcon
     },
     {
         appId: "about",
-        label: "About Me",
-        position: { x: GRID_PADDING, y: GRID_PADDING + 48 + GRID_GAP },
+        label: "LuminaCal",
+        position: { x: 0, y: 72 + 110 },
     },
     {
         appId: "lab",
-        label: "Lab",
-        position: { x: GRID_PADDING, y: GRID_PADDING + 48 + GRID_GAP * 2 },
+        label: "Archive",
+        position: { x: 0, y: 72 + 110 * 2 },
     },
     {
         appId: "leadership",
-        label: "Leadership",
-        position: { x: GRID_PADDING, y: GRID_PADDING + 48 + GRID_GAP * 3 },
+        label: "KPI Dashboard",
+        position: { x: 0, y: 72 + 110 * 3 },
     },
     {
         appId: "contact",
-        label: "Contact",
-        position: { x: GRID_PADDING, y: GRID_PADDING + 48 + GRID_GAP * 4 },
+        label: "Maqdis System",
+        position: { x: 0, y: 72 + 110 * 4 },
     },
 ];
 
@@ -101,7 +101,7 @@ export const useDesktopStore = create<DesktopState>()(
             },
         }),
         {
-            name: "dzakos-desktop-store",
+            name: "dzakos-desktop-v2",
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
                 icons: state.icons,

@@ -12,6 +12,7 @@ import {
 import { useWindowStore } from "@/stores/useWindowStore";
 import { useAppRegistry } from "@/stores/useAppRegistry";
 import { Z_LAYERS } from "@/hooks/useZIndex";
+import { AppleIcon } from "./AppleIcon";
 import type { AppId } from "@/types/app";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -105,12 +106,16 @@ const DockIcon = ({ appId, mouseX, index }: DockIconProps) => {
 
             {/* Icon */}
             <motion.div
-                className="flex items-center justify-center rounded-[12px]
-                   bg-card/80 shadow-os-soft border border-border/30
-                   hover:shadow-os-medium transition-shadow duration-200"
+                className="flex items-center justify-center transition-shadow duration-200"
                 style={{ width: size, height: size }}
             >
-                <div className="text-foreground/80">{app.icon}</div>
+                <div className="w-12 h-12 flex items-center justify-center">
+                    <AppleIcon
+                        {...app.iconConfig}
+                        isActive={windowState.hasOpenWindow}
+                        style="3d"
+                    />
+                </div>
             </motion.div>
 
             {/* Window indicator dot */}
@@ -118,10 +123,10 @@ const DockIcon = ({ appId, mouseX, index }: DockIconProps) => {
                 <div className="absolute -bottom-1.5 flex gap-0.5">
                     <div
                         className={`w-1 h-1 rounded-full transition-colors duration-200 ${windowState.hasActive
-                                ? "bg-accent-terracotta"
-                                : windowState.hasMinimized
-                                    ? "bg-muted-foreground/40"
-                                    : "bg-foreground/30"
+                            ? "bg-accent-terracotta"
+                            : windowState.hasMinimized
+                                ? "bg-muted-foreground/40"
+                                : "bg-foreground/30"
                             }`}
                     />
                 </div>
@@ -139,7 +144,7 @@ export const Dock = () => {
 
     return (
         <motion.div
-            className="fixed bottom-2 left-1/2 -translate-x-1/2"
+            className="absolute bottom-6 left-1/2 -translate-x-1/2"
             style={{ zIndex: Z_LAYERS.DOCK }}
             initial={{ y: 80 }}
             animate={{ y: 0 }}
@@ -149,9 +154,9 @@ export const Dock = () => {
         >
             {/* Glass container */}
             <div
-                className="flex items-end gap-1.5 px-3 pb-1.5 pt-1.5
-                   glass dark:glass-dark rounded-os-lg
-                   shadow-os-medium"
+                className="flex items-end gap-2 px-3 pb-2 pt-2
+                   bg-white/20 backdrop-blur-[40px] rounded-[24px]
+                   border border-white/30 shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
             >
                 {dockApps.map((app, i) => (
                     <DockIcon key={app.id} appId={app.id} mouseX={mouseX} index={i} />

@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { useDesktopStore, type DesktopIcon as DesktopIconType } from "@/stores/useDesktopStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { useAppRegistry } from "@/stores/useAppRegistry";
+import { AppleIcon } from "./AppleIcon";
+import { projects } from "../apps/projects/data";
 import type { AppId } from "@/types/app";
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -25,6 +27,10 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
     const app = getApp(icon.appId);
     const isSelected = selectedIcons.includes(icon.appId);
 
+    // Find matching project thumbnail for "photo" style
+    const project = projects.find(p => p.name === icon.label);
+    const thumbnail = project?.thumbnail;
+
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
             e.stopPropagation();
@@ -35,86 +41,75 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
 
             // Double-click detection (< 400ms)
             if (timeSinceLastClick < 400) {
-                // Open the app window
                 if (app) {
                     openWindow(
                         icon.appId,
                         app.name,
                         app.defaultWindowConfig.defaultWidth,
-                        app.defaultWindowConfig.defaultHeight
+                        app.defaultWindowConfig.defaultHeight,
+                        project ? { projectId: project.id } : undefined
                     );
                 }
                 deselectAll();
                 return;
             }
 
-            // Single click — select
-            if (e.ctrlKey || e.metaKey) {
-                // Multi-select with Ctrl/Cmd
-                useDesktopStore.getState().toggleSelectIcon(icon.appId);
-            } else {
-                selectIcon(icon.appId);
-            }
+            selectIcon(icon.appId);
         },
-        [app, icon.appId, openWindow, deselectAll, selectIcon]
+        [app, icon.appId, openWindow, deselectAll, selectIcon, project]
     );
 
     if (!app) return null;
 
     return (
         <motion.div
-            className="absolute flex flex-col items-center gap-1.5 cursor-pointer group"
+            className="absolute flex flex-col items-center gap-2 cursor-pointer group"
             style={{
-                left: icon.position.x,
+                right: 24, // Strictly on the right sidebar as per Frame 1
                 top: icon.position.y,
                 width: 80,
             }}
             onClick={handleClick}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
         >
-            {/* Icon Container */}
+            {/* Project Card Container */}
             <div
                 className={`
           relative flex items-center justify-center
-          w-14 h-14 rounded-os-md
-          transition-all duration-200 ease-out
+          w-[72px] h-[72px] rounded-lg
+          transition-all duration-300
           ${isSelected
-                        ? "bg-accent-terracotta/15 shadow-os-medium ring-1 ring-accent-terracotta/30"
-                        : "bg-card/60 shadow-os-soft hover:shadow-os-medium hover:bg-card/80"
+                        ? "shadow-[0_0_0_2px_rgba(0,0,0,0.8)] border-2 border-white"
+                        : "group-hover:translate-y-[-2px]"
                     }
         `}
             >
-                <div className="text-foreground/80 group-hover:text-foreground transition-colors">
-                    {app.icon}
+                {/* Premium Project Card (Photo Frame style) */}
+                <div className="w-[68px] h-[68px]">
+                    <AppleIcon
+                        {...app.iconConfig}
+                        image={thumbnail}
+                        style="photo"
+                        size={32}
+                    />
                 </div>
             </div>
 
             {/* Label */}
             <span
                 className={`
-          text-[11px] leading-tight text-center font-medium
-          max-w-[76px] truncate select-none
+          text-[12px] text-center font-bold tracking-tight
+          max-w-[80px] truncate select-none
           transition-colors duration-200
           ${isSelected
-                        ? "text-foreground"
-                        : "text-foreground/70 group-hover:text-foreground/90"
+                        ? "text-black"
+                        : "text-black/60 group-hover:text-black/90"
                     }
         `}
             >
                 {icon.label}
             </span>
-
-            {/* Selected indicator dot */}
-            {isSelected && (
-                <motion.div
-                    className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-accent-terracotta"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-            )}
         </motion.div>
     );
 };

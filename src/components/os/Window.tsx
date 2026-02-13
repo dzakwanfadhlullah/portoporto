@@ -102,13 +102,12 @@ export const Window = ({ windowId }: WindowProps) => {
                     }}
                     className={`
                     rounded-[16px] overflow-hidden flex flex-col
-                    shadow-[0_8px_32px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04)]
                     border border-border/40
                     bg-card
-                    transition-shadow duration-200
+                    transition-all duration-300
                     ${win.isFocused
-                            ? "shadow-[0_12px_48px_rgba(0,0,0,0.12),0_4px_16px_rgba(0,0,0,0.06)]"
-                            : "shadow-[0_4px_20px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.03)]"
+                            ? "shadow-os-window scale-[1.002]"
+                            : "shadow-os-medium opacity-90 scale-100"
                         }
                 `}
                     resizeHandleStyles={{
@@ -123,17 +122,19 @@ export const Window = ({ windowId }: WindowProps) => {
                     }}
                 >
                     {/* ── Title Bar ───────────────────────────────────────────────── */}
-                    <div
-                        className="window-drag-handle cursor-grab active:cursor-grabbing"
-                        onDoubleClick={handleDoubleClickTitle}
-                    >
-                        <WindowControls
-                            windowId={windowId}
-                            title={win.title}
-                            isMaximized={win.isMaximized}
-                            headerActions={headerActions}
-                        />
-                    </div>
+                    {!config.hideTitleBar && (
+                        <div
+                            className="window-drag-handle cursor-grab active:cursor-grabbing"
+                            onDoubleClick={handleDoubleClickTitle}
+                        >
+                            <WindowControls
+                                windowId={windowId}
+                                title={win.title}
+                                isMaximized={win.isMaximized}
+                                headerActions={headerActions}
+                            />
+                        </div>
+                    )}
 
                     {/* ── Content Area ────────────────────────────────────────────── */}
                     <div className="flex-1 overflow-auto">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef, useEffect } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import { useDesktopStore } from "@/stores/useDesktopStore";
@@ -12,16 +12,35 @@ import { Dock } from "./Dock";
 import { InfoCard } from "./InfoCard";
 import { Window } from "./Window";
 import { SnapOverlay } from "./SnapOverlay";
+import { Spotlight } from "./Spotlight";
 
 // ─── Desktop Component ──────────────────────────────────────────────────────
 
 export const Desktop = () => {
+    const containerRef = useRef<HTMLDivElement>(null);
     const icons = useDesktopStore((s) => s.icons);
     const deselectAll = useDesktopStore((s) => s.deselectAll);
     const wallpaper = useDesktopStore((s) => s.wallpaper);
     const windows = useWindowStore((s) => s.windows);
+    const setDesktopSize = useWindowStore((s) => s.setDesktopSize);
+
+    // Sync container size with store
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        const observer = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                setDesktopSize({ w: width, h: height });
+            }
+        });
+
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, [setDesktopSize]);
 
     const visibleWindows = useMemo(
+        /* SAME */
         () => Object.values(windows).filter((w) => !w.isMinimized),
         [windows]
     );
@@ -44,40 +63,12 @@ export const Desktop = () => {
 
     return (
         <div
-            className="relative h-screen w-screen overflow-hidden select-none"
+            ref={containerRef}
+            className="relative h-full w-full overflow-hidden select-none vibrant-wallpaper"
             style={{ zIndex: Z_LAYERS.DESKTOP }}
         >
-            {/* ── Wallpaper Background ─────────────────────────────────────── */}
-            <div
-                className="absolute inset-0"
-                style={{ background: wallpaper }}
-            />
-
-            {/* ── Warm Wave Gradient Layers ─────────────────────────────────── */}
-            <div
-                className="absolute inset-0 opacity-60"
-                style={{
-                    background:
-                        "radial-gradient(ellipse 120% 80% at 20% 80%, rgba(198, 123, 92, 0.08) 0%, transparent 60%)",
-                }}
-            />
-            <div
-                className="absolute inset-0 opacity-40"
-                style={{
-                    background:
-                        "radial-gradient(ellipse 100% 60% at 80% 20%, rgba(124, 156, 181, 0.06) 0%, transparent 50%)",
-                }}
-            />
-            <div
-                className="absolute inset-0 opacity-30"
-                style={{
-                    background:
-                        "radial-gradient(ellipse 80% 80% at 60% 60%, rgba(139, 158, 126, 0.05) 0%, transparent 50%)",
-                }}
-            />
-
-            {/* ── Grain Texture Overlay ─────────────────────────────────────── */}
-            <div className="absolute inset-0 grain pointer-events-none" />
+            {/* ── Desktop Texture Overlay ─────────────────────────────────────── */}
+            <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] grain pointer-events-none" />
 
             {/* ── Desktop Icon Area ─────────────────────────────────────────── */}
             <div
@@ -112,6 +103,7 @@ export const Desktop = () => {
             <InfoCard />
             <SnapOverlay />
             <Dock />
+            <Spotlight />
         </div>
     );
 };

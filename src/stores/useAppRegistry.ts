@@ -1,15 +1,18 @@
 import { create } from "zustand";
-import {
-    FolderKanban,
-    User,
-    FlaskConical,
-    Award,
-    Mail,
-} from "lucide-react";
-import { createElement } from "react";
+import { createElement, lazy } from "react";
+import { AppleIcon } from "@/components/os/AppleIcon";
 
 import type { AppId, AppMetadata } from "@/types/app";
 import type { WindowConfig } from "@/types/window";
+import {
+    LayoutGrid,
+    Folder,
+    UserCircle,
+    Archive,
+    Award,
+    Mail,
+    FileText
+} from "lucide-react";
 
 // ─── Default Window Configs ──────────────────────────────────────────────────
 
@@ -29,6 +32,7 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
         defaultHeight: 560,
         resizable: true,
         draggable: true,
+        hideTitleBar: true,
     },
     lab: {
         minWidth: 480,
@@ -68,8 +72,6 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
 // We use dynamic imports so app bundles are code-split automatically.
 // The `component` field stores a lazy-loaded React component.
 
-import { lazy } from "react";
-
 const ProjectsApp = lazy(
     () => import("@/components/apps/projects/ProjectsApp")
 );
@@ -93,7 +95,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "projects",
             name: "Projects",
-            icon: createElement(FolderKanban, { size: 20 }),
+            iconConfig: { icon: Folder, color: "#007AFF" }, // Blue folder like macOS
             component: ProjectsApp,
             defaultWindowConfig: defaultConfigs.projects,
             dockOrder: 1,
@@ -105,7 +107,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "about",
             name: "About Me",
-            icon: createElement(User, { size: 20 }),
+            iconConfig: { icon: UserCircle, color: "#FF3B30" }, // Red for personal
             component: AboutApp,
             defaultWindowConfig: defaultConfigs.about,
             dockOrder: 2,
@@ -117,7 +119,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "lab",
             name: "Lab",
-            icon: createElement(FlaskConical, { size: 20 }),
+            iconConfig: { icon: Archive, color: "#FF9500" }, // Orange box for 'Lab/Archive'
             component: LabApp,
             defaultWindowConfig: defaultConfigs.lab,
             dockOrder: 3,
@@ -129,7 +131,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "leadership",
             name: "Leadership",
-            icon: createElement(Award, { size: 20 }),
+            iconConfig: { icon: Award, color: "#FFCC18" }, // Gold
             component: LeadershipApp,
             defaultWindowConfig: defaultConfigs.leadership,
             dockOrder: 4,
@@ -141,7 +143,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "contact",
             name: "Contact",
-            icon: createElement(Mail, { size: 20 }),
+            iconConfig: { icon: Mail, color: "#34C759" }, // Green for communication
             component: ContactApp,
             defaultWindowConfig: defaultConfigs.contact,
             dockOrder: 5,
@@ -153,12 +155,20 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "project-detail",
             name: "Project Detail",
-            icon: createElement(FolderKanban, { size: 20 }),
+            iconConfig: { char: "📄", color: "#8E8E93" },
             component: ProjectDetail,
             defaultWindowConfig: defaultConfigs["project-detail"],
         },
     ],
 ]);
+
+// ─── Pre-calculated stable arrays ───────────────────────────────────────────
+
+const allApps = Array.from(appRegistry.values());
+const dockApps = [...allApps].sort(
+    (a, b) => (a.dockOrder ?? 999) - (b.dockOrder ?? 999)
+);
+const desktopApps = allApps.filter((app) => app.desktopPosition != null);
 
 // ─── Store ───────────────────────────────────────────────────────────────────
 
@@ -177,19 +187,9 @@ export const useAppRegistry = create<AppRegistryState>()((set, get) => ({
         return get().apps.get(id);
     },
 
-    getAllApps: () => {
-        return Array.from(get().apps.values());
-    },
+    getAllApps: () => allApps,
 
-    getDockApps: () => {
-        return Array.from(get().apps.values()).sort(
-            (a, b) => (a.dockOrder ?? 999) - (b.dockOrder ?? 999)
-        );
-    },
+    getDockApps: () => dockApps,
 
-    getDesktopApps: () => {
-        return Array.from(get().apps.values()).filter(
-            (app) => app.desktopPosition != null
-        );
-    },
+    getDesktopApps: () => desktopApps,
 }));

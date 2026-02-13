@@ -8,46 +8,39 @@ import { Z_LAYERS } from "@/hooks/useZIndex";
 export const InfoCard = () => {
     return (
         <motion.div
-            className="fixed top-12 left-5 w-[260px] select-none pointer-events-auto"
+            className="absolute top-16 left-12 w-[340px] select-none pointer-events-auto"
             style={{ zIndex: Z_LAYERS.DESKTOP_ICONS + 5 }}
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 28, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
         >
             <div
-                className="glass dark:glass-dark rounded-os-lg p-5 space-y-3.5
-                   shadow-os-soft border border-border/30"
+                className="bg-white/30 backdrop-blur-[40px] rounded-[32px] p-8 border border-white/40 shadow-sm transition-all duration-300"
             >
-                {/* Avatar */}
-                <div className="flex items-center gap-3">
+                {/* Avatar & Basic Info */}
+                <div className="flex items-center gap-5">
                     <div
-                        className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-terracotta/80 to-accent-sage/60
-                       flex items-center justify-center text-white text-sm font-bold shadow-sm"
+                        className="w-[60px] h-[60px] rounded-full bg-black/10 flex items-center justify-center overflow-hidden"
                     >
-                        D
+                        {/* Placeholder for real avatar image later */}
+                        <div className="w-full h-full bg-neutral-200 flex items-center justify-center font-bold text-neutral-500 text-xl">D</div>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-foreground leading-tight">
-                            Dzakwan
-                        </span>
-                        <span className="text-[10px] text-muted-foreground leading-tight">
-                            Frontend &amp; Mobile Engineer
+                        <span className="text-[17px] font-bold text-black/80 leading-tight tracking-tight">
+                            Dzakwan — <span className="font-medium text-black/50">Frontend &amp; Mobile Engineer</span>
                         </span>
                     </div>
                 </div>
 
                 {/* Tagline */}
-                <p className="text-[11px] leading-relaxed text-muted-foreground/80">
-                    Crafting seamless digital experiences with precision and purpose.
+                <p className="mt-4 text-[14px] leading-relaxed text-black/50 font-medium">
+                    Crafting thoughtful digital experiences with clarity and purpose.
                 </p>
 
-                {/* Status */}
-                <div className="flex items-center gap-2">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                    </span>
-                    <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                {/* Status Indicator */}
+                <div className="mt-5 flex items-center gap-2.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_8px_rgba(40,200,64,0.4)]" />
+                    <span className="text-[13px] font-semibold text-black/40">
                         Available for work
                     </span>
                 </div>

@@ -62,14 +62,14 @@ export const WindowControls = ({
         <div
             className="flex items-center h-10 px-3.5 select-none shrink-0
                  bg-card/80 border-b border-border/40"
-            // Prevent drag from being triggered by clicking controls
-            onMouseDown={(e) => e.stopPropagation()}
         >
             {/* ── Traffic Light Buttons ──────────────────────────────────── */}
             <div
                 className="flex items-center gap-[7px]"
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
+                // Prevent drag from being triggered by clicking buttons
+                onMouseDown={(e) => e.stopPropagation()}
             >
                 {/* Close */}
                 <button
@@ -128,7 +128,11 @@ export const WindowControls = ({
             </div>
 
             {/* ── Header Actions (Slot for Sub-apps) ────────────────────────── */}
-            <div className="flex items-center gap-1.5 min-w-[52px] justify-end">
+            <div
+                className="flex items-center gap-1.5 min-w-[52px] justify-end"
+                // Prevent drag from being triggered by clicking header actions
+                onMouseDown={(e) => e.stopPropagation()}
+            >
                 {headerActions}
             </div>
         </div>

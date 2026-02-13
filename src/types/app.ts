@@ -1,5 +1,6 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType } from "react";
 import type { WindowConfig } from "./window";
+import type { LucideIcon } from "lucide-react";
 
 // ─── App Types ───────────────────────────────────────────────────────────────
 
@@ -18,6 +19,13 @@ export interface DesktopPosition {
     col: number;
 }
 
+/** Icon configuration for consistent branding */
+export interface AppIconConfig {
+    icon?: LucideIcon;
+    char?: string;
+    color: string;
+}
+
 /**
  * Complete metadata for a registered application.
  * Defines how the app appears in the dock, desktop, and spotlight,
@@ -28,8 +36,8 @@ export interface AppMetadata {
     id: AppId;
     /** Display name shown in dock tooltip, title bar, spotlight */
     name: string;
-    /** Icon component rendered in dock and desktop */
-    icon: ReactNode;
+    /** Icon configuration instead of pre-rendered element */
+    iconConfig: AppIconConfig;
     /** The React component rendered inside the window */
     component: ComponentType;
     /** Default window size/behavior constraints */

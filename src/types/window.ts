@@ -69,4 +69,6 @@ export interface WindowConfig {
     defaultHeight: number;
     resizable: boolean;
     draggable: boolean;
+    hideTitleBar?: boolean;
+    customTitleBar?: boolean;
 }
