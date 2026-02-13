@@ -38,7 +38,7 @@ export default function AboutApp() {
     if (!win) return null;
 
     return (
-        <div className="h-full bg-white flex flex-row overflow-hidden font-sans border border-black/10 rounded-[16px] shadow-sm select-none">
+        <div className="h-full bg-white flex flex-row overflow-hidden font-sans select-none">
             {/* ── Sidebar ────────────────────────────────────────── */}
             <div className="w-[200px] shrink-0 bg-[#EFEBE6] border-r border-black/5 flex flex-col pt-4 px-3 pb-2 window-drag-handle cursor-default">
                 <div className="flex items-center gap-[7px] mb-8 px-2 relative z-20">
@@ -94,14 +94,12 @@ export default function AboutApp() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
                         transition={{ duration: 0.15 }}
-                        className="h-full w-full overflow-y-auto hide-scrollbar"
+                        className="h-full w-full px-10 py-10 overflow-y-auto hide-scrollbar"
                     >
-                        <div className="w-full max-w-[800px] mx-auto px-10 pt-12 pb-16">
-                            {activeSection === "intro" && <IntroView />}
-                            {activeSection === "offer" && <OfferView />}
-                            {activeSection === "awards" && <AwardsView />}
-                            {activeSection === "clients" && <ClientsView />}
-                        </div>
+                        {activeSection === "intro" && <IntroView />}
+                        {activeSection === "offer" && <OfferView />}
+                        {activeSection === "awards" && <AwardsView />}
+                        {activeSection === "clients" && <ClientsView />}
                     </motion.div>
                 </AnimatePresence>
             </div>

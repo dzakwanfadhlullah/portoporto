@@ -121,32 +121,35 @@ export const Window = ({ windowId }: WindowProps) => {
                         bottomLeft: { cursor: "sw-resize" },
                     }}
                 >
-                    {/* ── Title Bar ───────────────────────────────────────────────── */}
-                    {!config.hideTitleBar && (
-                        <div
-                            className="window-drag-handle cursor-grab active:cursor-grabbing"
-                            onDoubleClick={handleDoubleClickTitle}
-                        >
-                            <WindowControls
-                                windowId={windowId}
-                                title={win.title}
-                                isMaximized={win.isMaximized}
-                                headerActions={headerActions}
-                            />
-                        </div>
-                    )}
+                    {/* Inner flex wrapper – needed because react-rnd's internal div breaks the flex chain */}
+                    <div className="flex flex-col h-full w-full">
+                        {/* ── Title Bar ───────────────────────────────────────────────── */}
+                        {!config.hideTitleBar && (
+                            <div
+                                className="window-drag-handle cursor-grab active:cursor-grabbing"
+                                onDoubleClick={handleDoubleClickTitle}
+                            >
+                                <WindowControls
+                                    windowId={windowId}
+                                    title={win.title}
+                                    isMaximized={win.isMaximized}
+                                    headerActions={headerActions}
+                                />
+                            </div>
+                        )}
 
-                    {/* ── Content Area ────────────────────────────────────────────── */}
-                    <div className="flex-1 overflow-auto">
-                        <Suspense
-                            fallback={
-                                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                                    Loading...
-                                </div>
-                            }
-                        >
-                            <AppComponent />
-                        </Suspense>
+                        {/* ── Content Area ────────────────────────────────────────────── */}
+                        <div className="flex-1 min-h-0 overflow-auto">
+                            <Suspense
+                                fallback={
+                                    <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                                        Loading...
+                                    </div>
+                                }
+                            >
+                                <AppComponent />
+                            </Suspense>
+                        </div>
                     </div>
                 </Rnd>
             </motion.div>
