@@ -31,19 +31,19 @@ export default function ProjectDetail() {
     // Register navigation arrows in title bar
     useEffect(() => {
         setHeaderActions(
-            <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-lg border border-border/20">
+            <div className="flex items-center gap-1 bg-muted/20 p-0.5 rounded-md border border-border/10">
                 <button
                     onClick={handlePrev}
-                    className="p-1 rounded hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground transition-colors"
+                    className="p-1 rounded hover:bg-black/5 text-black/40 hover:text-black transition-colors"
                 >
-                    <ChevronLeft size={14} />
+                    <ChevronLeft size={16} strokeWidth={2.5} />
                 </button>
-                <div className="w-[1px] h-3 bg-border/40 mx-0.5" />
+                <div className="w-[1px] h-3 bg-black/10 mx-0.5" />
                 <button
                     onClick={handleNext}
-                    className="p-1 rounded hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground transition-colors"
+                    className="p-1 rounded hover:bg-black/5 text-black/40 hover:text-black transition-colors"
                 >
-                    <ChevronRight size={14} />
+                    <ChevronRight size={16} strokeWidth={2.5} />
                 </button>
             </div>
         );
@@ -53,134 +53,112 @@ export default function ProjectDetail() {
     if (!project) return null;
 
     return (
-        <div className="relative flex flex-col h-full bg-background overflow-hidden selection:bg-primary/20">
-            {/* ── Hero Area ────────────────────────────────────────────────── */}
-            <div className="relative h-[320px] shrink-0 overflow-hidden">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={project.id}
-                        initial={{ opacity: 0, scale: 1.1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 1.05 }}
-                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="absolute inset-0"
-                    >
-                        <Image
-                            src={project.thumbnail}
-                            alt={project.name}
-                            fill
-                            className="object-cover"
-                            priority
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-                    </motion.div>
-                </AnimatePresence>
-
-                {/* ── Floating Info Panel (Frame 3 style) ──────────────────────── */}
-                <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="absolute top-6 right-6 w-72 glass-dark p-5 rounded-2xl border border-white/10 shadow-2xl z-10"
-                >
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-                            <Info size={12} className="text-primary" />
-                        </div>
-                        <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-white/50">
-                            Quick Info
-                        </h4>
-                    </div>
-
-                    <div className="space-y-4">
-                        <InfoItem label="Year" value={project.year} />
-                        <InfoItem label="Role" value={project.role} />
-                        <InfoItem label="Brand" value={project.brand} />
-
-                        <div className="pt-2">
-                            <div className="flex gap-2">
-                                <button className="flex-1 bg-white text-black text-[11px] font-bold py-2 rounded-lg hover:bg-white/90 transition-colors flex items-center justify-center gap-1.5 shadow-lg">
-                                    <ExternalLink size={12} />
-                                    Live Demo
-                                </button>
-                                <button className="w-10 bg-white/10 text-white py-2 rounded-lg hover:bg-white/20 transition-colors flex items-center justify-center border border-white/5">
-                                    <Github size={14} />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
-            </div>
-
+        <div className="relative flex flex-col h-full bg-white overflow-hidden font-sans select-none selection:bg-[#FFD600]/30">
             {/* ── Content Area ────────────────────────────────────────────── */}
-            <div className="flex-1 overflow-auto bg-background px-12 py-10">
-                <div className="max-w-[720px]">
-                    <motion.div
-                        key={project.id + "-content"}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4 }}
-                    >
-                        <h1 className="text-5xl font-black tracking-tighter mb-8 bg-gradient-to-br from-foreground to-foreground/50 bg-clip-text text-transparent">
-                            {project.name}
-                        </h1>
-
-                        <section className="mb-12">
-                            <h2 className="text-xs uppercase tracking-widest font-bold text-primary mb-4">Overview</h2>
-                            <p className="text-lg text-muted-foreground leading-relaxed font-medium">
-                                {project.description}
-                            </p>
-                        </section>
-
-                        <div className="grid grid-cols-2 gap-12 mb-12">
-                            <section>
-                                <h3 className="text-[11px] uppercase tracking-wider font-bold text-foreground/40 mb-3">Tech Stack</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {project.tags.map(tag => (
-                                        <span key={tag} className="px-3 py-1 bg-muted rounded-full text-[11px] font-semibold border border-border/40">
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </section>
-
-                            <section>
-                                <h3 className="text-[11px] uppercase tracking-wider font-bold text-foreground/40 mb-3">Platform</h3>
-                                <p className="text-sm font-bold text-foreground">{project.brand}</p>
-                            </section>
-                        </div>
-
-                        <hr className="border-border/40 mb-12" />
-
-                        <section className="mb-12">
-                            <h2 className="text-xs uppercase tracking-widest font-bold text-primary mb-6">The Approach</h2>
-                            <div className="space-y-6 text-muted-foreground leading-relaxed">
-                                <p>
-                                    As the {project.role}, I focused on creating a seamless user experience while maintaining technical excellence.
-                                    The core challenge was ensuring the system remained performant and accessible across all platforms.
-                                </p>
-                                <p>
-                                    I implemented a modular architecture that allowed for easy scaling and maintenance.
-                                    By using state-of-the-art technologies and design patterns, we achieved a significant
-                                    improvement in user engagement and overall system stability.
-                                </p>
+            <div className="flex-1 overflow-y-auto pt-16 pb-24 px-12 sm:px-20 hide-scrollbar">
+                <div className="max-w-[1000px] mx-auto">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={project.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                        >
+                            {/* Metadata Label */}
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#007AFF]">Project Detail</span>
+                                <div className="h-[1px] w-8 bg-[#007AFF]/20" />
                             </div>
-                        </section>
 
-                        {/* Additional spacing at bottom */}
-                        <div className="h-24" />
-                    </motion.div>
+                            {/* Project Name (Hero Typography) */}
+                            <h1 className="text-5xl sm:text-6xl font-black tracking-tighter leading-[0.9] mb-10 text-black">
+                                {project.name}
+                            </h1>
+
+                            {/* Hero Image Section */}
+                            <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden mb-12 border border-black/5 shadow-os-medium group">
+                                <Image
+                                    src={project.thumbnail}
+                                    alt={project.name}
+                                    fill
+                                    className="object-cover group-hover:scale-[1.02] transition-transform duration-700"
+                                    priority
+                                />
+                            </div>
+
+                            {/* Integrated Info & Description Grid */}
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                                {/* Left Side: Details */}
+                                <div className="lg:col-span-8 space-y-12">
+                                    <section>
+                                        <h3 className="text-[13px] font-bold text-black uppercase opacity-25 mb-4 tracking-wider">Overview</h3>
+                                        <p className="text-[17px] text-black/80 leading-relaxed font-semibold">
+                                            {project.description}
+                                        </p>
+                                    </section>
+
+                                    <section>
+                                        <h3 className="text-[13px] font-bold text-black uppercase opacity-25 mb-4 tracking-wider">The Approach</h3>
+                                        <div className="space-y-6 text-[15px] font-medium text-black/60 leading-relaxed">
+                                            <p>
+                                                As the {project.role}, I focused on creating a seamless user experience while maintaining technical excellence.
+                                                The core challenge was ensuring the system remained performant and accessible across all platforms.
+                                            </p>
+                                            <p>
+                                                I implemented a modular architecture that allowed for easy scaling and maintenance.
+                                                By using state-of-the-art technologies and design patterns, we achieved a significant
+                                                improvement in user engagement and overall system stability.
+                                            </p>
+                                        </div>
+                                    </section>
+                                </div>
+
+                                {/* Right Side: Sidebar Info (Inline) */}
+                                <div className="lg:col-span-4 space-y-10">
+                                    <div className="grid grid-cols-2 lg:grid-cols-1 gap-10">
+                                        <DetailItem label="Year" value={project.year} />
+                                        <DetailItem label="Role" value={project.role} />
+                                        <DetailItem label="Brand" value={project.brand} />
+
+                                        <section className="space-y-4">
+                                            <h3 className="text-[11px] font-bold text-black uppercase opacity-25 tracking-[0.1em]">Stack</h3>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {project.tags.map(tag => (
+                                                    <span key={tag} className="px-2.5 py-1 bg-black/[0.03] rounded-md text-[11px] font-bold text-black/60 border border-black/5">
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </section>
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="pt-6 flex flex-col gap-3">
+                                        <button className="w-full bg-black text-white text-[13px] font-bold h-11 rounded-xl hover:bg-black/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/10">
+                                            <ExternalLink size={16} />
+                                            Live Project
+                                        </button>
+                                        <button className="w-full bg-white text-black h-11 rounded-xl hover:bg-black/5 transition-colors flex items-center justify-center gap-2 border border-black/5 font-bold text-[13px]">
+                                            <Github size={16} />
+                                            Source Code
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
             </div>
         </div>
     );
 }
 
-function InfoItem({ label, value }: { label: string; value: string }) {
+function DetailItem({ label, value }: { label: string; value: string }) {
     return (
-        <div className="flex flex-col gap-0.5">
-            <span className="text-[9px] uppercase tracking-widest font-bold text-white/30">{label}</span>
-            <span className="text-[13px] font-semibold text-white/90">{value}</span>
+        <div className="space-y-1">
+            <h4 className="text-[11px] font-bold text-black uppercase opacity-25 tracking-[0.1em]">{label}</h4>
+            <p className="font-bold text-[15px] text-black/90">{value}</p>
         </div>
     );
 }
