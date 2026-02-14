@@ -12,154 +12,121 @@ export interface Song {
 export const SONGS: Song[] = [
     {
         id: "1",
-        title: "Wildflowers",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "3:25",
+        title: "Easily",
+        artist: "Bruno Major",
+        album: "A Song For Every Moon",
+        duration: "3:32",
         cover: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop",
-        audioUrl: "/music/song1.mp3",
+        audioUrl: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/BrunoMajor-Easily.mp3",
         lyrics: [
-            { time: 0, text: "I'm picking wildflowers" },
-            { time: 5, text: "In the middle of the night" },
-            { time: 10, text: "Wait for the morning sun" },
-            { time: 15, text: "Everything will be alright" },
-            { time: 20, text: "All day, all night" },
-            { time: 25, text: "Searching for the light" }
+            { time: 0, text: "Easily..." },
+            { time: 5, text: "Wait for the light to come" },
+            { time: 10, text: "Every part of you is beautiful" }
         ]
     },
     {
         id: "2",
-        title: "Elevate",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "3:06",
+        title: "Sofia",
+        artist: "Clairo",
+        album: "Immunity",
+        duration: "3:08",
         cover: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop",
-        audioUrl: "/music/song2.mp3",
+        audioUrl: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/Clairo_Sofia.mp3",
         lyrics: [
-            { time: 0, text: "Let's elevate our minds" },
-            { time: 8, text: "To a place we've never been" },
-            { time: 16, text: "Beyond the clouds above" },
-            { time: 24, text: "Where the colors never end" }
+            { time: 0, text: "Sofia, know that you and I..." },
+            { time: 8, text: "Shouldn't feel like a crime" }
         ]
     },
     {
         id: "3",
-        title: "Happy People",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "3:20",
+        title: "Best Part",
+        artist: "Daniel Caesar",
+        album: "Freudian",
+        duration: "3:29",
         cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&h=800&fit=crop",
-        audioUrl: "/music/song3.mp3",
+        audioUrl: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/DanielCaesar_BestPart.mp3",
         lyrics: [
-            { time: 0, text: "See all the happy people" },
-            { time: 10, text: "Dancing in the street" },
-            { time: 20, text: "No more worries now" },
-            { time: 30, text: "Just the rhythm in their feet" }
+            { time: 0, text: "You're the coffee that I need in the morning" },
+            { time: 10, text: "You're my sunshine in the rain when it's pouring" }
         ]
     },
     {
         id: "4",
-        title: "Light Years",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "3:47",
+        title: "Malibu Nights",
+        artist: "Lany",
+        album: "Malibu Nights",
+        duration: "4:46",
         cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&h=800&fit=crop",
-        audioUrl: "/music/song4.mp3",
+        audioUrl: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/lany_malibu_nights.mp3",
         lyrics: [
-            { time: 0, text: "We're light years away" },
-            { time: 12, text: "From where we used to be" },
-            { time: 24, text: "In another galaxy" },
-            { time: 36, text: "Just you and me" }
+            { time: 0, text: "I've got way too much time to be this hurt" },
+            { time: 12, text: "Somebody help me, it's getting worse" }
         ]
     },
     {
         id: "5",
-        title: "We All Win",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "3:10",
+        title: "From The Start",
+        artist: "Laufey",
+        album: "Bewitched",
+        duration: "2:49",
         cover: "https://images.unsplash.com/photo-1514525253344-f81f3f776a26?w=800&h=800&fit=crop",
-        audioUrl: "/music/song5.mp3",
+        audioUrl: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/Laufey_FromTheStart.mp3",
         lyrics: [
-            { time: 0, text: "When we stand together" },
-            { time: 15, text: "We all win the race" },
-            { time: 30, text: "In this beautiful life" },
-            { time: 45, text: "In this sacred space" }
+            { time: 0, text: "Don't you notice how I get quiet when there's no one else around?" },
+            { time: 15, text: "Me and you and awkward silence" }
         ]
     },
     {
         id: "6",
-        title: "Poolside",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "3:07",
+        title: "Sunflower",
+        artist: "Rex Orange County",
+        album: "Sunflower",
+        duration: "4:12",
         cover: "https://images.unsplash.com/photo-1459749411177-042180ce673c?w=800&h=800&fit=crop",
-        audioUrl: "/music/song6.mp3",
+        audioUrl: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/RexOrangeCounty_Sunflower.mp3",
         lyrics: [
-            { time: 0, text: "Sitting by the poolside" },
-            { time: 20, text: "Watching waves go by" },
-            { time: 40, text: "Summer's here at last" },
-            { time: 60, text: "Underneath the sky" }
+            { time: 0, text: "I want to know where I can go" },
+            { time: 20, text: "When you're not around" }
         ]
     },
     {
         id: "7",
-        title: "30 Something",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "3:31",
+        title: "Slow Dancing In The Dark",
+        artist: "Joji",
+        album: "BALLADS 1",
+        duration: "3:29",
         cover: "https://images.unsplash.com/photo-1514525253344-f81f3f776a26?w=800&h=800&fit=crop",
-        audioUrl: "/music/song7.mp3",
+        audioUrl: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/SLOWDANCINGINTHEDARK.mp3",
         lyrics: [
-            { time: 0, text: "Thirty something years" },
-            { time: 10, text: "And I'm still feeling young" },
-            { time: 20, text: "With a heart full of songs" },
-            { time: 30, text: "And a life that's just begun" }
+            { time: 0, text: "I don't want a friend, I want my life in two" },
+            { time: 20, text: "Give me the truth" }
         ]
     },
     {
         id: "8",
-        title: "Jupiter",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "4:12",
+        title: "Good Days",
+        artist: "SZA",
+        album: "Good Days",
+        duration: "4:39",
         cover: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop",
-        audioUrl: "/music/song8.mp3",
+        audioUrl: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/SZA-GoodDays.mp3",
         lyrics: [
-            { time: 0, text: "Jupiter is rising" },
-            { time: 30, text: "In the midnight sky" },
-            { time: 60, text: "A giant in the dark" },
-            { time: 90, text: "Passing slowly by" }
+            { time: 0, text: "Good day in my mind, safe to take a step out" },
+            { time: 30, text: "Get some air, let it out" }
         ]
     },
     {
         id: "9",
-        title: "Wait",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "3:55",
+        title: "About You",
+        artist: "The 1975",
+        album: "Being Funny in a Foreign Language",
+        duration: "5:26",
         cover: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop",
-        audioUrl: "/music/song9.mp3",
+        audioUrl: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/The1975-AboutYou.mp3",
         lyrics: [
-            { time: 0, text: "Wait just a moment" },
-            { time: 15, text: "Let the time go slow" },
-            { time: 30, text: "There's so much to learn" },
-            { time: 45, text: "So much more to know" }
-        ]
-    },
-    {
-        id: "10",
-        title: "Afterglow",
-        artist: "Nao",
-        album: "Jupiter",
-        duration: "3:42",
-        cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&h=800&fit=crop",
-        audioUrl: "/music/song10.mp3",
-        lyrics: [
-            { time: 0, text: "In the afterglow" },
-            { time: 20, text: "When the party's done" },
-            { time: 40, text: "We'll remember this" },
-            { time: 60, text: "We're the lucky ones" }
+            { time: 0, text: "I know a place, it's somewhere I go" },
+            { time: 30, text: "When I need to be alone" }
         ]
     }
 ];
+

@@ -43,6 +43,26 @@ export default function MusicApp() {
         }
     }, [isPlaying, currentSongIndex]);
 
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = volume;
+        }
+    }, [volume]);
+
+    const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (audioRef.current && duration) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            audioRef.current.currentTime = percent * duration;
+        }
+    };
+
+    const handleVolumeChange = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const newVolume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        setVolume(newVolume);
+    };
+
     const handleTimeUpdate = () => {
         if (audioRef.current) {
             setCurrentTime(audioRef.current.currentTime);
@@ -245,7 +265,10 @@ export default function MusicApp() {
                     {/* Progress */}
                     <div className="w-full max-w-md flex items-center gap-3">
                         <span className="text-[10px] tabular-nums font-bold text-black/30 w-8 text-right">{formatTime(currentTime)}</span>
-                        <div className="flex-1 h-1.5 bg-black/5 rounded-full relative group cursor-pointer">
+                        <div
+                            className="flex-1 h-1.5 bg-black/5 rounded-full relative group cursor-pointer"
+                            onClick={handleSeek}
+                        >
                             <motion.div
                                 className="h-full bg-black/60 rounded-full relative"
                                 style={{ width: `${(currentTime / duration) * 100}%` || "0%" }}
@@ -267,7 +290,10 @@ export default function MusicApp() {
                     </button>
                     <div className="flex items-center gap-2 group">
                         <Volume2 size={18} className="text-black/30" />
-                        <div className="w-24 h-1.5 bg-black/5 rounded-full overflow-hidden">
+                        <div
+                            className="w-24 h-1.5 bg-black/5 rounded-full overflow-hidden cursor-pointer"
+                            onClick={handleVolumeChange}
+                        >
                             <div className="h-full bg-black/30" style={{ width: `${volume * 100}%` }} />
                         </div>
                     </div>
