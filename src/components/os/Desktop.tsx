@@ -39,9 +39,8 @@ export const Desktop = () => {
         return () => observer.disconnect();
     }, [setDesktopSize]);
 
-    const visibleWindows = useMemo(
-        /* SAME */
-        () => Object.values(windows).filter((w) => !w.isMinimized),
+    const allWindows = useMemo(
+        () => Object.values(windows),
         [windows]
     );
 
@@ -90,8 +89,16 @@ export const Desktop = () => {
                 style={{ zIndex: Z_LAYERS.WINDOWS_BASE }}
             >
                 <AnimatePresence>
-                    {visibleWindows.map((win) => (
-                        <Window key={win.id} windowId={win.id} />
+                    {allWindows.map((win) => (
+                        <div
+                            key={win.id}
+                            style={{
+                                display: win.isMinimized ? "none" : "block",
+                                pointerEvents: "none",
+                            }}
+                        >
+                            <Window windowId={win.id} />
+                        </div>
                     ))}
                 </AnimatePresence>
             </div>

@@ -21,6 +21,7 @@ import {
 import { useState, useRef, useEffect } from "react";
 import { SONGS, Song } from "./musicData";
 import LyricsView from "./LyricsView";
+import { parseLRC } from "@/lib/lrcParser";
 
 export default function MusicApp() {
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
@@ -29,9 +30,16 @@ export default function MusicApp() {
     const [duration, setDuration] = useState(0);
     const [showLyrics, setShowLyrics] = useState(true);
     const [volume, setVolume] = useState(0.8);
+    const [isShuffle, setIsShuffle] = useState(false);
+    const [isRepeat, setIsRepeat] = useState<"none" | "all" | "one">("none");
 
     const audioRef = useRef<HTMLAudioElement>(null);
     const currentSong: Song = SONGS[currentSongIndex] || SONGS[0];
+
+    // Use parsed LRC if available, otherwise fallback to static lyrics array
+    const displayLyrics = currentSong.lrcContents
+        ? parseLRC(currentSong.lrcContents)
+        : currentSong.lyrics;
 
     useEffect(() => {
         if (audioRef.current) {
@@ -76,7 +84,27 @@ export default function MusicApp() {
     };
 
     const handleSongEnd = () => {
-        handleNext();
+        if (isRepeat === "one") {
+            if (audioRef.current) {
+                audioRef.current.currentTime = 0;
+                audioRef.current.play();
+            }
+        } else if (isShuffle) {
+            let nextIndex;
+            do {
+                nextIndex = Math.floor(Math.random() * SONGS.length);
+            } while (nextIndex === currentSongIndex && SONGS.length > 1);
+            setCurrentSongIndex(nextIndex);
+        } else if (isRepeat === "all") {
+            handleNext();
+        } else {
+            // Repeat none: only play next if it's not the last song
+            if (currentSongIndex < SONGS.length - 1) {
+                handleNext();
+            } else {
+                setIsPlaying(false);
+            }
+        }
     };
 
     const handleNext = () => {
@@ -99,9 +127,7 @@ export default function MusicApp() {
                 {/* ── Sidebar ────────────────────────────────────────── */}
                 <aside className="w-64 bg-[#EBEBEB]/50 border-r border-[#D1D1D1] flex flex-col p-5 h-full">
                     <div className="flex items-center gap-2 mb-8 px-2">
-                        <div className="w-6 h-6 flex items-center justify-center bg-[#FA233B] rounded-md text-white">
-                            <Music2 size={14} />
-                        </div>
+                        <img src="/musicapple.png" alt="Music" className="w-6 h-6 object-contain" />
                         <span className="font-bold text-lg tracking-tight">Music</span>
                     </div>
 
@@ -146,6 +172,10 @@ export default function MusicApp() {
                                     <img src={currentSong.cover} alt={currentSong.title} className="w-full h-full object-cover" />
                                 </motion.div>
                                 <div className="flex flex-col justify-end py-2">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <img src="/musicapple.png" alt="Music" className="w-5 h-5 object-contain" />
+                                        <div className="text-[10px] font-bold text-[#FA233B] uppercase tracking-widest">Apple Music</div>
+                                    </div>
                                     <h1 className="text-4xl font-bold tracking-tight mb-1">{currentSong.title}</h1>
                                     <p className="text-2xl text-[#FA233B] font-medium mb-6">{currentSong.artist}</p>
                                     <p className="text-sm text-black/40 font-medium mb-8">
@@ -159,7 +189,10 @@ export default function MusicApp() {
                                             {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
                                             {isPlaying ? "Pause" : "Play"}
                                         </button>
-                                        <button className="flex items-center justify-center gap-2 bg-[#F2F2F7] hover:bg-[#E5E5EA] text-[#1C1C1E] px-8 py-2.5 rounded-lg font-bold transition-all min-w-[140px]">
+                                        <button
+                                            onClick={() => setIsShuffle(!isShuffle)}
+                                            className={`flex items-center justify-center gap-2 px-8 py-2.5 rounded-lg font-bold transition-all min-w-[140px] ${isShuffle ? "bg-[#FA233B] text-white shadow-md" : "bg-[#F2F2F7] hover:bg-[#E5E5EA] text-[#1C1C1E]"}`}
+                                        >
                                             <Shuffle size={18} />
                                             Shuffle
                                         </button>
@@ -227,7 +260,7 @@ export default function MusicApp() {
                             exit={{ width: 0, opacity: 0 }}
                             className="bg-white border-l border-[#D1D1D1] overflow-hidden hidden xl:block"
                         >
-                            <LyricsView lyrics={currentSong.lyrics} currentTime={currentTime} />
+                            <LyricsView lyrics={displayLyrics} currentTime={currentTime} />
                         </motion.aside>
                     )}
                 </AnimatePresence>
@@ -250,7 +283,12 @@ export default function MusicApp() {
                 {/* Controls */}
                 <div className="flex flex-col items-center gap-1.5 w-1/3">
                     <div className="flex items-center gap-6">
-                        <button className="text-black/30 hover:text-black transition-colors"><Shuffle size={18} /></button>
+                        <button
+                            onClick={() => setIsShuffle(!isShuffle)}
+                            className={`transition-colors ${isShuffle ? "text-[#FA233B]" : "text-black/30 hover:text-black"}`}
+                        >
+                            <Shuffle size={18} />
+                        </button>
                         <button onClick={handlePrev} className="text-black hover:text-[#FA233B] transition-colors"><SkipBack size={20} fill="currentColor" /></button>
                         <button
                             onClick={() => setIsPlaying(!isPlaying)}
@@ -259,7 +297,13 @@ export default function MusicApp() {
                             {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-0.5" />}
                         </button>
                         <button onClick={handleNext} className="text-black hover:text-[#FA233B] transition-colors"><SkipForward size={20} fill="currentColor" /></button>
-                        <button className="text-black/30 hover:text-black transition-colors"><Repeat size={18} /></button>
+                        <button
+                            onClick={() => setIsRepeat(isRepeat === "none" ? "all" : isRepeat === "all" ? "one" : "none")}
+                            className={`transition-colors relative ${isRepeat !== "none" ? "text-[#FA233B]" : "text-black/30 hover:text-black"}`}
+                        >
+                            <Repeat size={18} />
+                            {isRepeat === "one" && <span className="absolute -top-1 -right-1 text-[8px] font-bold">1</span>}
+                        </button>
                     </div>
 
                     {/* Progress */}
