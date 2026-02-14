@@ -26,10 +26,10 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
         draggable: true,
     },
     about: {
-        minWidth: 720,
-        minHeight: 540,
-        defaultWidth: 720,
-        defaultHeight: 540,
+        minWidth: 860,
+        minHeight: 680,
+        defaultWidth: 860,
+        defaultHeight: 680,
         resizable: false,
         draggable: true,
         hideTitleBar: true,
@@ -51,10 +51,10 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
         draggable: true,
     },
     contact: {
-        minWidth: 360,
-        minHeight: 320,
-        defaultWidth: 520,
-        defaultHeight: 480,
+        minWidth: 800,
+        minHeight: 600,
+        defaultWidth: 1024,
+        defaultHeight: 768,
         resizable: true,
         draggable: true,
     },
@@ -83,8 +83,8 @@ const LabApp = lazy(() => import("@/components/apps/lab/LabApp"));
 const LeadershipApp = lazy(
     () => import("@/components/apps/leadership/LeadershipApp")
 );
-const ContactApp = lazy(
-    () => import("@/components/apps/contact/ContactApp")
+const MusicApp = lazy(
+    () => import("@/components/apps/music/MusicApp")
 );
 
 // ─── App Registry ────────────────────────────────────────────────────────────
@@ -95,11 +95,11 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "projects",
             name: "Projects",
-            iconConfig: { icon: Folder, color: "#007AFF" }, // Blue folder like macOS
+            iconConfig: { image: "/folderapple.png", style: "3d", color: "transparent", scale: 1.1, offsetY: 2 },
             component: ProjectsApp,
             defaultWindowConfig: defaultConfigs.projects,
-            dockOrder: 1,
-            desktopPosition: { row: 0, col: 0 },
+            dockOrder: 2,
+            desktopPosition: { row: 0, col: 1 },
         },
     ],
     [
@@ -107,11 +107,11 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "about",
             name: "About Me",
-            iconConfig: { image: "/profile.png", style: "3d", color: "transparent" },
+            iconConfig: { image: "/profile.png", style: "3d", color: "transparent", scale: 1.45, offsetY: 4 },
             component: AboutApp,
             defaultWindowConfig: defaultConfigs.about,
-            dockOrder: 2,
-            desktopPosition: { row: 0, col: 1 },
+            dockOrder: 1,
+            desktopPosition: { row: 0, col: 0 },
         },
     ],
     [
@@ -142,9 +142,9 @@ const appRegistry = new Map<AppId, AppMetadata>([
         "contact",
         {
             id: "contact",
-            name: "Contact",
-            iconConfig: { icon: Mail, color: "#34C759" }, // Green for communication
-            component: ContactApp,
+            name: "Music",
+            iconConfig: { image: "/musicapple.png", style: "3d", color: "transparent", scale: 1.3, offsetY: 2 },
+            component: MusicApp,
             defaultWindowConfig: defaultConfigs.contact,
             dockOrder: 5,
             desktopPosition: { row: 2, col: 0 },

@@ -19,6 +19,10 @@ interface AppleIconProps {
     size?: number;
     /** For 3D style: is it active/open? (adds a small indicator glow) */
     isActive?: boolean;
+    /** Custom scale factor */
+    scale?: number;
+    /** Custom vertical offset (nudge) */
+    offsetY?: number;
 }
 
 /**
@@ -34,6 +38,8 @@ export const AppleIcon: FC<AppleIconProps> = ({
     color = "#8E8E93", // Default gray
     size = 20,
     isActive = false,
+    scale,
+    offsetY,
 }) => {
     if (style === "symbol" && icon) {
         return (
@@ -137,7 +143,10 @@ export const AppleIcon: FC<AppleIconProps> = ({
                     <img
                         src={image}
                         alt="Icon"
-                        className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)] scale-[1.45] translate-y-[4px]"
+                        className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)]"
+                        style={{
+                            transform: `scale(${scale ?? 1.45}) translateY(${offsetY ?? 4}px)`,
+                        }}
                     />
                 ) : image ? (
                     // If image is used as background in 3D style, we don't necessarily need a child 

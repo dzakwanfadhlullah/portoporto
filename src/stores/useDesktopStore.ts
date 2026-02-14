@@ -54,7 +54,7 @@ const defaultIcons: DesktopIcon[] = [
     },
     {
         appId: "contact",
-        label: "Maqdis System",
+        label: "Music",
         position: { x: 120, y: 72 + 130 },
     },
 ];

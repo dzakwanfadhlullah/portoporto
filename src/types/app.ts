@@ -26,6 +26,10 @@ export interface AppIconConfig {
     image?: string;
     style?: "3d" | "symbol" | "photo";
     color?: string;
+    /** Scale factor for the icon content (e.g. 1.45 for Memoji) */
+    scale?: number;
+    /** Vertical offset in pixels (nudge) */
+    offsetY?: number;
 }
 
 /**

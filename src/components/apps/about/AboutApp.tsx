@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { Check } from "lucide-react";
 import { useWindowStore } from "@/stores/useWindowStore";
 
 // ─── Constants & Types ───────────────────────────────────────────────────────
@@ -118,7 +119,7 @@ function IntroView() {
 
             <div className="grid grid-cols-3 gap-3 mb-8">
                 {[1, 2, 3].map((i) => (
-                    <div key={i} className="aspect-[3/4] relative rounded-xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
+                    <div key={i} className="aspect-square relative rounded-xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
                         <div className="absolute inset-0 flex items-center justify-center text-black/10 text-[10px] font-bold uppercase">Portrait {i}</div>
                         <Image
                             src={`https://images.unsplash.com/photo-${i === 1 ? '1534528741775-53994a69daeb' : i === 2 ? '1506794778202-cad84cf45f1d' : '1507003211169-0a1dd7228f2d'}?w=400&h=533&q=80&fit=crop`}
@@ -168,13 +169,56 @@ function IntroView() {
 
 function OfferView() {
     return (
-        <div className="w-full">
-            <h2 className="text-[22px] sm:text-[26px] font-bold mb-8 tracking-tight">What I Offer</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10">
-                <OfferItem title="UI/UX Design" desc="Focusing on user-centric interfaces and seamless interactions." />
-                <OfferItem title="Web Development" desc="High-performance, responsive websites built with modern tech." />
-                <OfferItem title="Visual Identity" desc="Crafting unique visual stories for products and companies." />
-                <OfferItem title="Art Direction" desc="Leading creative vision for digital and physical projects." />
+        <div className="w-full max-w-[800px]">
+            <h2 className="text-[22px] sm:text-[26px] font-bold mb-8 tracking-tight">Services</h2>
+
+            <div className="flex flex-col gap-6 mb-12">
+                <OfferItem
+                    title="Front-End Web Development"
+                    desc="Build responsive, high-performance websites using Next.js, React, and Tailwind CSS."
+                />
+                <OfferItem
+                    title="Mobile App Development"
+                    desc="Develop offline-first mobile apps with Flutter and native Android (Kotlin + Jetpack Compose)."
+                />
+                <OfferItem
+                    title="UI/UX Design"
+                    desc="Design intuitive user flows, accessible interfaces, and end-to-end product experiences in Figma."
+                />
+                <OfferItem
+                    title="Prototyping & Wireframing"
+                    desc="Create low-to-high fidelity wireframes and interactive prototypes for web & mobile."
+                />
+                <OfferItem
+                    title="Design System & Component Library"
+                    desc="Build scalable design systems with reusable components to speed up handoff and consistency."
+                />
+                <OfferItem
+                    title="Dashboard & Data Visualization"
+                    desc="Deliver KPI dashboards and operational insights (charts, heatmaps, trends) for decision-making."
+                />
+                <OfferItem
+                    title="API Integration & Full-stack Collaboration"
+                    desc="Integrate front-end with backend services (e.g., FastAPI, Supabase) cleanly and reliably."
+                />
+                <OfferItem
+                    title="Testing & Production Readiness"
+                    desc="Implement auth (JWT/RBAC), automated testing, and production-grade practices for maintainable delivery."
+                />
+                <OfferItem
+                    title="On-device AI Feature Integration"
+                    desc="Implement camera + detection workflows (e.g., CameraX + ML Kit) for real-time recognition features."
+                />
+                <OfferItem
+                    title="Leadership & Project Execution"
+                    desc="Lead cross-team initiatives, coordinate stakeholders, and execute programs with measurable impact."
+                />
+            </div>
+
+            <div className="bg-[#F2F2F2] rounded-2xl p-8 mb-4 border border-black/5">
+                <p className="font-mono text-[13px] leading-relaxed text-black/70 italic text-center">
+                    “I build products that feel smooth to use — combining strong UI/UX with solid engineering. If you need someone who can design and ship, let’s build something impactful.”
+                </p>
             </div>
         </div>
     );
@@ -226,9 +270,17 @@ function TextSocialLink({ label, href }: { label: string; href: string }) {
 
 function OfferItem({ title, desc }: { title: string, desc: string }) {
     return (
-        <div className="space-y-2">
-            <h4 className="font-bold text-[16px]">{title}</h4>
-            <p className="text-[13px] text-black/50 leading-relaxed font-medium">{desc}</p>
+        <div className="flex gap-3 group">
+            <div className="pt-1 shrink-0">
+                <div className="w-4 h-4 rounded-full bg-[#FFB800] flex items-center justify-center text-white shadow-sm">
+                    <Check size={10} strokeWidth={4} />
+                </div>
+            </div>
+            <div className="space-y-0.5">
+                <p className="text-[12px] leading-snug text-black/80 font-medium">
+                    <span className="font-bold">{title}</span> — {desc}
+                </p>
+            </div>
         </div>
     );
 }
