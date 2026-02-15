@@ -22,29 +22,36 @@ export const ProjectTableView = ({ projects }: ProjectTableViewProps) => {
     };
 
     return (
-        <div className="w-full h-full overflow-hidden flex flex-col bg-white">
-            {/* Header */}
-            <div className="flex items-center px-10 pt-4 pb-2 text-[13px] font-medium text-black/90 border-b border-black/[0.03]">
-                <div className="flex-1 pl-12">Name</div>
-                <div className="w-40">Role</div>
-                <div className="w-32">Brand</div>
-                <div className="w-20 text-right">Year</div>
+        <div className="w-full h-full overflow-auto bg-white flex flex-col [scrollbar-gutter:stable]">
+            {/* Header - Sticky */}
+            <div className="sticky top-0 z-20 grid grid-cols-[40px_1fr_320px_192px_80px_40px] items-center pt-4 pb-2 text-[13px] font-medium text-black/90 border-b border-black/[0.03] bg-white">
+                <div /> {/* Left Padding Column (40px) */}
+                <div className="flex items-center gap-4">
+                    <div className="w-9 shrink-0" /> {/* Spacer to match thumbnail */}
+                    <span>Name</span>
+                </div>
+                <div>Role</div>
+                <div>Brand</div>
+                <div className="text-right">Year</div>
+                <div /> {/* Right Padding Column (40px) */}
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-auto">
+            <div className="flex flex-col">
                 {projects.map((project, index) => (
                     <div
                         key={project.id}
                         className={`
-                            group flex items-center px-10 py-1.5 cursor-pointer transition-colors duration-100
+                            group grid grid-cols-[40px_1fr_320px_192px_80px_40px] items-center py-1.5 cursor-pointer transition-colors duration-100
                             ${index % 2 === 1 ? "bg-black/[0.02]" : "bg-transparent"}
                             hover:bg-blue-500/5
                         `}
                         onClick={() => handleOpenDetail(project)}
                     >
+                        <div /> {/* Left Padding Column */}
+
                         {/* Thumbnail & Name Area */}
-                        <div className="flex-1 flex items-center gap-4 min-w-0">
+                        <div className="flex items-center gap-4 min-w-0">
                             <div className="w-9 h-9 relative rounded-[4px] overflow-hidden border border-black/5 shrink-0 bg-neutral-100">
                                 <Image
                                     src={project.thumbnail}
@@ -59,19 +66,21 @@ export const ProjectTableView = ({ projects }: ProjectTableViewProps) => {
                         </div>
 
                         {/* Role Area */}
-                        <div className="w-40 text-[14px] font-medium text-black/40 truncate">
+                        <div className="text-[14px] font-medium text-black/40 truncate">
                             {project.role}
                         </div>
 
                         {/* Brand Area */}
-                        <div className="w-32 text-[14px] font-medium text-black/40 truncate">
+                        <div className="text-[14px] font-medium text-black/40 truncate">
                             {project.brand}
                         </div>
 
                         {/* Year Area */}
-                        <div className="w-20 text-[14px] font-medium text-black/40 text-right">
+                        <div className="text-[14px] font-medium text-black/40 text-right">
                             {project.year}
                         </div>
+
+                        <div /> {/* Right Padding Column */}
                     </div>
                 ))}
             </div>

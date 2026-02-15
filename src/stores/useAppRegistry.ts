@@ -118,8 +118,8 @@ const appRegistry = new Map<AppId, AppMetadata>([
         "lab",
         {
             id: "lab",
-            name: "Lab",
-            iconConfig: { icon: Archive, color: "#FF9500" }, // Orange box for 'Lab/Archive'
+            name: "Game Center",
+            iconConfig: { image: "/GameCentersApple.png", style: "3d", color: "transparent", scale: 1.2, offsetY: 0 },
             component: LabApp,
             defaultWindowConfig: defaultConfigs.lab,
             dockOrder: 3,
@@ -131,7 +131,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "leadership",
             name: "Leadership",
-            iconConfig: { icon: Award, color: "#FFCC18" }, // Gold
+            iconConfig: { image: "/trophyapple.png", style: "3d", color: "transparent", scale: 1.2, offsetY: 0 },
             component: LeadershipApp,
             defaultWindowConfig: defaultConfigs.leadership,
             dockOrder: 4,
@@ -165,9 +165,9 @@ const appRegistry = new Map<AppId, AppMetadata>([
 // ─── Pre-calculated stable arrays ───────────────────────────────────────────
 
 const allApps = Array.from(appRegistry.values());
-const dockApps = [...allApps].sort(
-    (a, b) => (a.dockOrder ?? 999) - (b.dockOrder ?? 999)
-);
+const dockApps = [...allApps]
+    .filter((app) => app.dockOrder !== undefined)
+    .sort((a, b) => (a.dockOrder ?? 999) - (b.dockOrder ?? 999));
 const desktopApps = allApps.filter((app) => app.desktopPosition != null);
 
 // ─── Store ───────────────────────────────────────────────────────────────────
