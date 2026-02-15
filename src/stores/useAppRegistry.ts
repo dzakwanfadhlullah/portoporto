@@ -107,7 +107,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "about",
             name: "About Me",
-            iconConfig: { image: "/profile.png", style: "3d", color: "transparent", scale: 1.45, offsetY: 4 },
+            iconConfig: { image: "/profile.png", style: "3d", color: "transparent", scale: 1.45, offsetY: 6 },
             component: AboutApp,
             defaultWindowConfig: defaultConfigs.about,
             dockOrder: 1,
@@ -119,7 +119,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "lab",
             name: "Game Center",
-            iconConfig: { image: "/GameCentersApple.png", style: "3d", color: "transparent", scale: 1.2, offsetY: 0 },
+            iconConfig: { image: "/GameCentersApple.png", style: "3d", color: "transparent", scale: 0.85, offsetY: 4 },
             component: LabApp,
             defaultWindowConfig: defaultConfigs.lab,
             dockOrder: 3,
@@ -131,7 +131,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "leadership",
             name: "Leadership",
-            iconConfig: { image: "/trophyapple.png", style: "3d", color: "transparent", scale: 1.2, offsetY: 0 },
+            iconConfig: { image: "/trophyapple.png", style: "3d", color: "transparent", scale: 0.8, offsetY: 5 },
             component: LeadershipApp,
             defaultWindowConfig: defaultConfigs.leadership,
             dockOrder: 4,
@@ -143,7 +143,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "contact",
             name: "Music",
-            iconConfig: { image: "/musicapple.png", style: "3d", color: "transparent", scale: 1.3, offsetY: 2 },
+            iconConfig: { image: "/musicapple.png", style: "3d", color: "transparent", scale: 0.9, offsetY: 3 },
             component: MusicApp,
             defaultWindowConfig: defaultConfigs.contact,
             dockOrder: 5,
