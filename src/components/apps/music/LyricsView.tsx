@@ -11,9 +11,10 @@ interface LyricLine {
 interface LyricsViewProps {
     lyrics: LyricLine[];
     currentTime: number;
+    onSeek?: (time: number) => void;
 }
 
-export default function LyricsView({ lyrics, currentTime }: LyricsViewProps) {
+export default function LyricsView({ lyrics, currentTime, onSeek }: LyricsViewProps) {
     const activeIndex = lyrics.reduce((acc, line, index) => {
         if (currentTime >= line.time) return index;
         return acc;
@@ -57,7 +58,8 @@ export default function LyricsView({ lyrics, currentTime }: LyricsViewProps) {
                             filter: isActive ? "blur(0px)" : "blur(1px)",
                         }}
                         transition={{ duration: 0.4 }}
-                        className={`text-2xl font-bold tracking-tight leading-snug cursor-default ${isActive ? "text-black" : "text-black/40"
+                        onClick={() => onSeek?.(line.time)}
+                        className={`text-2xl font-bold tracking-tight leading-snug cursor-pointer hover:opacity-100 transition-opacity ${isActive ? "text-black" : "text-black/40"
                             }`}
                     >
                         {line.text}

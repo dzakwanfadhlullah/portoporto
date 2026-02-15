@@ -32,8 +32,11 @@ export default function MusicApp() {
     const [volume, setVolume] = useState(0.8);
     const [isShuffle, setIsShuffle] = useState(false);
     const [isRepeat, setIsRepeat] = useState<"none" | "all" | "one">("none");
+    const [lyricsWidth, setLyricsWidth] = useState(450);
+    const [isResizing, setIsResizing] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement>(null);
+    const appRef = useRef<HTMLDivElement>(null);
     const currentSong: Song = SONGS[currentSongIndex] || SONGS[0];
 
     // Use parsed LRC if available, otherwise fallback to static lyrics array
@@ -57,11 +60,44 @@ export default function MusicApp() {
         }
     }, [volume]);
 
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isResizing || !appRef.current) return;
+            const rect = appRef.current.getBoundingClientRect();
+            const newWidth = rect.right - e.clientX;
+            // Limit width between 300px and 800px
+            if (newWidth > 300 && newWidth < 800) {
+                setLyricsWidth(newWidth);
+            }
+        };
+
+        const handleMouseUp = () => {
+            setIsResizing(false);
+        };
+
+        if (isResizing) {
+            window.addEventListener("mousemove", handleMouseMove);
+            window.addEventListener("mouseup", handleMouseUp);
+        }
+
+        return () => {
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, [isResizing]);
+
     const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
         if (audioRef.current && duration) {
             const rect = e.currentTarget.getBoundingClientRect();
             const percent = (e.clientX - rect.left) / rect.width;
             audioRef.current.currentTime = percent * duration;
+        }
+    };
+
+    const handleSeekTo = (time: number) => {
+        if (audioRef.current) {
+            audioRef.current.currentTime = time;
+            if (!isPlaying) setIsPlaying(true);
         }
     };
 
@@ -122,7 +158,10 @@ export default function MusicApp() {
     };
 
     return (
-        <div className="h-full flex flex-col bg-[#F9F9F9] text-[#1C1C1E] overflow-hidden font-sans selection:bg-[#FA233B]/20">
+        <div
+            ref={appRef}
+            className="h-full flex flex-col bg-[#F9F9F9] text-[#1C1C1E] overflow-hidden font-sans selection:bg-[#FA233B]/20 rounded-2xl"
+        >
             <div className="flex-1 flex overflow-hidden">
                 {/* ── Sidebar ────────────────────────────────────────── */}
                 <aside className="w-64 bg-[#EBEBEB]/50 border-r border-[#D1D1D1] flex flex-col p-5 h-full">
@@ -254,20 +293,35 @@ export default function MusicApp() {
                 {/* ── Lyrics View ───────────────────────────────────────── */}
                 <AnimatePresence>
                     {showLyrics && (
-                        <motion.aside
-                            initial={{ width: 0, opacity: 0 }}
-                            animate={{ width: 450, opacity: 1 }}
-                            exit={{ width: 0, opacity: 0 }}
-                            className="bg-white border-l border-[#D1D1D1] overflow-hidden hidden xl:block"
-                        >
-                            <LyricsView lyrics={displayLyrics} currentTime={currentTime} />
-                        </motion.aside>
+                        <>
+                            {/* Resizer Divider */}
+                            <div
+                                className="w-[1px] bg-[#D1D1D1] hover:bg-[#FA233B] hover:w-1 cursor-col-resize transition-all z-20 group relative h-full hidden xl:block"
+                                onMouseDown={() => setIsResizing(true)}
+                            >
+                                <div className="absolute inset-y-0 -left-1 -right-1 cursor-col-resize" />
+                            </div>
+
+                            <motion.aside
+                                initial={{ width: 0, opacity: 0 }}
+                                animate={{ width: lyricsWidth, opacity: 1 }}
+                                exit={{ width: 0, opacity: 0 }}
+                                className="bg-white overflow-hidden hidden xl:block"
+                                style={{ width: lyricsWidth }}
+                            >
+                                <LyricsView
+                                    lyrics={displayLyrics}
+                                    currentTime={currentTime}
+                                    onSeek={handleSeekTo}
+                                />
+                            </motion.aside>
+                        </>
                     )}
                 </AnimatePresence>
             </div>
 
             {/* ── Player Bar ─────────────────────────────────────────── */}
-            <footer className="h-20 bg-white/80 backdrop-blur-xl border-t border-[#D1D1D1] px-6 flex items-center justify-between z-10">
+            <footer className="h-20 bg-white/80 backdrop-blur-xl border-t border-[#D1D1D1] px-6 flex items-center justify-between z-10 rounded-b-2xl">
                 {/* Track Info */}
                 <div className="flex items-center gap-3 w-1/3">
                     <div className="w-12 h-12 rounded-lg overflow-hidden shadow-lg border border-black/5">
