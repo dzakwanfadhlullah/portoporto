@@ -42,7 +42,10 @@ export function GlassCardDemo() {
                     style={{
                         background: useTransform(
                             [mouseX, mouseY],
-                            ([latestX, latestY]) => `radial-gradient(circle at ${latestX + 150}px ${latestY + 100}px, rgba(255,255,255,0.15), transparent 80%)`
+                            (latest) => {
+                                const [latestX, latestY] = latest as [number, number];
+                                return `radial-gradient(circle at ${latestX + 150}px ${latestY + 100}px, rgba(255,255,255,0.15), transparent 80%)`;
+                            }
                         )
                     }}
                 />
