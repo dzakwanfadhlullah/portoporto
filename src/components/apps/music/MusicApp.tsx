@@ -37,7 +37,7 @@ export default function MusicApp() {
 
     const audioRef = useRef<HTMLAudioElement>(null);
     const appRef = useRef<HTMLDivElement>(null);
-    const currentSong: Song = SONGS[currentSongIndex] || SONGS[0];
+    const currentSong = (SONGS[currentSongIndex] || SONGS[0]) as Song;
 
     // Use parsed LRC if available, otherwise fallback to static lyrics array
     const displayLyrics = currentSong.lrcContents
