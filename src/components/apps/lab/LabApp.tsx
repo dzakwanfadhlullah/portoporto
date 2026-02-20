@@ -8,6 +8,7 @@ import { BlackjackDemo } from "./demos/BlackjackDemo";
 import { AppleRunnerDemo } from "./demos/AppleRunnerDemo";
 import { OrbitFlapDemo } from "./demos/OrbitFlapDemo";
 import { TheStackDemo } from "./demos/TheStackDemo";
+import { VirusProtocolDemo } from "./demos/VirusProtocolDemo";
 import { LabSidebar, LabSectionId } from "./LabSidebar";
 
 export default function LabApp() {
@@ -32,7 +33,7 @@ export default function LabApp() {
                         {/* ── Header ────────────────────────────────────────── */}
                         <div className="mb-12">
                             <h1 className="text-[26px] font-bold tracking-tight mb-2 text-foreground">
-                                {activeSection === "typing" ? "Keyboard Test" : activeSection === "blackjack" ? "Blackjack" : activeSection === "applerunner" ? "Apple Runner" : activeSection === "orbitflap" ? "Orbit Flap" : activeSection === "thestack" ? "The Stack" : "Game Center"}
+                                {activeSection === "typing" ? "Keyboard Test" : activeSection === "blackjack" ? "Blackjack" : activeSection === "applerunner" ? "Apple Runner" : activeSection === "orbitflap" ? "Orbit Flap" : activeSection === "thestack" ? "The Stack" : activeSection === "virusprotocol" ? "Virus Protocol" : "Game Center"}
                             </h1>
                             <p className="max-w-[600px] text-[15px] text-foreground/50 leading-relaxed font-medium">
                                 Test your skills with fun
@@ -64,6 +65,7 @@ export default function LabApp() {
                                 {activeSection === "applerunner" && <AppleRunnerDemo />}
                                 {activeSection === "orbitflap" && <OrbitFlapDemo />}
                                 {activeSection === "thestack" && <TheStackDemo />}
+                                {activeSection === "virusprotocol" && <VirusProtocolDemo />}
                             </div>
                         )}
                     </motion.div>
