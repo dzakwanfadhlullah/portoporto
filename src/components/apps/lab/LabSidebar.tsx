@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Gamepad2, Keyboard, Spade } from "lucide-react";
+import { Gamepad2, Keyboard, Spade, Rocket, Circle, Layers } from "lucide-react";
 
-export type LabSectionId = "typing" | "blackjack";
+export type LabSectionId = "typing" | "blackjack" | "applerunner" | "orbitflap" | "thestack";
 
 interface NavItem {
     id: LabSectionId;
@@ -14,6 +14,9 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
     { id: "typing", label: "Keyboard Test", icon: Keyboard },
     { id: "blackjack", label: "Blackjack", icon: Spade },
+    { id: "applerunner", label: "Apple Runner", icon: Rocket },
+    { id: "orbitflap", label: "Orbit Flap", icon: Circle },
+    { id: "thestack", label: "The Stack", icon: Layers },
 ];
 
 interface LabSidebarProps {

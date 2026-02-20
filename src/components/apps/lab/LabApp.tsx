@@ -1,10 +1,13 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Keyboard, Spade } from "lucide-react";
+import { Keyboard, Spade, Rocket, Circle, Layers } from "lucide-react";
 import { useState } from "react";
 import { TypingTestDemo } from "./demos/TypingTestDemo";
 import { BlackjackDemo } from "./demos/BlackjackDemo";
+import { AppleRunnerDemo } from "./demos/AppleRunnerDemo";
+import { OrbitFlapDemo } from "./demos/OrbitFlapDemo";
+import { TheStackDemo } from "./demos/TheStackDemo";
 import { LabSidebar, LabSectionId } from "./LabSidebar";
 
 export default function LabApp() {
@@ -24,12 +27,12 @@ export default function LabApp() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="flex-1 overflow-y-auto px-10 py-12 hide-scrollbar"
+                        className="flex-1 flex flex-col overflow-y-auto px-6 py-8 md:px-10 md:py-12 hide-scrollbar"
                     >
                         {/* ── Header ────────────────────────────────────────── */}
                         <div className="mb-12">
                             <h1 className="text-[26px] font-bold tracking-tight mb-2 text-foreground">
-                                {activeSection === "typing" ? "Keyboard Test" : activeSection === "blackjack" ? "Blackjack" : "Game Center"}
+                                {activeSection === "typing" ? "Keyboard Test" : activeSection === "blackjack" ? "Blackjack" : activeSection === "applerunner" ? "Apple Runner" : activeSection === "orbitflap" ? "Orbit Flap" : activeSection === "thestack" ? "The Stack" : "Game Center"}
                             </h1>
                             <p className="max-w-[600px] text-[15px] text-foreground/50 leading-relaxed font-medium">
                                 Test your skills with fun
@@ -37,24 +40,32 @@ export default function LabApp() {
                             </p>
                         </div>
 
-                        {/* ── Game Grid ─────────────────────────────────────────── */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-20">
-                            {activeSection === "typing" && (
-                                <div className="col-span-1 md:col-span-2 xl:col-span-3">
-                                    <DemoContainer title="Keyboard Test" icon={Keyboard} className="!aspect-auto min-h-[500px] h-fit sm:min-h-[550px]">
-                                        <TypingTestDemo />
-                                    </DemoContainer>
-                                </div>
-                            )}
+                        {/* ── Game Grid / Canvas ─────────────────────────────────────────── */}
+                        {(activeSection === "typing" || activeSection === "blackjack") ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-20">
+                                {activeSection === "typing" && (
+                                    <div className="col-span-1 md:col-span-2 xl:col-span-3">
+                                        <DemoContainer title="Keyboard Test" icon={Keyboard} className="!aspect-auto min-h-[500px] h-fit sm:min-h-[550px]">
+                                            <TypingTestDemo />
+                                        </DemoContainer>
+                                    </div>
+                                )}
 
-                            {activeSection === "blackjack" && (
-                                <div className="col-span-1 md:col-span-2 xl:col-span-3">
-                                    <DemoContainer title="Blackjack" icon={Spade} className="!aspect-auto min-h-[550px] h-fit sm:min-h-[600px]">
-                                        <BlackjackDemo />
-                                    </DemoContainer>
-                                </div>
-                            )}
-                        </div>
+                                {activeSection === "blackjack" && (
+                                    <div className="col-span-1 md:col-span-2 xl:col-span-3">
+                                        <DemoContainer title="Blackjack" icon={Spade} className="!aspect-auto min-h-[550px] h-fit sm:min-h-[600px]">
+                                            <BlackjackDemo />
+                                        </DemoContainer>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="flex-1 w-full min-h-[500px] md:min-h-[600px] rounded-[2rem] overflow-hidden border border-black/[0.08] shadow-[0_20px_40px_rgba(0,0,0,0.12)] relative bg-white/50">
+                                {activeSection === "applerunner" && <AppleRunnerDemo />}
+                                {activeSection === "orbitflap" && <OrbitFlapDemo />}
+                                {activeSection === "thestack" && <TheStackDemo />}
+                            </div>
+                        )}
                     </motion.div>
                 </AnimatePresence>
             </div>
