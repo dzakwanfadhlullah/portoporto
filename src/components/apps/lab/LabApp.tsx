@@ -9,7 +9,8 @@ import {
     Grid,
     CircleDashed,
     SunMoon,
-    Layout
+    Layout,
+    Keyboard
 } from "lucide-react";
 import { useState } from "react";
 import { GlassCardDemo } from "./demos/GlassCardDemo";
@@ -18,6 +19,7 @@ import { BentoDemo } from "./demos/BentoDemo";
 import { ActivityRingsDemo } from "./demos/ActivityRingsDemo";
 import { HoverDemo } from "./demos/HoverDemo";
 import { ThemeDemo } from "./demos/ThemeDemo";
+import { TypingTestDemo } from "./demos/TypingTestDemo";
 import { LabSidebar, LabSectionId } from "./LabSidebar";
 
 export default function LabApp() {
@@ -43,9 +45,10 @@ export default function LabApp() {
                         <div className="mb-12">
                             <h1 className="text-[26px] font-bold tracking-tight mb-2 text-foreground">
                                 {activeSection === "all" ? "Latest Experiments" :
-                                    activeSection === "glass" ? "Glassmorphism" :
-                                        activeSection === "physics" ? "Spring Physics" :
-                                            activeSection === "layout" ? "UI Layouts" : "Interaction"}
+                                    activeSection === "typing" ? "Keyboard Test" :
+                                        activeSection === "glass" ? "Glassmorphism" :
+                                            activeSection === "physics" ? "Spring Physics" :
+                                                activeSection === "layout" ? "UI Layouts" : "Interaction"}
                             </h1>
                             <p className="max-w-[600px] text-[15px] text-foreground/50 leading-relaxed font-medium">
                                 Explore interactive components focused on
@@ -57,6 +60,14 @@ export default function LabApp() {
 
                         {/* ── Demo Grid ─────────────────────────────────────────── */}
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-20">
+                            {(activeSection === "all" || activeSection === "typing") && (
+                                <div className="col-span-1 md:col-span-2 xl:col-span-3">
+                                    <DemoContainer title="Keyboard Test" icon={Keyboard} className="!aspect-auto h-[400px]">
+                                        <TypingTestDemo />
+                                    </DemoContainer>
+                                </div>
+                            )}
+
                             {(activeSection === "all" || activeSection === "glass") && (
                                 <DemoContainer title="Glassmorphism" icon={Layers}>
                                     <GlassCardDemo />
@@ -100,7 +111,7 @@ export default function LabApp() {
     );
 }
 
-function DemoContainer({ title, icon: Icon, children }: { title: string; icon: any; children: React.ReactNode }) {
+function DemoContainer({ title, icon: Icon, children, className }: { title: string; icon: any; children: React.ReactNode, className?: string }) {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -121,7 +132,7 @@ function DemoContainer({ title, icon: Icon, children }: { title: string; icon: a
                     VIEW DEMO
                 </div>
             </div>
-            <div className="aspect-square rounded-[2rem] bg-white/20 border border-black/[0.03] overflow-hidden relative shadow-[0_4px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-500 ease-[p-bezier(0.23,1,0.32,1)]">
+            <div className={`aspect-square rounded-[2rem] bg-white/20 border border-black/[0.03] overflow-hidden relative shadow-[0_4px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:scale-[1.02] transition-all duration-500 ease-[p-bezier(0.23,1,0.32,1)] ${className || ""}`}>
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none z-10" />
                 {children}
             </div>

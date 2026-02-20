@@ -9,10 +9,11 @@ import {
     Grid,
     CircleDashed,
     SunMoon,
-    Layout
+    Layout,
+    Keyboard
 } from "lucide-react";
 
-export type LabSectionId = "all" | "glass" | "physics" | "layout" | "interaction";
+export type LabSectionId = "all" | "typing" | "glass" | "physics" | "layout" | "interaction";
 
 interface NavItem {
     id: LabSectionId;
@@ -22,6 +23,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
     { id: "all", label: "All Experiments", icon: Layout },
+    { id: "typing", label: "Keyboard Test", icon: Keyboard },
     { id: "glass", label: "Glassmorphism", icon: Layers },
     { id: "physics", label: "Spring Physics", icon: Wind },
     { id: "layout", label: "UI Layouts", icon: Grid },
