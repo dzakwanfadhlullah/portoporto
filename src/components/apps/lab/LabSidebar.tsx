@@ -1,19 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-    FlaskConical,
-    Layers,
-    MousePointer2,
-    Wind,
-    Grid,
-    CircleDashed,
-    SunMoon,
-    Layout,
-    Keyboard
-} from "lucide-react";
+import { Gamepad2, Keyboard, Spade } from "lucide-react";
 
-export type LabSectionId = "all" | "typing" | "glass" | "physics" | "layout" | "interaction";
+export type LabSectionId = "typing" | "blackjack";
 
 interface NavItem {
     id: LabSectionId;
@@ -22,12 +12,8 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-    { id: "all", label: "All Experiments", icon: Layout },
     { id: "typing", label: "Keyboard Test", icon: Keyboard },
-    { id: "glass", label: "Glassmorphism", icon: Layers },
-    { id: "physics", label: "Spring Physics", icon: Wind },
-    { id: "layout", label: "UI Layouts", icon: Grid },
-    { id: "interaction", label: "Interaction", icon: MousePointer2 },
+    { id: "blackjack", label: "Blackjack", icon: Spade },
 ];
 
 interface LabSidebarProps {
@@ -40,11 +26,11 @@ export function LabSidebar({ activeSection, onSectionChange }: LabSidebarProps) 
         <div className="w-[240px] shrink-0 bg-[#F6F6F6]/60 backdrop-blur-xl border-r border-black/[0.05] flex flex-col pt-12 px-3 pb-4 select-none">
             <div className="flex items-center gap-3 mb-8 px-3">
                 <div className="w-8 h-8 rounded-lg bg-[#007AFF] flex items-center justify-center text-white shadow-sm">
-                    <FlaskConical size={18} strokeWidth={2.5} />
+                    <Gamepad2 size={18} strokeWidth={2.5} />
                 </div>
                 <div>
-                    <h2 className="text-[15px] font-bold tracking-tight text-black">Lab</h2>
-                    <p className="text-[10px] font-bold text-black/30 uppercase tracking-widest">Experiments</p>
+                    <h2 className="text-[15px] font-bold tracking-tight text-black">Game Center</h2>
+                    <p className="text-[10px] font-bold text-black/30 uppercase tracking-widest">Mini Games</p>
                 </div>
             </div>
 
@@ -81,7 +67,7 @@ export function LabSidebar({ activeSection, onSectionChange }: LabSidebarProps) 
             <div className="mt-auto px-3 py-4">
                 <div className="p-4 rounded-xl bg-white/40 border border-white/60 shadow-sm backdrop-blur-sm">
                     <p className="text-[11px] font-medium text-black/40 leading-relaxed">
-                        Explore my latest experiments in motion, physics, and interface design.
+                        Play mini games and test your skills. More games coming soon!
                     </p>
                 </div>
             </div>
