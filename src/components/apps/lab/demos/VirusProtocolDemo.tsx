@@ -22,9 +22,47 @@ const WAVES = [
 // --- Types ---
 interface Vector2 { x: number; y: number; }
 interface Bullet extends Vector2 { id: number; vx: number; vy: number; damage: number; color: string; }
-interface Enemy extends Vector2 { id: number; hp: number; maxHp: number; speed: number; type: string; radius: number; }
+interface Enemy extends Vector2 { id: number; hp: number; maxHp: number; speed: number; type: string; radius: number; stunTimer: number; }
 interface Particle extends Vector2 { vx: number; vy: number; life: number; maxLife: number; color: string; size: number; }
 interface DropItem extends Vector2 { id: number; type: 'hp'; life: number; maxLife: number; startY: number; }
+
+// ─── Sound Effects (Web Audio API — Global Class, identical to BlackjackDemo) ──
+class SoundEngine {
+    private ctx: AudioContext | null = null;
+    enabled = true;
+
+    private getCtx(): AudioContext {
+        if (!this.ctx) this.ctx = new AudioContext();
+        return this.ctx;
+    }
+
+    private tone(freq: number, dur: number, type: OscillatorType = "sine", vol = 0.15) {
+        if (!this.enabled) return;
+        try {
+            const ctx = this.getCtx();
+            if (ctx.state === "suspended") ctx.resume();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(vol, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + dur);
+        } catch { /* ignore audio errors */ }
+    }
+
+    shoot() { this.tone(150, 0.08, "square", 0.06); setTimeout(() => this.tone(80, 0.06, "square", 0.04), 30); }
+    hit() { this.tone(300, 0.08, "sawtooth", 0.08); setTimeout(() => this.tone(150, 0.06, "sawtooth", 0.05), 30); }
+    hurt() { [100, 80, 60].forEach((f, i) => setTimeout(() => this.tone(f, 0.15, "sawtooth", 0.25), i * 60)); }
+    heal() { [400, 600, 800].forEach((f, i) => setTimeout(() => this.tone(f, 0.15, "sine", 0.12), i * 80)); }
+    death() { this.tone(200, 0.15, "square", 0.12); setTimeout(() => this.tone(80, 0.12, "square", 0.08), 60); }
+    wave() { [200, 400, 600].forEach((f, i) => setTimeout(() => this.tone(f, 0.2, "sine", 0.12), i * 120)); }
+}
+
+const sfx = new SoundEngine();
 
 export function VirusProtocolDemo() {
     // We keep UI state synced but drive logic from Refs to avoid Stale Closures
@@ -40,7 +78,7 @@ export function VirusProtocolDemo() {
 
     // --- Absolute Game State Refs (The Source of Truth) ---
     const stateRef = useRef<'menu' | 'story' | 'playing' | 'gameover' | 'victory' | 'paused'>('menu');
-    const playerRef = useRef<{ x: number; y: number; hp: number; maxHp: number; score: number; wave: number; waveStartScore: number }>({ x: 400, y: 300, hp: 100, maxHp: 100, score: 0, wave: 0, waveStartScore: 0 });
+    const playerRef = useRef<{ x: number; y: number; hp: number; maxHp: number; score: number; wave: number; waveStartScore: number; invulnTimer: number; muzzleFlash: number }>({ x: 400, y: 300, hp: 100, maxHp: 100, score: 0, wave: 0, waveStartScore: 0, invulnTimer: 0, muzzleFlash: 0 });
     const waveStartScoreRef = useRef(0); // Anti-farm exploit
 
     // --- Entities ---
@@ -179,7 +217,7 @@ export function VirusProtocolDemo() {
 
         enemiesRef.current.push({
             id: Math.random(), x: ex, y: ey,
-            hp, maxHp: hp, speed, type: type as string, radius
+            hp, maxHp: hp, speed, type: type as string, radius, stunTimer: 0
         });
     };
 
@@ -212,6 +250,9 @@ export function VirusProtocolDemo() {
         const time = performance.now();
         if (time - lastFireTimeRef.current > fireRate) {
             lastFireTimeRef.current = time;
+            p.muzzleFlash = 1.0; // Trigger flash visual
+            sfx.shoot(); // SFX
+
             const baseAngle = Math.atan2(mouseRef.current.y - p.y, mouseRef.current.x - p.x);
             addShake(bulletCount * 1.5);
 
@@ -225,8 +266,8 @@ export function VirusProtocolDemo() {
 
                 bulletsRef.current.push({
                     id: Math.random(),
-                    x: p.x + Math.cos(angle) * (PLAYER_RADIUS + 5),
-                    y: p.y + Math.sin(angle) * (PLAYER_RADIUS + 5),
+                    x: p.x + Math.cos(angle) * 5, // Spawn much closer (Point Blank Fix)
+                    y: p.y + Math.sin(angle) * 5,
                     vx: Math.cos(angle) * BULLET_SPEED,
                     vy: Math.sin(angle) * BULLET_SPEED,
                     damage, color: bColor
@@ -344,20 +385,38 @@ export function VirusProtocolDemo() {
             ctx.shadowBlur = 0;
         });
 
-        // Player
+        // Player Visuals
         const p = playerRef.current;
         const angleToMouse = Math.atan2(mouseRef.current.y - p.y, mouseRef.current.x - p.x);
 
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(angleToMouse);
-        ctx.fillStyle = "#007AFF";
-        ctx.beginPath();
-        ctx.arc(0, 0, PLAYER_RADIUS, 0, Math.PI * 2);
-        ctx.fill();
 
-        ctx.fillStyle = "#005bb5";
-        ctx.fillRect(0, -4, 20, 8);
+        // I-Frame Blinking
+        if (p.invulnTimer <= 0 || Math.floor(performance.now() / 50) % 2 === 0) {
+            ctx.fillStyle = "#007AFF";
+            ctx.beginPath();
+            ctx.arc(0, 0, PLAYER_RADIUS, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Gun Barrel
+            ctx.fillStyle = "#005bb5";
+            ctx.fillRect(0, -4, 20, 8);
+
+            // Muzzle Flash Effect
+            if (p.muzzleFlash > 0) {
+                ctx.fillStyle = `rgba(255, 204, 0, ${p.muzzleFlash})`;
+                ctx.beginPath();
+                ctx.arc(25, 0, 8 * p.muzzleFlash, 0, Math.PI * 2);
+                ctx.fill();
+                // Spiky flash star
+                ctx.beginPath();
+                ctx.moveTo(35, 0); ctx.lineTo(20, -10); ctx.lineTo(25, 0); ctx.lineTo(20, 10);
+                ctx.fill();
+            }
+        }
+
         ctx.restore();
 
         // Crosshair
@@ -412,6 +471,16 @@ export function VirusProtocolDemo() {
         p.x = Math.max(PLAYER_RADIUS, Math.min(boundsRef.current.width - PLAYER_RADIUS, p.x));
         p.y = Math.max(PLAYER_RADIUS, Math.min(boundsRef.current.height - PLAYER_RADIUS, p.y));
 
+        if (p.muzzleFlash > 0) {
+            p.muzzleFlash -= timeScale * 0.15; // Fast fade
+            if (p.muzzleFlash < 0) p.muzzleFlash = 0;
+        }
+
+        if (p.invulnTimer > 0) {
+            p.invulnTimer -= timeScale * 16.66; // in ms
+            if (p.invulnTimer < 0) p.invulnTimer = 0;
+        }
+
         if (mouseRef.current.down) fireWeapon();
 
         // Bullets Physic
@@ -446,6 +515,7 @@ export function VirusProtocolDemo() {
 
             if (Math.hypot(p.x - item.x, p.y - item.y) < PLAYER_RADIUS + 15) {
                 p.hp = Math.min(p.maxHp, p.hp + 20); // Heal 20
+                sfx.heal();
                 createParticles(item.x, item.y, "#34C759", 8);
                 itemsRef.current.splice(i, 1);
                 continue;
@@ -454,19 +524,53 @@ export function VirusProtocolDemo() {
             if (item.life >= item.maxLife) itemsRef.current.splice(i, 1);
         }
 
-        // Enemy Math
+        // Enemy Math & Physics
         let pDamage = 0;
         for (let i = enemiesRef.current.length - 1; i >= 0; i--) {
             const e = enemiesRef.current[i];
             if (!e) continue;
+
+            // Boid Separation (Swarm AI fix to prevent 1-pixel stacking trap)
+            if (e.type === 'swarm') {
+                for (let k = 0; k < enemiesRef.current.length; k++) {
+                    if (k === i) continue;
+                    const otherE = enemiesRef.current[k];
+                    if (otherE && otherE.type === 'swarm') {
+                        const dist = Math.hypot(e.x - otherE.x, e.y - otherE.y);
+                        if (dist > 0 && dist < e.radius * 2) {
+                            // Push apart
+                            const pushForce = 0.5 * (1 - dist / (e.radius * 2)); // Stronger the closer they are
+                            e.x += (e.x - otherE.x) * pushForce;
+                            e.y += (e.y - otherE.y) * pushForce;
+                        }
+                    }
+                }
+            }
+
             // Swarm movement erraticness
             let angleToPlayer = Math.atan2(p.y - e.y, p.x - e.x);
             if (e.type === 'swarm') {
                 angleToPlayer += Math.sin(time / 200 + e.id) * 0.5; // wobbly
             }
 
-            e.x += Math.cos(angleToPlayer) * e.speed * timeScale;
-            e.y += Math.sin(angleToPlayer) * e.speed * timeScale;
+            // Movement and Stun
+            if (e.stunTimer > 0) {
+                e.stunTimer -= timeScale * 16.66; // Stun duration tick
+            } else {
+                e.x += Math.cos(angleToPlayer) * e.speed * timeScale;
+                e.y += Math.sin(angleToPlayer) * e.speed * timeScale;
+            }
+
+            // Boss Frenzy Mechanic (Under 50% HP)
+            if (e.type === 'boss' && e.hp < e.maxHp * 0.5) {
+                // Spawn micro swarms directly from the boss rapidly
+                if (Math.random() < 0.05 * timeScale) {
+                    enemiesRef.current.push({
+                        id: Math.random(), x: e.x + (Math.random() - 0.5) * 100, y: e.y + (Math.random() - 0.5) * 100,
+                        hp: 3, maxHp: 3, speed: ENEMY_BASE_SPEED * 2.5, type: 'swarm', radius: 6, stunTimer: 0
+                    });
+                }
+            }
 
             // Padding zone logic: If window shrinks, warp enemy closer to bounds to avoid stuck off-screen
             const enemyPad = 80;
@@ -475,12 +579,28 @@ export function VirusProtocolDemo() {
             if (e.y < -enemyPad) e.y = -enemyPad;
             if (e.y > boundsRef.current.height + enemyPad) e.y = boundsRef.current.height + enemyPad;
 
-            // Player Collision (Damage)
-            if (Math.hypot(p.x - e.x, p.y - e.y) < PLAYER_RADIUS + e.radius) {
+            // Player Collision (Damage & Proper Knockback)
+            if (p.invulnTimer <= 0 && Math.hypot(p.x - e.x, p.y - e.y) < PLAYER_RADIUS + e.radius) {
                 const dmgMod = e.type === 'boss' ? 5 : e.type === 'tank' ? 2 : e.type === 'swarm' ? 0.3 : 1;
-                pDamage += dmgMod * timeScale;
-                p.x -= Math.cos(angleToPlayer) * 2;
-                p.y -= Math.sin(angleToPlayer) * 2;
+                pDamage += dmgMod * 15; // Spike damage instead of per frame bleed
+
+                // IMPORTANT: Calculate angle FROM enemy TO player for knockback
+                const knockbackAngle = Math.atan2(p.y - e.y, p.x - e.x);
+
+                // Push PLAYER Away (Proper formula: += not -=)
+                p.x += Math.cos(knockbackAngle) * 50;
+                p.y += Math.sin(knockbackAngle) * 50;
+
+                // Push ENEMY away (Impact momentum) and Stun them
+                if (e.type !== 'boss') {
+                    // Knock them very far back so they don't immediately catch up within the 0.5s I-Frames
+                    e.x -= Math.cos(knockbackAngle) * 60;
+                    e.y -= Math.sin(knockbackAngle) * 60;
+                    e.stunTimer = 1000; // Freeze their movement for 1 full second
+                }
+
+                p.invulnTimer = 500; // 0.5 seconds of i-frames
+                sfx.hurt(); // Big impact synth
             }
 
             for (let j = bulletsRef.current.length - 1; j >= 0; j--) {
@@ -488,6 +608,7 @@ export function VirusProtocolDemo() {
                 if (!b) continue;
                 if (Math.hypot(b.x - e.x, b.y - e.y) < e.radius + BULLET_RADIUS) {
                     e.hp -= b.damage;
+                    sfx.hit(); // Hit pip feedback
                     createParticles(b.x, b.y, b.color, 4);
                     bulletsRef.current.splice(j, 1);
                     if (e.type !== 'boss') {
@@ -498,6 +619,7 @@ export function VirusProtocolDemo() {
             }
 
             if (e.hp <= 0) {
+                sfx.death(); // Enemy pop
                 const color = e.type === 'fast' ? "#FF9500" : e.type === 'tank' ? "#8A2BE2" : e.type === 'swarm' ? "#FF2D55" : e.type === 'boss' ? "#000000" : "#FF3B30";
                 createParticles(e.x, e.y, color, e.type === 'boss' ? 80 : 15, e.type === 'boss' ? 3 : 1);
                 spawnItem(e.x, e.y);
@@ -565,12 +687,13 @@ export function VirusProtocolDemo() {
         playerRef.current.waveStartScore = playerRef.current.score;
 
         stateRef.current = 'playing';
+        sfx.wave();
         syncUI();
     };
 
     const handleStartClick = () => {
         // Initial Game Reset Total
-        playerRef.current = { x: boundsRef.current.width / 2, y: boundsRef.current.height / 2, hp: 100, maxHp: 100, score: 0, wave: 0, waveStartScore: 0 };
+        playerRef.current = { x: boundsRef.current.width / 2, y: boundsRef.current.height / 2, hp: 100, maxHp: 100, score: 0, wave: 0, waveStartScore: 0, invulnTimer: 0, muzzleFlash: 0 };
         enemiesRef.current = [];
         bulletsRef.current = [];
         particlesRef.current = [];
