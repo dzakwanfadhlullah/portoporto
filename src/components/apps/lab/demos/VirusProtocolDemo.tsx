@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crosshair, ShieldAlert, Play, RotateCcw, Activity } from "lucide-react";
+import { Crosshair, ShieldAlert, Play, RotateCcw, Activity, Pause } from "lucide-react";
 
 // --- Constants & Config ---
 const PLAYER_SPEED = 4.2;
@@ -24,12 +24,11 @@ interface Vector2 { x: number; y: number; }
 interface Bullet extends Vector2 { id: number; vx: number; vy: number; damage: number; color: string; }
 interface Enemy extends Vector2 { id: number; hp: number; maxHp: number; speed: number; type: string; radius: number; }
 interface Particle extends Vector2 { vx: number; vy: number; life: number; maxLife: number; color: string; size: number; }
-interface DropItem extends Vector2 { id: number; type: 'hp'; life: number; maxLife: number; }
+interface DropItem extends Vector2 { id: number; type: 'hp'; life: number; maxLife: number; startY: number; }
 
 export function VirusProtocolDemo() {
-    // --- React State (For UI Only) ---
     // We keep UI state synced but drive logic from Refs to avoid Stale Closures
-    const [uiGameState, setUiGameState] = useState<'menu' | 'story' | 'playing' | 'gameover' | 'victory'>('menu');
+    const [uiGameState, setUiGameState] = useState<'menu' | 'story' | 'playing' | 'gameover' | 'victory' | 'paused'>('menu');
     const [uiWave, setUiWave] = useState(0);
     const [uiScore, setUiScore] = useState(0);
     const [uiHp, setUiHp] = useState(100);
@@ -40,8 +39,9 @@ export function VirusProtocolDemo() {
     const boundsRef = useRef({ width: 800, height: 600 });
 
     // --- Absolute Game State Refs (The Source of Truth) ---
-    const stateRef = useRef<'menu' | 'story' | 'playing' | 'gameover' | 'victory'>('menu');
-    const playerRef = useRef<{ x: number; y: number; hp: number; maxHp: number; score: number; wave: number }>({ x: 400, y: 300, hp: 100, maxHp: 100, score: 0, wave: 0 });
+    const stateRef = useRef<'menu' | 'story' | 'playing' | 'gameover' | 'victory' | 'paused'>('menu');
+    const playerRef = useRef<{ x: number; y: number; hp: number; maxHp: number; score: number; wave: number; waveStartScore: number }>({ x: 400, y: 300, hp: 100, maxHp: 100, score: 0, wave: 0, waveStartScore: 0 });
+    const waveStartScoreRef = useRef(0); // Anti-farm exploit
 
     // --- Entities ---
     const bulletsRef = useRef<Bullet[]>([]);
@@ -64,20 +64,14 @@ export function VirusProtocolDemo() {
     const damageFlashRef = useRef(0);
 
     // --- Sync Helper ---
-    // Updates React State ONLY when necessary to avoid spamming re-renders
     const syncUI = useCallback(() => {
         setUiGameState((prev) => prev !== stateRef.current ? stateRef.current : prev);
         setUiWave((prev) => prev !== playerRef.current.wave ? playerRef.current.wave : prev);
-        setUiScore((prev) => {
-            // Only update score UI every 10 points or if it's vastly different, for performance
-            // But since score isn't changing 1000 times a sec, direct update inside RAF is fine, 
-            // but doing it carefully via React setter.
-            return playerRef.current.score;
-        });
+        setUiScore((prev) => prev !== playerRef.current.score ? playerRef.current.score : prev);
         setUiHp(Math.ceil(playerRef.current.hp));
     }, []);
 
-    // --- Resize Observer ---
+    // --- Handlers & Observer ---
     useEffect(() => {
         if (!containerRef.current) return;
         const observer = new ResizeObserver((entries) => {
@@ -88,11 +82,23 @@ export function VirusProtocolDemo() {
         });
         observer.observe(containerRef.current);
         return () => observer.disconnect();
+        // --- Input Handlers ---
     }, []);
 
-    // --- Input Handlers ---
     useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => { keysRef.current[e.code] = true; };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            keysRef.current[e.code] = true;
+            if (e.code === 'Escape') {
+                if (stateRef.current === 'playing') {
+                    stateRef.current = 'paused';
+                    syncUI();
+                } else if (stateRef.current === 'paused') {
+                    stateRef.current = 'playing';
+                    lastFrameTimeRef.current = performance.now();
+                    syncUI();
+                }
+            }
+        };
         const handleKeyUp = (e: KeyboardEvent) => { keysRef.current[e.code] = false; };
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
@@ -100,12 +106,23 @@ export function VirusProtocolDemo() {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const togglePause = () => {
+        if (stateRef.current === 'playing') {
+            stateRef.current = 'paused';
+            syncUI();
+        } else if (stateRef.current === 'paused') {
+            stateRef.current = 'playing';
+            lastFrameTimeRef.current = performance.now(); // Reset delta completely
+            syncUI();
+        }
+    };
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
-        // Constrain mouse to bounds to avoid weird aim glitches
         mouseRef.current.x = Math.max(0, Math.min(boundsRef.current.width, e.clientX - rect.left));
         mouseRef.current.y = Math.max(0, Math.min(boundsRef.current.height, e.clientY - rect.top));
     };
@@ -114,7 +131,7 @@ export function VirusProtocolDemo() {
     const handleMouseUp = () => { mouseRef.current.down = false; };
     const handleMouseLeave = () => { mouseRef.current.down = false; };
 
-    // --- Juice Systems ---
+    // --- Juice & Feedback ---
     const addShake = (amount: number) => {
         screenShakeRef.current = Math.min(screenShakeRef.current + amount, 20);
     };
@@ -140,26 +157,25 @@ export function VirusProtocolDemo() {
         }
     };
 
-    // --- Game Logic Functions ---
-    const spawnEnemy = (wave: typeof WAVES[0]) => {
+    // --- Logic ---
+    const spawnEnemy = (waveInfo: typeof WAVES[0]) => {
         waveStateRef.current.spawned++;
 
-        // Random off-screen spawn
         let ex = 0, ey = 0;
         const edge = Math.floor(Math.random() * 4);
-        const margin = 80;
-        if (edge === 0) { ex = Math.random() * boundsRef.current.width; ey = -margin; } // Top
-        else if (edge === 1) { ex = boundsRef.current.width + margin; ey = Math.random() * boundsRef.current.height; } // Right
-        else if (edge === 2) { ex = Math.random() * boundsRef.current.width; ey = boundsRef.current.height + margin; } // Bottom
-        else { ex = -margin; ey = Math.random() * boundsRef.current.height; } // Left
+        const margin = 100; // Farther out to avoid popping in during resize
+        if (edge === 0) { ex = Math.random() * boundsRef.current.width; ey = -margin; }
+        else if (edge === 1) { ex = boundsRef.current.width + margin; ey = Math.random() * boundsRef.current.height; }
+        else if (edge === 2) { ex = Math.random() * boundsRef.current.width; ey = boundsRef.current.height + margin; }
+        else { ex = -margin; ey = Math.random() * boundsRef.current.height; }
 
-        const type = wave.types[Math.floor(Math.random() * wave.types.length)];
+        const type = waveInfo.types[Math.floor(Math.random() * waveInfo.types.length)];
         let hp = 20, speed = ENEMY_BASE_SPEED, radius = 14;
 
         if (type === 'fast') { hp = 15; speed = ENEMY_BASE_SPEED * 1.8; radius = 12; }
         else if (type === 'tank') { hp = 80; speed = ENEMY_BASE_SPEED * 0.7; radius = 22; }
         else if (type === 'swarm') { hp = 8; speed = ENEMY_BASE_SPEED * 2.2; radius = 8; }
-        else if (type === 'boss') { hp = 2000; speed = ENEMY_BASE_SPEED * 0.5; radius = 60; ex = boundsRef.current.width / 2; ey = -100; } // Boss spawns top center
+        else if (type === 'boss') { hp = 2000; speed = ENEMY_BASE_SPEED * 0.5; radius = 60; ex = boundsRef.current.width / 2; ey = -100; }
 
         enemiesRef.current.push({
             id: Math.random(), x: ex, y: ey,
@@ -168,13 +184,12 @@ export function VirusProtocolDemo() {
     };
 
     const spawnItem = (x: number, y: number) => {
-        // 10% chance to drop HP
-        if (Math.random() < 0.1) {
+        if (Math.random() < 0.1) { // 10% chance
             itemsRef.current.push({
                 id: Math.random(),
-                x, y,
+                x, y, startY: y,
                 type: 'hp',
-                life: 0, maxLife: 600 // lasts 10 seconds (at 60fps)
+                life: 0, maxLife: 600 // 10 secs
             });
         }
     };
@@ -183,51 +198,29 @@ export function VirusProtocolDemo() {
         const p = playerRef.current;
         const waveLvl = WAVES[p.wave]?.level || 1;
 
-        let fireRate = 200; // default
+        let fireRate = 200;
         let bulletCount = 1;
         let spreadAngle = 0;
-        let bColor = "#007AFF"; // Blue
+        let bColor = "#007AFF";
         let damage = 10;
 
-        // Weapon Systems based on level
-        if (waveLvl === 1) {
-            fireRate = 220; // Pistol
-        } else if (waveLvl === 2) {
-            fireRate = 120; // Machine Gun
-            bColor = "#34C759"; // Green
-        } else if (waveLvl === 3) {
-            fireRate = 350; // Shotgun
-            bulletCount = 3;
-            spreadAngle = 0.25; // radians
-            bColor = "#FF9500"; // Orange
-            damage = 15;
-        } else if (waveLvl >= 4) {
-            fireRate = 180; // Auto-Shotgun
-            bulletCount = 4;
-            spreadAngle = 0.3;
-            bColor = "#FF2D55"; // Pinkish Red
-            damage = 18;
-        }
+        if (waveLvl === 1) { fireRate = 220; }
+        else if (waveLvl === 2) { fireRate = 120; bColor = "#34C759"; }
+        else if (waveLvl === 3) { fireRate = 350; bulletCount = 3; spreadAngle = 0.25; bColor = "#FF9500"; damage = 15; }
+        else if (waveLvl >= 4) { fireRate = 180; bulletCount = 4; spreadAngle = 0.3; bColor = "#FF2D55"; damage = 18; }
 
         const time = performance.now();
         if (time - lastFireTimeRef.current > fireRate) {
             lastFireTimeRef.current = time;
-
             const baseAngle = Math.atan2(mouseRef.current.y - p.y, mouseRef.current.x - p.x);
-
-            // Add slight recoil shake
             addShake(bulletCount * 1.5);
 
             for (let i = 0; i < bulletCount; i++) {
-                // Calculate spread
                 let angle = baseAngle;
                 if (bulletCount > 1) {
-                    // evenly distribute: e.g. -spread, 0, +spread
-                    const offset = (i / (bulletCount - 1)) - 0.5; // -0.5 to 0.5
+                    const offset = (i / (bulletCount - 1)) - 0.5;
                     angle += offset * spreadAngle * 2;
                 }
-
-                // Add tiny inaccuracy
                 angle += (Math.random() - 0.5) * 0.05;
 
                 bulletsRef.current.push({
@@ -244,33 +237,39 @@ export function VirusProtocolDemo() {
 
     // --- Render Loop (Canvas) ---
     const drawCanvas = (ctx: CanvasRenderingContext2D) => {
-        ctx.clearRect(0, 0, boundsRef.current.width, boundsRef.current.height);
+        const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
+        ctx.clearRect(0, 0, boundsRef.current.width * dpr, boundsRef.current.height * dpr);
+
+        ctx.save();
+        ctx.scale(dpr, dpr);
 
         // Apply Screen Shake
         ctx.save();
+        const w = boundsRef.current.width;
+        const h = boundsRef.current.height;
+
         if (screenShakeRef.current > 0) {
             const sx = (Math.random() - 0.5) * screenShakeRef.current;
             const sy = (Math.random() - 0.5) * screenShakeRef.current;
             ctx.translate(sx, sy);
-            // Decay
             screenShakeRef.current *= 0.8;
             if (screenShakeRef.current < 0.5) screenShakeRef.current = 0;
         }
 
-        // 1. Grid Background
+        // Grid
         ctx.strokeStyle = "rgba(0,0,0,0.03)";
         ctx.lineWidth = 1;
         const gridSize = 40;
         ctx.beginPath();
-        for (let x = 0; x < boundsRef.current.width; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, boundsRef.current.height); }
-        for (let y = 0; y < boundsRef.current.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(boundsRef.current.width, y); }
+        for (let x = 0; x < w; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+        for (let y = 0; y < h; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
         ctx.stroke();
 
-        // 2. Base Overlay for Damage Flash
+        // Damage Tint
         if (damageFlashRef.current > 0) {
-            ctx.fillStyle = `rgba(255, 59, 48, ${damageFlashRef.current * 0.3})`; // Red tint
-            ctx.fillRect(0, 0, boundsRef.current.width, boundsRef.current.height);
-            damageFlashRef.current *= 0.85; // Fast decay
+            ctx.fillStyle = `rgba(255, 59, 48, ${damageFlashRef.current * 0.3})`;
+            ctx.fillRect(0, 0, w, h);
+            damageFlashRef.current *= 0.85;
             if (damageFlashRef.current < 0.01) damageFlashRef.current = 0;
         }
 
@@ -280,22 +279,24 @@ export function VirusProtocolDemo() {
             const timeRemaining = item.maxLife - item.life;
             if (timeRemaining < 120 && Math.floor(timeRemaining / 10) % 2 === 0) return;
 
+            const floatY = Math.sin(performance.now() / 200 + item.id) * 3;
+
             ctx.fillStyle = "#34C759"; // Green HP
             const size = 12;
-            ctx.fillRect(item.x - size / 2, item.y - size / 2, size, size);
+            ctx.fillRect(item.x - size / 2, item.y - size / 2 + floatY, size, size);
             // Cross inside
             ctx.fillStyle = "white";
-            ctx.fillRect(item.x - 2, item.y - size / 2 + 2, 4, size - 4);
-            ctx.fillRect(item.x - size / 2 + 2, item.y - 2, size - 4, 4);
+            ctx.fillRect(item.x - 2, item.y - size / 2 + 2 + floatY, 4, size - 4);
+            ctx.fillRect(item.x - size / 2 + 2, item.y - 2 + floatY, size - 4, 4);
 
             // Glow
             ctx.shadowColor = "#34C759";
             ctx.shadowBlur = 10;
-            ctx.fillRect(item.x - size / 2, item.y - size / 2, size, size);
+            ctx.fillRect(item.x - size / 2, item.y - size / 2 + floatY, size, size);
             ctx.shadowBlur = 0;
         });
 
-        // 4. Particles
+        // Particles
         particlesRef.current.forEach(p => {
             ctx.globalAlpha = 1 - (p.life / p.maxLife);
             ctx.fillStyle = p.color;
@@ -305,16 +306,14 @@ export function VirusProtocolDemo() {
         });
         ctx.globalAlpha = 1;
 
-        // 5. Enemies
+        // Enemies
         enemiesRef.current.forEach(e => {
-            // Colors
             ctx.fillStyle = e.type === 'fast' ? "#FF9500" : e.type === 'tank' ? "#8A2BE2" : e.type === 'swarm' ? "#FF2D55" : e.type === 'boss' ? "#000000" : "#FF3B30";
 
             ctx.beginPath();
             ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
             ctx.fill();
 
-            // Boss styling (Glitchy aura)
             if (e.type === 'boss') {
                 ctx.strokeStyle = "#FF3B30";
                 ctx.lineWidth = 3;
@@ -323,7 +322,6 @@ export function VirusProtocolDemo() {
                 ctx.stroke();
             }
 
-            // HP Bar
             if (e.hp < e.maxHp && e.type !== 'swarm') {
                 const barWidth = e.radius * 2;
                 const barY = e.y - e.radius - 8;
@@ -334,38 +332,35 @@ export function VirusProtocolDemo() {
             }
         });
 
-        // 6. Bullets
+        // Bullets
         bulletsRef.current.forEach(b => {
             ctx.fillStyle = b.color;
             ctx.beginPath();
             ctx.arc(b.x, b.y, BULLET_RADIUS, 0, Math.PI * 2);
             ctx.fill();
-            // Glow
             ctx.shadowColor = b.color;
             ctx.shadowBlur = 8;
             ctx.fill();
             ctx.shadowBlur = 0;
         });
 
-        // 7. Player
+        // Player
         const p = playerRef.current;
         const angleToMouse = Math.atan2(mouseRef.current.y - p.y, mouseRef.current.x - p.x);
 
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(angleToMouse);
-
         ctx.fillStyle = "#007AFF";
         ctx.beginPath();
         ctx.arc(0, 0, PLAYER_RADIUS, 0, Math.PI * 2);
         ctx.fill();
 
-        // Gun barrel
         ctx.fillStyle = "#005bb5";
         ctx.fillRect(0, -4, 20, 8);
         ctx.restore();
 
-        // 8. Laser Sight (Subtle)
+        // Crosshair
         ctx.strokeStyle = "rgba(0, 122, 255, 0.15)";
         ctx.lineWidth = 1;
         ctx.setLineDash([5, 5]);
@@ -373,8 +368,6 @@ export function VirusProtocolDemo() {
         ctx.moveTo(p.x, p.y);
         ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
         ctx.stroke();
-        ctx.setLineDash([]);
-
         // Crosshair reticle
         ctx.strokeStyle = "rgba(0, 122, 255, 0.8)";
         ctx.lineWidth = 2;
@@ -383,27 +376,25 @@ export function VirusProtocolDemo() {
         ctx.stroke();
 
         ctx.restore(); // End screen shake translation
-    };
-
-    // --- Main Game Loop (Business Logic) ---
+        ctx.restore(); // End DPR scale
+    };// --- Main Game Engine ---
     const updateGame = (time: number) => {
-        // Stop updating logic if not playing (Stale closure fix internally uses stateRef)
         if (stateRef.current !== 'playing') {
             reqFrameRef.current = requestAnimationFrame(updateGame);
             return;
         }
 
         let dt = time - lastFrameTimeRef.current;
-        if (dt > 100) dt = 16; // Prevent huge jumps if tab inactive
+        if (dt > 100) dt = 16;
         lastFrameTimeRef.current = time;
-        const timeScale = dt / 16.66; // Normalize to 60fps
+        const timeScale = dt / 16.66;
 
         const waveInfo = WAVES[playerRef.current.wave];
-        if (!waveInfo) return; // Should not happen, victory triggers before
+        if (!waveInfo) return;
 
         const p = playerRef.current;
 
-        // 1. Player Movement System
+        // Player Movement
         const keys = keysRef.current;
         let dx = 0, dy = 0;
         if (keys['KeyW'] || keys['ArrowUp']) dy -= 1;
@@ -418,32 +409,28 @@ export function VirusProtocolDemo() {
 
         p.x += dx * PLAYER_SPEED * timeScale;
         p.y += dy * PLAYER_SPEED * timeScale;
-
-        // Clamp to Bounds
         p.x = Math.max(PLAYER_RADIUS, Math.min(boundsRef.current.width - PLAYER_RADIUS, p.x));
         p.y = Math.max(PLAYER_RADIUS, Math.min(boundsRef.current.height - PLAYER_RADIUS, p.y));
 
-        // 2. Actions
         if (mouseRef.current.down) fireWeapon();
 
-        // 3. Bullets Physics
+        // Bullets Physic
         for (let i = bulletsRef.current.length - 1; i >= 0; i--) {
             const b = bulletsRef.current[i];
             if (!b) continue;
             b.x += b.vx * timeScale;
             b.y += b.vy * timeScale;
 
-            // Remove offscreen padding
-            const pad = 20;
+            // Remove offscreen padding (increased pad size for smooth resize behavior)
+            const pad = 100;
             if (b.x < -pad || b.x > boundsRef.current.width + pad || b.y < -pad || b.y > boundsRef.current.height + pad) {
                 bulletsRef.current.splice(i, 1);
             }
         }
 
-        // 4. Wave Spawning
+        // Wave Spawn
         const wState = waveStateRef.current;
         if (wState.spawned < waveInfo.count) {
-            // Speed up spawn if few enemies on screen
             const dynamicSpawnRate = enemiesRef.current.length < 5 ? waveInfo.spawnRate / 2 : waveInfo.spawnRate;
             if (time - wState.lastSpawn > dynamicSpawnRate) {
                 spawnEnemy(waveInfo);
@@ -451,31 +438,27 @@ export function VirusProtocolDemo() {
             }
         }
 
-        // 5. Item Processing
+        // Items Handling
         for (let i = itemsRef.current.length - 1; i >= 0; i--) {
             const item = itemsRef.current[i];
             if (!item) continue;
             item.life += 1 * timeScale;
 
-            // Pickup?
-            if (Math.hypot(p.x - item.x, p.y - item.y) < PLAYER_RADIUS + 12) {
+            if (Math.hypot(p.x - item.x, p.y - item.y) < PLAYER_RADIUS + 15) {
                 p.hp = Math.min(p.maxHp, p.hp + 20); // Heal 20
-                createParticles(item.x, item.y, "#34C759", 8); // Green burst
+                createParticles(item.x, item.y, "#34C759", 8);
                 itemsRef.current.splice(i, 1);
                 continue;
             }
 
-            if (item.life >= item.maxLife) {
-                itemsRef.current.splice(i, 1);
-            }
+            if (item.life >= item.maxLife) itemsRef.current.splice(i, 1);
         }
 
-        // 6. Enemy Processing & Collisions
+        // Enemy Math
         let pDamage = 0;
         for (let i = enemiesRef.current.length - 1; i >= 0; i--) {
             const e = enemiesRef.current[i];
             if (!e) continue;
-
             // Swarm movement erraticness
             let angleToPlayer = Math.atan2(p.y - e.y, p.x - e.x);
             if (e.type === 'swarm') {
@@ -485,26 +468,28 @@ export function VirusProtocolDemo() {
             e.x += Math.cos(angleToPlayer) * e.speed * timeScale;
             e.y += Math.sin(angleToPlayer) * e.speed * timeScale;
 
+            // Padding zone logic: If window shrinks, warp enemy closer to bounds to avoid stuck off-screen
+            const enemyPad = 80;
+            if (e.x < -enemyPad) e.x = -enemyPad;
+            if (e.x > boundsRef.current.width + enemyPad) e.x = boundsRef.current.width + enemyPad;
+            if (e.y < -enemyPad) e.y = -enemyPad;
+            if (e.y > boundsRef.current.height + enemyPad) e.y = boundsRef.current.height + enemyPad;
+
             // Player Collision (Damage)
             if (Math.hypot(p.x - e.x, p.y - e.y) < PLAYER_RADIUS + e.radius) {
                 const dmgMod = e.type === 'boss' ? 5 : e.type === 'tank' ? 2 : e.type === 'swarm' ? 0.3 : 1;
                 pDamage += dmgMod * timeScale;
-                // Pushback player slightly
                 p.x -= Math.cos(angleToPlayer) * 2;
                 p.y -= Math.sin(angleToPlayer) * 2;
             }
 
-            // Bullet Collision
-            let hit = false;
             for (let j = bulletsRef.current.length - 1; j >= 0; j--) {
                 const b = bulletsRef.current[j];
                 if (!b) continue;
                 if (Math.hypot(b.x - e.x, b.y - e.y) < e.radius + BULLET_RADIUS) {
                     e.hp -= b.damage;
                     createParticles(b.x, b.y, b.color, 4);
-                    bulletsRef.current.splice(j, 1); // delete bullet
-                    hit = true;
-                    // Slightly pushback enemy
+                    bulletsRef.current.splice(j, 1);
                     if (e.type !== 'boss') {
                         e.x += b.vx * 0.1;
                         e.y += b.vy * 0.1;
@@ -513,36 +498,31 @@ export function VirusProtocolDemo() {
             }
 
             if (e.hp <= 0) {
-                // Death explosion
                 const color = e.type === 'fast' ? "#FF9500" : e.type === 'tank' ? "#8A2BE2" : e.type === 'swarm' ? "#FF2D55" : e.type === 'boss' ? "#000000" : "#FF3B30";
                 createParticles(e.x, e.y, color, e.type === 'boss' ? 80 : 15, e.type === 'boss' ? 3 : 1);
-
-                // Score & Drop
                 spawnItem(e.x, e.y);
+
                 const pts = e.type === 'boss' ? 5000 : e.type === 'tank' ? 100 : e.type === 'fast' ? 40 : e.type === 'swarm' ? 10 : 20;
                 p.score += pts;
                 wState.killed++;
 
-                // Screen shake on big kills
                 if (e.type === 'boss' || e.type === 'tank') addShake(e.type === 'boss' ? 30 : 10);
-
                 enemiesRef.current.splice(i, 1);
             }
         }
 
-        // 7. Apply Player Damage & Status
         if (pDamage > 0) {
             p.hp -= pDamage;
             flashDamage();
             if (p.hp <= 0) {
-                stateRef.current = 'gameover'; // Die
+                stateRef.current = 'gameover';
                 syncUI();
                 reqFrameRef.current = requestAnimationFrame(updateGame);
                 return;
             }
         }
 
-        // 8. Particles Update
+        // Particles
         for (let i = particlesRef.current.length - 1; i >= 0; i--) {
             const part = particlesRef.current[i];
             if (!part) continue;
@@ -552,31 +532,25 @@ export function VirusProtocolDemo() {
             if (part.life >= part.maxLife) particlesRef.current.splice(i, 1);
         }
 
-        // 9. Wave System Advancement
+        // Wave Logic
         if (wState.killed >= waveInfo.count) {
             if (p.wave + 1 < WAVES.length) {
-                // Next wave transition
                 stateRef.current = 'story';
                 p.wave++;
                 syncUI();
-
-                setTimeout(() => {
-                    startWaveInternal();
-                }, 3500); // 3.5 sec rest
+                setTimeout(() => { startWaveInternal(); }, 3500);
             } else {
-                // Game beat!
                 stateRef.current = 'victory';
                 syncUI();
             }
         }
 
-        // Render Frame
         if (canvasRef.current) {
             const ctx = canvasRef.current.getContext('2d');
             if (ctx) drawCanvas(ctx);
         }
 
-        syncUI(); // update UI overlay safely
+        syncUI();
         reqFrameRef.current = requestAnimationFrame(updateGame);
     };
 
@@ -587,13 +561,37 @@ export function VirusProtocolDemo() {
         bulletsRef.current = [];
         itemsRef.current = []; // Clear old items maybe or keep them? Clear for cleanliness.
 
+        // Save score at beginning of wave for Retry
+        playerRef.current.waveStartScore = playerRef.current.score;
+
         stateRef.current = 'playing';
         syncUI();
     };
 
     const handleStartClick = () => {
-        // Initial Game Reset
-        playerRef.current = { x: boundsRef.current.width / 2, y: boundsRef.current.height / 2, hp: 100, maxHp: 100, score: 0, wave: 0 };
+        // Initial Game Reset Total
+        playerRef.current = { x: boundsRef.current.width / 2, y: boundsRef.current.height / 2, hp: 100, maxHp: 100, score: 0, wave: 0, waveStartScore: 0 };
+        enemiesRef.current = [];
+        bulletsRef.current = [];
+        particlesRef.current = [];
+        itemsRef.current = [];
+
+        stateRef.current = 'story';
+        // Ensure loop is running exactly once
+        if (reqFrameRef.current) cancelAnimationFrame(reqFrameRef.current);
+        lastFrameTimeRef.current = performance.now();
+        reqFrameRef.current = requestAnimationFrame(updateGame);
+
+        setTimeout(() => {
+            startWaveInternal();
+        }, 3500);
+    };
+
+    const handleRetryPhaseClick = () => {
+        // Restore Player to current wave start (Score back to pre-wave, full HP)
+        playerRef.current.hp = playerRef.current.maxHp;
+        playerRef.current.score = playerRef.current.waveStartScore;
+
         enemiesRef.current = [];
         bulletsRef.current = [];
         particlesRef.current = [];
@@ -602,7 +600,6 @@ export function VirusProtocolDemo() {
         stateRef.current = 'story';
         syncUI();
 
-        // Ensure loop is running exactly once
         if (reqFrameRef.current) cancelAnimationFrame(reqFrameRef.current);
         lastFrameTimeRef.current = performance.now();
         reqFrameRef.current = requestAnimationFrame(updateGame);
@@ -619,7 +616,7 @@ export function VirusProtocolDemo() {
         };
     }, []);
 
-    // Idle static frame drawing
+    // Idle draw
     useEffect(() => {
         if (uiGameState !== 'playing' && canvasRef.current) {
             const ctx = canvasRef.current.getContext('2d');
@@ -628,7 +625,6 @@ export function VirusProtocolDemo() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [uiGameState]);
 
-    // Derived Variables for UI Render
     const activeWave = WAVES[uiWave];
 
     return (
@@ -639,34 +635,33 @@ export function VirusProtocolDemo() {
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
-            style={{ cursor: uiGameState === 'playing' ? 'none' : 'default' }} // hide cursor in-game, use drawn reticle
+            style={{ cursor: uiGameState === 'playing' ? 'none' : 'default' }}
         >
             {/* HTML5 Canvas Surface */}
             <canvas
                 ref={canvasRef}
-                width={boundsRef.current.width}
-                height={boundsRef.current.height}
+                width={boundsRef.current.width * (typeof window !== 'undefined' ? window.devicePixelRatio : 1)}
+                height={boundsRef.current.height * (typeof window !== 'undefined' ? window.devicePixelRatio : 1)}
+                style={{ width: boundsRef.current.width, height: boundsRef.current.height }}
                 className="block absolute inset-0 z-0"
             />
 
-            {/* In-Game HUD Overlays */}
-            {uiGameState === 'playing' && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute top-0 left-0 w-full p-6 flex justify-between items-start pointer-events-none z-10">
-                    {/* Left: Health Core */}
+            {/* In-Game HUDs */}
+            {(uiGameState === 'playing' || uiGameState === 'paused') && (
+                <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-start pointer-events-none z-10">
                     <div className="flex flex-col gap-2">
                         <div className={`backdrop-blur-xl px-4 py-2.5 rounded-2xl border flex items-center gap-3 shadow-sm transition-colors duration-300 ${uiHp < 30 ? 'bg-red-500/10 border-red-500/30' : 'bg-white/80 dark:bg-black/50 border-black/5 dark:border-white/10'}`}>
                             <ShieldAlert size={18} className={uiHp < 30 ? "text-red-500 animate-pulse" : "text-[#007AFF]"} />
                             <div className="w-[140px] h-3 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden shadow-inner relative">
                                 <div
                                     className={`absolute left-0 top-0 bottom-0 transition-all duration-300 ${uiHp < 30 ? 'bg-red-500' : 'bg-[#007AFF]'}`}
-                                    style={{ width: `${uiHp}%` }}
+                                    style={{ width: `${Math.max(0, uiHp)}%` }}
                                 />
                             </div>
-                            <span className={`text-[13px] font-black font-mono w-10 text-right ${uiHp < 30 ? 'text-red-500' : 'text-black/80 dark:text-white/80'}`}>{uiHp}</span>
+                            <span className={`text-[13px] font-black font-mono w-10 text-right ${uiHp < 30 ? 'text-red-500' : 'text-black/80 dark:text-white/80'}`}>{Math.max(0, uiHp)}</span>
                         </div>
                     </div>
 
-                    {/* Right: Wave & Score */}
                     <div className="flex flex-col items-end gap-2">
                         <div className="bg-white/80 dark:bg-black/50 backdrop-blur-xl px-4 py-2 rounded-xl border border-black/5 dark:border-white/10 flex items-center gap-3">
                             <span className="text-[10px] font-bold text-black/40 dark:text-white/40 uppercase tracking-widest">Phase</span>
@@ -677,10 +672,10 @@ export function VirusProtocolDemo() {
                             <span className="text-[15px] font-black text-[#8A2BE2] font-mono">{uiScore.toString().padStart(6, '0')}</span>
                         </div>
                     </div>
-                </motion.div>
+                </div>
             )}
 
-            {/* Menu Screens */}
+            {/* Overlays / Modals */}
             <AnimatePresence mode="wait">
                 {uiGameState === 'menu' && (
                     <motion.div
@@ -694,10 +689,11 @@ export function VirusProtocolDemo() {
                             </div>
                             <h2 className="text-3xl font-black text-black dark:text-white tracking-tight">Virus Protocol</h2>
                             <p className="text-[13px] text-black/60 dark:text-white/60 leading-relaxed font-medium">
-                                Defend the core. Move with <kbd className="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded text-black dark:text-white shadow-sm">WASD</kbd>, aim & shoot with your <kbd className="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded text-black dark:text-white shadow-sm">Mouse</kbd>. Secure all 5 phases.
+                                Defend the core. Move with <kbd className="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded text-black dark:text-white shadow-sm">WASD</kbd>, aim & shoot with your <kbd className="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded text-black dark:text-white shadow-sm">Mouse</kbd>. Secure all 5 phases. <br /><br />
+                                <span className="opacity-70">(Press ESC to Pause)</span>
                             </p>
                             <button
-                                onClick={handleStartClick}
+                                onClick={() => handleStartClick()}
                                 className="mt-5 w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-black dark:bg-white text-white dark:text-black font-bold text-[15px] hover:scale-[1.02] transition-transform active:scale-95 shadow-xl"
                             >
                                 <Play size={16} className="fill-current" /> Initialize Sequence
@@ -717,7 +713,7 @@ export function VirusProtocolDemo() {
                             <h2 className="text-4xl font-black text-white tracking-widest uppercase">
                                 Phase {activeWave.level}
                             </h2>
-                            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-sm">
+                            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-sm shadow-xl">
                                 <h3 className="text-2xl font-bold text-[#FF3B30] mb-3">{activeWave.title}</h3>
                                 <p className="text-white/70 text-sm font-mono leading-relaxed">{activeWave.desc}</p>
                             </div>
@@ -744,11 +740,45 @@ export function VirusProtocolDemo() {
                                 <p className="text-4xl font-black font-mono text-white">{uiScore}</p>
                                 <p className="text-xs text-red-300 mt-2">Died at Phase {activeWave?.level}</p>
                             </div>
+                            <div className="flex gap-3 mt-5 w-full">
+                                <button
+                                    onClick={handleRetryPhaseClick}
+                                    className="flex-1 flex flex-col items-center justify-center gap-1.5 px-4 py-3 rounded-2xl bg-white text-black font-bold text-[14px] hover:bg-gray-200 transition-colors active:scale-95 shadow-lg"
+                                >
+                                    <RotateCcw size={18} strokeWidth={2.5} />
+                                    <span>Retry Phase</span>
+                                </button>
+                                <button
+                                    onClick={handleStartClick}
+                                    className="flex-1 flex flex-col items-center justify-center gap-1.5 px-4 py-3 rounded-2xl bg-red-500/20 text-red-500 font-bold text-[14px] hover:bg-red-500/30 transition-colors active:scale-95 border border-red-500/30"
+                                >
+                                    <ShieldAlert size={18} className="fill-current" />
+                                    <span>Reboot Total</span>
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+
+                {uiGameState === 'paused' && (
+                    <motion.div
+                        key="paused"
+                        initial={{ opacity: 0, backdropFilter: "blur(0px)" }} animate={{ opacity: 1, backdropFilter: "blur(10px)" }} exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-50 flex items-center justify-center bg-black/60"
+                    >
+                        <div className="bg-black/80 border border-white/10 p-10 rounded-[2.5rem] flex flex-col items-center gap-4 shadow-2xl max-w-sm text-center">
+                            <Activity size={48} className="text-[#007AFF] animate-pulse mb-1" />
+                            <h2 className="text-3xl font-black text-white tracking-widest uppercase">[ SYSTEM PAUSED ]</h2>
+                            <p className="text-[13px] text-white/60 font-mono mt-2">Press ESC or click below to resume.</p>
                             <button
-                                onClick={handleStartClick}
-                                className="mt-5 w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-white text-black font-bold text-[15px] hover:bg-gray-200 transition-colors active:scale-95 shadow-lg"
+                                onClick={() => {
+                                    stateRef.current = 'playing';
+                                    lastFrameTimeRef.current = performance.now();
+                                    syncUI();
+                                }}
+                                className="mt-5 w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-[#007AFF] text-white font-bold text-[15px] hover:bg-[#005bb5] transition-colors active:scale-95 shadow-lg shadow-[#007AFF]/20"
                             >
-                                <RotateCcw size={16} strokeWidth={2.5} /> Reboot System
+                                <Play size={16} className="fill-current" /> Resume Operation
                             </button>
                         </div>
                     </motion.div>
@@ -773,7 +803,7 @@ export function VirusProtocolDemo() {
                                 <p className="text-4xl font-black font-mono text-white">{uiScore}</p>
                             </div>
                             <button
-                                onClick={handleStartClick}
+                                onClick={() => handleStartClick()}
                                 className="w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-green-500 text-white font-bold text-[15px] hover:bg-green-600 transition-colors active:scale-95 shadow-lg shadow-green-500/20"
                             >
                                 <Play size={16} className="fill-current" /> Play Again
