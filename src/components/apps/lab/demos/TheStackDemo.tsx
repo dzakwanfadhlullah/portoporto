@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Layers, RotateCcw, AlertTriangle } from "lucide-react";
+import { Layers, RotateCcw, AlertTriangle, Volume2, VolumeX } from "lucide-react";
 
 // --- Constants ---
 const BLOCK_HEIGHT = 24;
@@ -10,6 +10,58 @@ const INITIAL_WIDTH = 200;
 const SPEED_BASE = 4.0;
 const GAME_WIDTH = 800; // logical container width for rendering
 const GAME_HEIGHT = 600;
+
+class SoundEngine {
+    private ctx: AudioContext | null = null;
+    enabled = true;
+    private pitchStep = 0;
+
+    private getCtx(): AudioContext {
+        if (!this.ctx) this.ctx = new AudioContext();
+        return this.ctx;
+    }
+
+    playTone(freq: number, duration: number, type: OscillatorType = "sine", volume = 0.1) {
+        if (!this.enabled) return;
+        try {
+            const ctx = this.getCtx();
+            if (ctx.state === "suspended") ctx.resume();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(volume, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + duration);
+        } catch { /* ignore audio errors */ }
+    }
+
+    resetPitch() { this.pitchStep = 0; }
+
+    place(perfect: boolean) {
+        if (perfect) {
+            // Perfect hit bonus sound
+            [600, 800, 1000].forEach((f, i) => setTimeout(() => this.playTone(f, 0.1, "sine", 0.08), i * 80));
+            this.pitchStep++;
+        } else {
+            // Normal hit sound, escalating pitch
+            const baseFreq = 220 + (this.pitchStep * 15);
+            this.playTone(baseFreq, 0.1, "square", 0.05);
+            setTimeout(() => this.playTone(baseFreq * 1.5, 0.1, "sine", 0.05), 30);
+            this.pitchStep++;
+        }
+    }
+
+    miss() {
+        this.resetPitch();
+        [150, 100].forEach((f, i) => setTimeout(() => this.playTone(f, 0.25, "sawtooth", 0.1), i * 150));
+    }
+}
+
+const sfx = new SoundEngine();
 
 // Pastel gradient colors for layers
 const COLORS = [
@@ -54,6 +106,9 @@ export function TheStackDemo() {
 
     const [blocks, setBlocks] = useState<StackBlock[]>([]);
     const [debris, setDebris] = useState<DebrisBlock[]>([]);
+    const [soundOn, setSoundOn] = useState(true);
+
+    useEffect(() => { sfx.enabled = soundOn; }, [soundOn]);
 
     // Game logic refs
     const activeBlockRef = useRef({ x: GAME_WIDTH / 2 - INITIAL_WIDTH / 2, width: INITIAL_WIDTH, direction: 1 });
@@ -87,6 +142,7 @@ export function TheStackDemo() {
         setIsPlaying(true);
         setIsGameOver(false);
         setScore(0);
+        sfx.resetPitch();
 
         const initialBlock = {
             id: 0,
@@ -143,6 +199,7 @@ export function TheStackDemo() {
                 color: COLORS[stack.length % COLORS.length]!
             };
             setDebris(prev => [...prev, newDebris]);
+            sfx.miss();
             gameOver();
             return;
         }
@@ -194,6 +251,9 @@ export function TheStackDemo() {
             activeBlockRef.current.width = topBlock.width;
             stackRef.current[stackRef.current.length - 1] = placedBlock;
             setBlocks([...stackRef.current]);
+            sfx.place(true);
+        } else {
+            sfx.place(false);
         }
 
     }, [isPlaying, isGameOver, score, bounds]); // score deps slightly tricky but we use ref for stack
@@ -215,14 +275,16 @@ export function TheStackDemo() {
 
     const gameLoop = (time: number) => {
         if (!lastTime.current) lastTime.current = time;
-        const deltaTime = time - lastTime.current;
+        let deltaTime = time - lastTime.current;
+        if (deltaTime > 100) deltaTime = 16;
         lastTime.current = time;
+        const timeScale = deltaTime / 16.66;
 
         const active = activeBlockRef.current;
         const speed = SPEED_BASE + (stackRef.current.length * 0.15);
 
         // Move block
-        active.x += speed * active.direction;
+        active.x += speed * active.direction * timeScale;
 
         // Bounce off walls
         const EDGE_MARGIN = 50;
@@ -284,6 +346,13 @@ export function TheStackDemo() {
                     <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest leading-none">Best</span>
                     <span className="text-xl font-black text-white/90 leading-none mt-1" style={{ fontVariantNumeric: "tabular-nums" }}>{highScore}</span>
                 </div>
+                {/* Volume Button Here */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); setSoundOn(!soundOn); }}
+                    className="absolute top-6 left-1/2 -translate-x-1/2 z-40 px-3 py-2 rounded-full bg-white/5 backdrop-blur-md hover:bg-white/10 border border-white/10 pointer-events-auto transition-colors"
+                >
+                    {soundOn ? <Volume2 size={16} className="text-white/70" /> : <VolumeX size={16} className="text-white/40" />}
+                </button>
                 <div className="flex flex-col items-end bg-white/5 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10">
                     <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest leading-none">Score</span>
                     <span className="text-2xl font-black text-[#ECA1FF] leading-none mt-1" style={{ fontVariantNumeric: "tabular-nums" }}>{score}</span>

@@ -27,7 +27,7 @@ export const projects: Project[] = [
         brand: "Mobile App",
         year: "2026",
         description: "Sophisticated calendar and productivity mobile application with smart scheduling features.",
-        thumbnail: "https://images.unsplash.com/photo-1506784919141-935049915272?w=800&q=80",
+        thumbnail: "/luminacal-logo.png",
         tags: ["React Native", "Mobile", "Productivity"],
     },
     {
@@ -37,7 +37,7 @@ export const projects: Project[] = [
         brand: "Mobile App",
         year: "2026",
         description: "Fitness and workout tracking mobile platform for enthusiasts and professional athletes.",
-        thumbnail: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80",
+        thumbnail: "/liftnode-logo.png",
         tags: ["Mobile", "Health", "Fitness"],
     },
     {
@@ -47,7 +47,7 @@ export const projects: Project[] = [
         brand: "Web Platform",
         year: "2025",
         description: "Comprehensive education management platform connecting students and educators seamlessly.",
-        thumbnail: "https://images.unsplash.com/photo-1523050335191-51ff08820842?w=800&q=80",
+        thumbnail: "/kelas-kampus-logo.png",
         tags: ["React", "UI/UX", "Education"],
     },
     {
@@ -57,7 +57,7 @@ export const projects: Project[] = [
         brand: "Mobile App",
         year: "2025",
         description: "Eco-friendly lifestyle tracking application encouraging sustainable daily habits.",
-        thumbnail: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80",
+        thumbnail: "/verda-logo.png",
         tags: ["Mobile", "Eco", "Sustainability"],
     },
     {
@@ -67,7 +67,7 @@ export const projects: Project[] = [
         brand: "AR Game",
         year: "2025",
         description: "Immersive augmented reality experience focused on forest conservation and education.",
-        thumbnail: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+        thumbnail: "/ar-guardian-forest-logo.png",
         tags: ["AR", "Game Design", "3D Assets"],
     },
 ];

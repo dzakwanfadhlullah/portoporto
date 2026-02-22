@@ -57,7 +57,7 @@ export const ProjectTableView = ({ projects }: ProjectTableViewProps) => {
                                     src={project.thumbnail}
                                     alt={project.name}
                                     fill
-                                    className="object-cover"
+                                    className="object-contain p-1"
                                 />
                             </div>
                             <h3 className="text-[14px] font-bold text-black/90 truncate">

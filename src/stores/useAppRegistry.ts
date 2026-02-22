@@ -66,6 +66,14 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
         resizable: true,
         draggable: true,
     },
+    photobooth: {
+        minWidth: 640,
+        minHeight: 480,
+        defaultWidth: 800,
+        defaultHeight: 600,
+        resizable: true,
+        draggable: true,
+    },
 };
 
 // ─── Lazy component loaders ──────────────────────────────────────────────────
@@ -85,6 +93,9 @@ const LeadershipApp = lazy(
 );
 const MusicApp = lazy(
     () => import("@/components/apps/music/MusicApp")
+);
+const PhotoBoothApp = lazy(
+    () => import("@/components/apps/photobooth/PhotoBoothApp")
 );
 
 // ─── App Registry ────────────────────────────────────────────────────────────
@@ -148,6 +159,20 @@ const appRegistry = new Map<AppId, AppMetadata>([
             defaultWindowConfig: defaultConfigs.contact,
             dockOrder: 5,
             desktopPosition: { row: 2, col: 0 },
+        },
+    ],
+    [
+        "photobooth",
+        {
+            id: "photobooth",
+            name: "Photo Booth",
+            // Reference image uses a camera lens look, let's use lucide icon with style for now
+            // or we could use the icon config with char for a fallback or image if one exists
+            iconConfig: { char: "📷", style: "symbol", color: "#FF3B30", scale: 1.2 },
+            component: PhotoBoothApp,
+            defaultWindowConfig: defaultConfigs.photobooth,
+            dockOrder: 6,
+            desktopPosition: { row: 2, col: 1 },
         },
     ],
     [

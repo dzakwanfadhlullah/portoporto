@@ -11,7 +11,8 @@ export type AppId =
     | "lab"
     | "leadership"
     | "contact"
-    | "project-detail";
+    | "project-detail"
+    | "photobooth";
 
 /** Desktop grid position for icon placement */
 export interface DesktopPosition {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Rocket, Bug, RotateCcw } from "lucide-react";
+import { Rocket, Bug, RotateCcw, Volume2, VolumeX } from "lucide-react";
 
 // --- Types & Constants ---
 const GRAVITY = 0.6;
@@ -11,6 +11,40 @@ const OBSTACLE_SPEED = 5;
 const SPAWN_RATE = 1500; // ms
 const DINO_SIZE = 40;
 const OBSTACLE_SIZE = 30;
+
+class SoundEngine {
+    private ctx: AudioContext | null = null;
+    enabled = true;
+
+    private getCtx(): AudioContext {
+        if (!this.ctx) this.ctx = new AudioContext();
+        return this.ctx;
+    }
+
+    playTone(freq: number, duration: number, type: OscillatorType = "sine", volume = 0.1) {
+        if (!this.enabled) return;
+        try {
+            const ctx = this.getCtx();
+            if (ctx.state === "suspended") ctx.resume();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(volume, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + duration);
+        } catch { /* ignore audio errors */ }
+    }
+
+    jump() { this.playTone(300, 0.1, "sine", 0.08); setTimeout(() => this.playTone(400, 0.15, "sine", 0.08), 50); }
+    score() { this.playTone(800, 0.05, "square", 0.05); }
+    crash() { [150, 120, 90].forEach((f, i) => setTimeout(() => this.playTone(f, 0.2, "sawtooth", 0.15), i * 150)); }
+}
+
+const sfx = new SoundEngine();
 
 interface Obstacle {
     id: number;
@@ -23,6 +57,7 @@ export function AppleRunnerDemo() {
     const [isGameOver, setIsGameOver] = useState(false);
     const [score, setScore] = useState(0);
     const [highScore, setHighScore] = useState(0);
+    const [soundOn, setSoundOn] = useState(true);
 
     const [bounds, setBounds] = useState({ width: 800, height: 400 });
     const boundsRef = useRef({ width: 800, height: 400 });
@@ -33,6 +68,7 @@ export function AppleRunnerDemo() {
     const obstacles = useRef<Obstacle[]>([]);
     const lastTime = useRef<number>(0);
     const lastSpawn = useRef<number>(0);
+    const currentSpawnDelay = useRef<number>(1500);
     const scoreRef = useRef(0);
     const requestRef = useRef<number>(0);
 
@@ -40,6 +76,8 @@ export function AppleRunnerDemo() {
     const dinoElem = useRef<HTMLDivElement>(null);
     const containerElem = useRef<HTMLDivElement>(null);
     const scoreElem = useRef<HTMLDivElement>(null);
+
+    useEffect(() => { sfx.enabled = soundOn; }, [soundOn]);
 
     useEffect(() => {
         if (containerElem.current) {
@@ -72,8 +110,9 @@ export function AppleRunnerDemo() {
         if (isGameOver) return;
 
         // Allow jumping only if on the ground
-        if (dinoY.current >= getGroundY()) {
+        if (dinoY.current >= getGroundY() - 1) {
             velocity.current = JUMP_VELOCITY;
+            sfx.jump();
         }
     }, [isPlaying, isGameOver]);
 
@@ -98,6 +137,7 @@ export function AppleRunnerDemo() {
         obstacles.current = [];
         lastTime.current = performance.now();
         lastSpawn.current = performance.now();
+        currentSpawnDelay.current = SPAWN_RATE + Math.random() * 1000 - 500;
 
         requestRef.current = requestAnimationFrame(gameLoop);
     };
@@ -108,18 +148,21 @@ export function AppleRunnerDemo() {
         if (scoreRef.current > highScore) {
             setHighScore(Math.floor(scoreRef.current));
         }
+        sfx.crash();
         if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
 
     const gameLoop = (time: number) => {
         if (!lastTime.current) lastTime.current = time;
-        const deltaTime = time - lastTime.current;
+        let deltaTime = time - lastTime.current;
+        if (deltaTime > 100) deltaTime = 16;
         lastTime.current = time;
+        const timeScale = deltaTime / 16.66;
 
         // --- Physics ---
         const groundY = getGroundY();
-        velocity.current += GRAVITY;
-        dinoY.current += velocity.current;
+        velocity.current += GRAVITY * timeScale;
+        dinoY.current += velocity.current * timeScale;
 
         // Ground collision
         if (dinoY.current > groundY) {
@@ -129,13 +172,14 @@ export function AppleRunnerDemo() {
 
         // --- Obstacles Manager ---
         // Spawn
-        if (time - lastSpawn.current > SPAWN_RATE + Math.random() * 1000 - 500) {
+        if (time - lastSpawn.current > currentSpawnDelay.current) {
             obstacles.current.push({
                 id: Math.random(),
                 x: boundsRef.current.width + 50, // Spawn offscreen right
                 passed: false
             });
             lastSpawn.current = time;
+            currentSpawnDelay.current = SPAWN_RATE + Math.random() * 1000 - 500;
         }
 
         // Move & Collide
@@ -143,13 +187,14 @@ export function AppleRunnerDemo() {
         for (let i = 0; i < obstacles.current.length; i++) {
             const obs = obstacles.current[i];
             if (!obs) continue;
-            obs.x -= OBSTACLE_SPEED * speedMultiplier;
+            obs.x -= OBSTACLE_SPEED * speedMultiplier * timeScale;
 
             // Score increment
             if (!obs.passed && obs.x < 50) { // 50 is player X position
                 obs.passed = true;
                 scoreRef.current += 10;
                 setScore(Math.floor(scoreRef.current));
+                sfx.score();
             }
 
             // Collision Detection (AABB)
@@ -238,6 +283,13 @@ export function AppleRunnerDemo() {
                     <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">High Score</span>
                     <span className="text-xl font-black text-black/80" style={{ fontVariantNumeric: "tabular-nums" }}>{highScore.toString().padStart(5, '0')}</span>
                 </div>
+                {/* Volume Button Here */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); setSoundOn(!soundOn); }}
+                    className="absolute top-4 left-1/2 -translate-x-1/2 z-30 p-2 rounded-full bg-black/5 hover:bg-black/10 transition-colors"
+                >
+                    {soundOn ? <Volume2 size={16} className="text-black/50" /> : <VolumeX size={16} className="text-black/30" />}
+                </button>
                 <div className="flex flex-col items-end">
                     <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Score</span>
                     <span ref={scoreElem} className="text-xl font-black text-blue-500" style={{ fontVariantNumeric: "tabular-nums" }}>00000</span>

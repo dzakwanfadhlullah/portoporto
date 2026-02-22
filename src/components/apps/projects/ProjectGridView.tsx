@@ -35,7 +35,7 @@ export const ProjectGridView = ({ projects }: ProjectGridViewProps) => {
                             src={project.thumbnail}
                             alt={project.name}
                             fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                            className="object-contain p-6 group-hover:scale-110 transition-transform duration-500"
                         />
                         <div className="absolute top-3 right-3">
                             <span className="px-2 py-1 bg-background/80 backdrop-blur-md rounded-md text-[10px] font-mono tracking-tighter border border-border/20 shadow-sm">

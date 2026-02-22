@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Command, RotateCcw, AlertTriangle } from "lucide-react";
+import { Command, RotateCcw, AlertTriangle, Volume2, VolumeX } from "lucide-react";
 
 // --- Constants ---
 const GRAVITY = 0.5;
@@ -14,6 +14,40 @@ const GAP_SIZE = 160;
 const PLAYER_SIZE = 36;
 const GAME_WIDTH = 800; // logical width for spawning
 const GAME_HEIGHT = 600;
+
+class SoundEngine {
+    private ctx: AudioContext | null = null;
+    enabled = true;
+
+    private getCtx(): AudioContext {
+        if (!this.ctx) this.ctx = new AudioContext();
+        return this.ctx;
+    }
+
+    playTone(freq: number, duration: number, type: OscillatorType = "sine", volume = 0.1) {
+        if (!this.enabled) return;
+        try {
+            const ctx = this.getCtx();
+            if (ctx.state === "suspended") ctx.resume();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(volume, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + duration);
+        } catch { /* ignore audio errors */ }
+    }
+
+    jump() { this.playTone(400, 0.1, "sine", 0.05); setTimeout(() => this.playTone(600, 0.15, "sine", 0.05), 50); }
+    score() { this.playTone(800, 0.05, "square", 0.05); }
+    crash() { [150, 120, 90].forEach((f, i) => setTimeout(() => this.playTone(f, 0.2, "sawtooth", 0.15), i * 150)); }
+}
+
+const sfx = new SoundEngine();
 
 interface PipeData {
     id: number;
@@ -27,6 +61,9 @@ export function OrbitFlapDemo() {
     const [isGameOver, setIsGameOver] = useState(false);
     const [score, setScore] = useState(0);
     const [highScore, setHighScore] = useState(0);
+    const [soundOn, setSoundOn] = useState(true);
+
+    useEffect(() => { sfx.enabled = soundOn; }, [soundOn]);
 
     // Refs for game loop
     const playerY = useRef(GAME_HEIGHT / 2);
@@ -75,6 +112,7 @@ export function OrbitFlapDemo() {
         if (isGameOver) return;
 
         velocity.current = JUMP_VELOCITY;
+        sfx.jump();
     }, [isPlaying, isGameOver]);
 
     useEffect(() => {
@@ -108,6 +146,7 @@ export function OrbitFlapDemo() {
         if (scoreRef.current > highScore) {
             setHighScore(scoreRef.current);
         }
+        sfx.crash();
         if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
 
@@ -127,12 +166,14 @@ export function OrbitFlapDemo() {
 
     const gameLoop = (time: number) => {
         if (!lastTime.current) lastTime.current = time;
-        // const deltaTime = time - lastTime.current;
+        let deltaTime = time - lastTime.current;
+        if (deltaTime > 100) deltaTime = 16;
         lastTime.current = time;
+        const timeScale = deltaTime / 16.66;
 
         // Player physics
-        velocity.current += GRAVITY;
-        playerY.current += velocity.current;
+        velocity.current += GRAVITY * timeScale;
+        playerY.current += velocity.current * timeScale;
 
         // Floor / Ceiling collision
         if (playerY.current > boundsRef.current.height - PLAYER_SIZE || playerY.current < 0) {
@@ -152,13 +193,14 @@ export function OrbitFlapDemo() {
             const pipe = pipes.current[i];
             if (!pipe) continue;
 
-            pipe.x -= PIPE_SPEED;
+            pipe.x -= PIPE_SPEED * timeScale;
 
             // Scoring
             if (!pipe.passed && pipe.x < PLAYER_X - PIPE_WIDTH) {
                 pipe.passed = true;
                 scoreRef.current += 1;
                 setScore(scoreRef.current);
+                sfx.score();
             }
 
             // AABB Collision Detect
@@ -251,6 +293,13 @@ export function OrbitFlapDemo() {
                     <span className="text-[10px] font-bold text-black/50 dark:text-white/60 uppercase tracking-widest leading-none">Best</span>
                     <span className="text-xl font-black text-black/90 dark:text-white/90 leading-none mt-1" style={{ fontVariantNumeric: "tabular-nums" }}>{highScore}</span>
                 </div>
+                {/* Volume Button Here */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); setSoundOn(!soundOn); }}
+                    className="absolute top-6 left-1/2 -translate-x-1/2 z-30 p-2 rounded-full bg-white/30 dark:bg-white/10 backdrop-blur-md hover:bg-white/50 dark:hover:bg-white/20 border border-white/20 transition-colors"
+                >
+                    {soundOn ? <Volume2 size={16} className="text-black/70 dark:text-white/70" /> : <VolumeX size={16} className="text-black/40 dark:text-white/40" />}
+                </button>
                 <div className="flex flex-col items-end bg-white/30 dark:bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20">
                     <span className="text-[10px] font-bold text-black/50 dark:text-white/60 uppercase tracking-widest leading-none">Current</span>
                     <span className="text-2xl font-black text-[#FF3B30] leading-none mt-1" style={{ fontVariantNumeric: "tabular-nums" }}>{score}</span>
