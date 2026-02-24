@@ -107,7 +107,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "projects",
             name: "Projects",
-            iconConfig: { image: "/folderapple.png", style: "3d", color: "transparent", scale: 1.1, offsetY: 2 },
+            iconConfig: { image: "/folderapple.png", style: "3d", color: "transparent", scale: 0.95, offsetY: 2 },
             component: ProjectsApp,
             defaultWindowConfig: defaultConfigs.projects,
             dockOrder: 2,
@@ -119,7 +119,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "about",
             name: "About Me",
-            iconConfig: { image: "/profile.png", style: "3d", color: "transparent", scale: 1.45, offsetY: 6 },
+            iconConfig: { image: "/profile.png", style: "3d", color: "transparent", scale: 1.40, offsetY: 5.5 },
             component: AboutApp,
             defaultWindowConfig: defaultConfigs.about,
             dockOrder: 1,
@@ -131,7 +131,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "lab",
             name: "Game Center",
-            iconConfig: { image: "/GameCentersApple.png", style: "3d", color: "transparent", scale: 0.85, offsetY: 4 },
+            iconConfig: { image: "/GameCentersApple.png", style: "3d", color: "transparent", scale: 0.90, offsetY: 3 },
             component: LabApp,
             defaultWindowConfig: defaultConfigs.lab,
             dockOrder: 3,
@@ -143,7 +143,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "leadership",
             name: "Leadership",
-            iconConfig: { image: "/trophyapple.png", style: "3d", color: "transparent", scale: 0.8, offsetY: 5 },
+            iconConfig: { image: "/trophyapple.png", style: "3d", color: "transparent", scale: 0.75, offsetY: 5 },
             component: LeadershipApp,
             defaultWindowConfig: defaultConfigs.leadership,
             dockOrder: 4,
@@ -155,7 +155,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
         {
             id: "contact",
             name: "Music",
-            iconConfig: { image: "/musicapple.png", style: "3d", color: "transparent", scale: 0.9, offsetY: 3 },
+            iconConfig: { image: "/musicapple.png", style: "3d", color: "transparent", scale: 0.90, offsetY: 5 },
             component: MusicApp,
             defaultWindowConfig: defaultConfigs.contact,
             dockOrder: 5,
@@ -169,7 +169,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
             name: "Photo Booth",
             // Reference image uses a camera lens look, let's use lucide icon with style for now
             // or we could use the icon config with char for a fallback or image if one exists
-            iconConfig: { image: "/Photobooth icon.png", style: "3d", color: "transparent", scale: 0.9 },
+            iconConfig: { image: "/Photobooth icon.png", style: "3d", color: "transparent", scale: 0.90, offsetY: 4 },
             component: PhotoBoothApp,
             defaultWindowConfig: defaultConfigs.photobooth,
             dockOrder: 6,
