@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
     Play,
     Pause,
@@ -166,7 +167,7 @@ export default function MusicApp() {
                 {/* ── Sidebar ────────────────────────────────────────── */}
                 <aside className="w-64 bg-[#EBEBEB]/50 border-r border-[#D1D1D1] flex flex-col p-5 h-full">
                     <div className="flex items-center gap-2 mb-8 px-2">
-                        <img src="/musicapple.png" alt="Music" className="w-6 h-6 object-contain" />
+                        <Image src="/musicapple.png" alt="Music" width={24} height={24} className="object-contain" />
                         <span className="font-bold text-lg tracking-tight">Music</span>
                     </div>
 
@@ -206,13 +207,13 @@ export default function MusicApp() {
                             <div className="flex gap-10 mb-12">
                                 <motion.div
                                     layoutId={`cover-${currentSong.id}`}
-                                    className="w-64 h-64 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden flex-shrink-0"
+                                    className="relative w-64 h-64 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden flex-shrink-0"
                                 >
-                                    <img src={currentSong.cover} alt={currentSong.title} className="w-full h-full object-cover" />
+                                    <Image src={currentSong.cover} alt={currentSong.title} fill className="object-cover" unoptimized />
                                 </motion.div>
                                 <div className="flex flex-col justify-end py-2">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <img src="/musicapple.png" alt="Music" className="w-5 h-5 object-contain" />
+                                        <Image src="/musicapple.png" alt="Music" width={20} height={20} className="object-contain" />
                                         <div className="text-[10px] font-bold text-[#FA233B] uppercase tracking-widest">Apple Music</div>
                                     </div>
                                     <h1 className="text-4xl font-bold tracking-tight mb-1">{currentSong.title}</h1>
@@ -324,8 +325,8 @@ export default function MusicApp() {
             <footer className="h-20 bg-white/80 backdrop-blur-xl border-t border-[#D1D1D1] px-6 flex items-center justify-between z-10 rounded-b-2xl">
                 {/* Track Info */}
                 <div className="flex items-center gap-3 w-1/3">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden shadow-lg border border-black/5">
-                        <img src={currentSong.cover} alt="" className="w-full h-full object-cover" />
+                    <div className="relative w-12 h-12 rounded-lg overflow-hidden shadow-lg border border-black/5">
+                        <Image src={currentSong.cover} alt="" fill className="object-cover" unoptimized />
                     </div>
                     <div className="overflow-hidden">
                         <h4 className="text-sm font-bold truncate">{currentSong.title}</h4>

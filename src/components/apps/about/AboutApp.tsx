@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Check } from "lucide-react";
 import { useWindowStore } from "@/stores/useWindowStore";
+import type { WindowId } from "@/types/window";
 
 // ─── Constants & Types ───────────────────────────────────────────────────────
 
@@ -33,10 +34,10 @@ export default function AboutApp() {
     const maximizeWindow = useWindowStore((s) => s.maximizeWindow);
     const restoreWindow = useWindowStore((s) => s.restoreWindow);
 
-    const windowId = Object.keys(windows).find(id => windows[id]?.appId === "about") as any;
+    const windowId = Object.keys(windows).find(id => windows[id]?.appId === "about") as WindowId | undefined;
     const win = windowId ? windows[windowId] : null;
 
-    if (!win) return null;
+    if (!win || !windowId) return null;
 
     return (
         <div className="h-full bg-white flex flex-row overflow-hidden font-sans select-none">
@@ -66,10 +67,7 @@ export default function AboutApp() {
                         <button
                             key={item.id}
                             onClick={(e) => { e.stopPropagation(); setActiveSection(item.id); }}
-                            className={`relative flex items-center px-4 py-1.5 transition-colors duration-200 group text-[13px] font-semibold rounded-md cursor-pointer ${activeSection === item.id
-                                ? "text-black"
-                                : "text-black/50 hover:text-black"
-                                }`}
+                            className={`relative flex items-center px-4 py-1.5 transition-colors duration-200 group text-[13px] font-semibold rounded-md cursor-pointer ${activeSection === item.id ? "text-black" : "text-black/50 hover:text-black"}`}
                         >
                             {activeSection === item.id && (
                                 <motion.div

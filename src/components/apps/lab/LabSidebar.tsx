@@ -8,7 +8,7 @@ export type LabSectionId = "typing" | "blackjack" | "applerunner" | "orbitflap" 
 interface NavItem {
     id: LabSectionId;
     label: string;
-    icon: any;
+    icon: React.ElementType;
 }
 
 const NAV_ITEMS: NavItem[] = [

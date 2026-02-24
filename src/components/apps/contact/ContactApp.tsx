@@ -186,7 +186,7 @@ export default function ContactApp() {
     );
 }
 
-function ContactItem({ icon: Icon, label, value, href }: { icon: any; label: string; value: string; href?: string }) {
+function ContactItem({ icon: Icon, label, value, href }: { icon: React.ElementType; label: string; value: string; href?: string }) {
     const content = (
         <div className="flex items-center gap-4 group cursor-pointer">
             <div className="w-10 h-10 rounded-xl bg-background border border-border/40 flex items-center justify-center text-muted-foreground group-hover:text-[#D26D4D] group-hover:border-[#D26D4D]/20 transition-all shadow-sm">

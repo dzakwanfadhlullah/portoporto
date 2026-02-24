@@ -745,7 +745,7 @@ export function VirusProtocolDemo() {
             const ctx = canvasRef.current.getContext('2d');
             if (ctx) drawCanvas(ctx);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [uiGameState]);
 
     const activeWave = WAVES[uiWave];

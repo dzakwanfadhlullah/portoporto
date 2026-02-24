@@ -3,6 +3,7 @@
 import { createElement, type FC } from "react";
 import { motion } from "framer-motion";
 import { LucideIcon } from "lucide-react";
+import Image from "next/image";
 
 interface AppleIconProps {
     /** The Lucide icon to use for the "symbol" style */
@@ -67,10 +68,12 @@ export const AppleIcon: FC<AppleIconProps> = ({
                 {/* Outer Frame (Polaroid-ish) */}
                 <div className="w-full h-full bg-slate-100 overflow-hidden rounded-[2px] border border-black/10 relative">
                     {image ? (
-                        <img
+                        <Image
                             src={image}
                             alt="Project Thumbnail"
-                            className="w-full h-full object-cover grayscale-[0.1] contrast-[1.05]"
+                            fill
+                            unoptimized
+                            className="object-cover grayscale-[0.1] contrast-[1.05]"
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-slate-200">
@@ -140,14 +143,15 @@ export const AppleIcon: FC<AppleIconProps> = ({
             {/* Glyph / Emoji / Icon / Image Content */}
             <div className="relative z-10 select-none flex items-center justify-center w-full h-full text-white">
                 {image && color === "transparent" ? (
-                    <img
-                        src={image}
-                        alt="Icon"
-                        className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)]"
-                        style={{
-                            transform: `scale(${scale ?? 1.45}) translateY(${offsetY ?? 4}px)`,
-                        }}
-                    />
+                    <div className="relative w-full h-full" style={{ transform: `scale(${scale ?? 1.45}) translateY(${offsetY ?? 4}px)` }}>
+                        <Image
+                            src={image}
+                            alt="Icon"
+                            fill
+                            unoptimized
+                            className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)]"
+                        />
+                    </div>
                 ) : image ? (
                     // If image is used as background in 3D style, we don't necessarily need a child 
                     null

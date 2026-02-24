@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Keyboard, Spade, Rocket, Circle, Layers } from "lucide-react";
+import { Keyboard, Spade } from "lucide-react";
 import { useState } from "react";
 import { TypingTestDemo } from "./demos/TypingTestDemo";
 import { BlackjackDemo } from "./demos/BlackjackDemo";
@@ -75,7 +75,7 @@ export default function LabApp() {
     );
 }
 
-function DemoContainer({ title, icon: Icon, children, className }: { title: string; icon: any; children: React.ReactNode, className?: string }) {
+function DemoContainer({ title, icon: Icon, children, className }: { title: string; icon: React.ElementType; children: React.ReactNode, className?: string }) {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}

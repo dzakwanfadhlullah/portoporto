@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { createElement, lazy } from "react";
+import { createElement } from "react";
+import dynamic from "next/dynamic";
 import { AppleIcon } from "@/components/os/AppleIcon";
 
 import type { AppId, AppMetadata } from "@/types/app";
@@ -80,22 +81,22 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
 // We use dynamic imports so app bundles are code-split automatically.
 // The `component` field stores a lazy-loaded React component.
 
-const ProjectsApp = lazy(
-    () => import("@/components/apps/projects/ProjectsApp")
+const ProjectsApp = dynamic(
+    () => import("@/components/apps/projects/ProjectsApp"), { ssr: false }
 );
-const ProjectDetail = lazy(
-    () => import("@/components/apps/projects/ProjectDetail")
+const ProjectDetail = dynamic(
+    () => import("@/components/apps/projects/ProjectDetail"), { ssr: false }
 );
-const AboutApp = lazy(() => import("@/components/apps/about/AboutApp"));
-const LabApp = lazy(() => import("@/components/apps/lab/LabApp"));
-const LeadershipApp = lazy(
-    () => import("@/components/apps/leadership/LeadershipApp")
+const AboutApp = dynamic(() => import("@/components/apps/about/AboutApp"), { ssr: false });
+const LabApp = dynamic(() => import("@/components/apps/lab/LabApp"), { ssr: false });
+const LeadershipApp = dynamic(
+    () => import("@/components/apps/leadership/LeadershipApp"), { ssr: false }
 );
-const MusicApp = lazy(
-    () => import("@/components/apps/music/MusicApp")
+const MusicApp = dynamic(
+    () => import("@/components/apps/music/MusicApp"), { ssr: false }
 );
-const PhotoBoothApp = lazy(
-    () => import("@/components/apps/photobooth/PhotoBoothApp")
+const PhotoBoothApp = dynamic(
+    () => import("@/components/apps/photobooth/PhotoBoothApp"), { ssr: false }
 );
 
 // ─── App Registry ────────────────────────────────────────────────────────────

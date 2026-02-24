@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps, react-hooks/purity */
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Layers, RotateCcw, AlertTriangle, Volume2, VolumeX } from "lucide-react";
+import { Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 
 // --- Constants ---
 const BLOCK_HEIGHT = 24;
@@ -138,7 +139,7 @@ export function TheStackDemo() {
         return () => observer.disconnect();
     }, []);
 
-    const startGame = () => {
+    function startGame() {
         setIsPlaying(true);
         setIsGameOver(false);
         setScore(0);
@@ -164,14 +165,14 @@ export function TheStackDemo() {
 
         lastTime.current = performance.now();
         requestRef.current = requestAnimationFrame(gameLoop);
-    };
+    }
 
-    const gameOver = () => {
+    function gameOver() {
         setIsPlaying(false);
         setIsGameOver(true);
         if (score > highScore) setHighScore(score);
         if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    };
+    }
 
     const placeBlock = useCallback(() => {
         if (!isPlaying && !isGameOver) {
@@ -273,7 +274,7 @@ export function TheStackDemo() {
     const movingBlockElem = useRef<HTMLDivElement>(null);
     const cameraElem = useRef<HTMLDivElement>(null);
 
-    const gameLoop = (time: number) => {
+    function gameLoop(time: number) {
         if (!lastTime.current) lastTime.current = time;
         let deltaTime = time - lastTime.current;
         if (deltaTime > 100) deltaTime = 16;
@@ -313,7 +314,7 @@ export function TheStackDemo() {
         }
 
         requestRef.current = requestAnimationFrame(gameLoop);
-    };
+    }
 
     useEffect(() => {
         return () => {

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useCamera } from "./useCamera";
 import { LayoutGrid, Camera, Video, Image as ImageIcon, StopCircle } from "lucide-react";
 
@@ -101,11 +102,13 @@ export default function PhotoBoothApp() {
                 />
 
                 {snapshot && (
-                    <img
+                    <Image
                         src={snapshot}
                         alt="Snapshot"
+                        fill
+                        unoptimized
                         style={{ filter: currentFilter }}
-                        className="absolute inset-0 w-full h-full object-cover z-10 animate-in fade-in zoom-in-95 duration-200"
+                        className="absolute inset-0 object-cover z-10 animate-in fade-in zoom-in-95 duration-200"
                     />
                 )}
             </div>
