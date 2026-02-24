@@ -647,16 +647,21 @@ function PlayingCard({ card, index, small }: { card: Card; index: number; small?
                 className="absolute inset-0 rounded-lg bg-white border border-black/10 flex flex-col justify-between shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
                 style={{ backfaceVisibility: "hidden", padding: small ? 3 : 6 }}
             >
-                <div className="flex flex-col items-start leading-none">
+                {/* Top Left */}
+                <div className="absolute top-[3px] left-[3px] flex flex-col items-center leading-none" style={{ padding: small ? "2px" : "4px" }}>
                     <span className="font-black" style={{ color: suitColor(card.suit), fontSize: small ? 11 : 14 }}>{card.rank}</span>
-                    <span style={{ color: suitColor(card.suit), fontSize: small ? 9 : 12 }}>{card.suit}</span>
+                    <span style={{ color: suitColor(card.suit), fontSize: small ? 9 : 12, marginTop: "-1px" }}>{card.suit}</span>
                 </div>
-                <div className="flex items-center justify-center flex-1">
-                    <span style={{ color: suitColor(card.suit), fontSize: small ? 20 : 28 }}>{card.suit}</span>
+
+                {/* Center */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span style={{ color: suitColor(card.suit), fontSize: small ? 22 : 32 }}>{card.suit}</span>
                 </div>
-                <div className="flex flex-col items-end leading-none rotate-180">
+
+                {/* Bottom Right */}
+                <div className="absolute bottom-[3px] right-[3px] flex flex-col items-center leading-none transform rotate-180" style={{ padding: small ? "2px" : "4px" }}>
                     <span className="font-black" style={{ color: suitColor(card.suit), fontSize: small ? 11 : 14 }}>{card.rank}</span>
-                    <span style={{ color: suitColor(card.suit), fontSize: small ? 9 : 12 }}>{card.suit}</span>
+                    <span style={{ color: suitColor(card.suit), fontSize: small ? 9 : 12, marginTop: "-1px" }}>{card.suit}</span>
                 </div>
             </div>
 
@@ -678,7 +683,7 @@ function PlayingCard({ card, index, small }: { card: Card; index: number; small?
                     backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.1) 5px, rgba(255,255,255,0.1) 10px)",
                 }} />
             </div>
-        </motion.div>
+        </motion.div >
     );
 }
 

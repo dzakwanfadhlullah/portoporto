@@ -705,9 +705,7 @@ export function VirusProtocolDemo() {
         lastFrameTimeRef.current = performance.now();
         reqFrameRef.current = requestAnimationFrame(updateGame);
 
-        setTimeout(() => {
-            startWaveInternal();
-        }, 3500);
+        startWaveInternal();
     };
 
     const handleRetryPhaseClick = () => {
@@ -745,7 +743,7 @@ export function VirusProtocolDemo() {
             const ctx = canvasRef.current.getContext('2d');
             if (ctx) drawCanvas(ctx);
         }
-         
+
     }, [uiGameState]);
 
     const activeWave = WAVES[uiWave];

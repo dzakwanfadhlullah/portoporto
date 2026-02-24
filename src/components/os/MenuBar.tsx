@@ -15,7 +15,6 @@ import type { AppId } from "@/types/app";
 
 const NAV_ITEMS: { label: string; appId: AppId }[] = [
     { label: "Projects", appId: "projects" },
-    { label: "Archive", appId: "lab" },
     { label: "About", appId: "about" },
     { label: "Contact", appId: "contact" },
 ];

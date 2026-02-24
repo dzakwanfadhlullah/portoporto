@@ -169,7 +169,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
             name: "Photo Booth",
             // Reference image uses a camera lens look, let's use lucide icon with style for now
             // or we could use the icon config with char for a fallback or image if one exists
-            iconConfig: { char: "📷", style: "symbol", color: "#FF3B30", scale: 1.2 },
+            iconConfig: { image: "/Photobooth icon.png", style: "3d", color: "transparent", scale: 0.9 },
             component: PhotoBoothApp,
             defaultWindowConfig: defaultConfigs.photobooth,
             dockOrder: 6,

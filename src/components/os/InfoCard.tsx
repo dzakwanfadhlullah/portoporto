@@ -19,12 +19,8 @@ export const InfoCard = () => {
             >
                 {/* Avatar & Basic Info */}
                 <div className="flex items-center gap-5">
-                    <div
-                        className="w-[64px] h-[64px] rounded-full bg-gradient-to-br from-[#00A3FF] to-[#0057FF] flex items-center justify-center overflow-hidden border-2 border-white/20 shadow-lg"
-                    >
-                        {/* High quality avatar style */}
-                        <div className="w-full h-full flex items-center justify-center font-bold text-white text-2xl tracking-tighter shadow-inner">D</div>
-                    </div>
+                    {/* High quality avatar style */}
+                    <img src="/profile.png" alt="Profile" className="w-[64px] h-[64px] object-cover drop-shadow-lg" />
                     <div className="flex flex-col">
                         <span className="text-[19px] font-extrabold text-white/95 leading-tight tracking-[0.01em]">
                             Dzakwan — <span className="font-semibold text-white/50">Frontend Engineer</span>

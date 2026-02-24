@@ -293,7 +293,20 @@ export function TypingTestDemo() {
                                     <span key={index} className={`relative transition-colors duration-75 ${isTyped ? (isCorrect ? "text-black dark:text-white" : "text-red-500 bg-red-500/10 rounded-sm") : "text-black/20 dark:text-white/20"
                                         }`}>
                                         {isCurrent && (
-                                            <motion.span layoutId="cursor" className="absolute left-0 top-[10%] w-[2px] h-[80%] bg-blue-500" animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.8 }} />
+                                            <motion.span
+                                                layoutId="cursor"
+                                                className="absolute left-0 top-[10%] w-[2px] h-[80%] bg-blue-500"
+                                                animate={{ opacity: [1, 0, 1] }}
+                                                transition={{ repeat: Infinity, duration: 0.8 }}
+                                                onLayoutAnimationComplete={() => {
+                                                    // Auto-scroll logic
+                                                    const cursorEl = document.querySelector('[data-typing-cursor="true"]');
+                                                    if (cursorEl) {
+                                                        cursorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                                    }
+                                                }}
+                                                data-typing-cursor="true"
+                                            />
                                         )}
                                         {char}
                                     </span>
