@@ -19,7 +19,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
     { id: "intro", label: "I'm Dzakwan" },
     { id: "offer", label: "What I Offer" },
-    { id: "awards", label: "Awards & Press" },
+    { id: "awards", label: "Awards" },
     { id: "clients", label: "Clients" },
 ];
 
@@ -150,10 +150,9 @@ function IntroView() {
                 <div className="space-y-4">
                     <h3 className="text-[13px] font-bold text-black uppercase opacity-60">Connect</h3>
                     <div className="flex flex-col gap-3">
-                        <TextSocialLink label="Instagram" href="https://instagram.com" />
-                        <TextSocialLink label="X (Twitter)" href="https://twitter.com" />
-                        <TextSocialLink label="LinkedIn" href="https://linkedin.com" />
-                        <TextSocialLink label="GitHub" href="https://github.com" />
+                        <TextSocialLink label="Instagram" href="https://instagram.com/jakwnn" />
+                        <TextSocialLink label="LinkedIn" href="https://www.linkedin.com/in/DzakwanFadhlullah/" />
+                        <TextSocialLink label="GitHub" href="https://github.com/dzakwanfadhlullah" />
                     </div>
                 </div>
             </div>
@@ -221,12 +220,9 @@ function OfferView() {
 function AwardsView() {
     return (
         <div className="w-full">
-            <h2 className="text-[22px] sm:text-[26px] font-bold mb-8 tracking-tight">Awards & Press</h2>
+            <h2 className="text-[22px] sm:text-[26px] font-bold mb-8 tracking-tight">Awards</h2>
             <div className="grid grid-cols-1 gap-1">
-                < AwardItem year="2024" title="Site of the Year" source="Awwwards" />
-                <AwardItem year="2023" title="Design Excellence" source="Behance" />
-                <AwardItem year="2023" title="Mobile App of the month" source="FWA" />
-                <AwardItem year="2022" title="Young Talent Award" source="Adobe" />
+                <AwardItem year="2023" title="UBB National Trading Competition 3.0" source="Universitas Bangka Belitung" />
             </div>
         </div>
     );
@@ -237,7 +233,7 @@ function ClientsView() {
         <div className="w-full">
             <h2 className="text-[22px] sm:text-[26px] font-bold mb-8 tracking-tight">Selected Clients</h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-                {['Apple', 'Stripe', 'Nike', 'Vercel', 'Linear', 'Airbnb'].map(client => (
+                {['PT. Bukit Asam Tbk', 'Kelas Kampus', 'Yayasan Maqdis'].map(client => (
                     <div key={client} className="p-8 rounded-2xl bg-[#F5F5F7] border border-black/5 flex items-center justify-center font-bold text-[18px] text-black/30 grayscale hover:grayscale-0 hover:bg-white hover:shadow-md transition-all">
                         {client}
                     </div>
