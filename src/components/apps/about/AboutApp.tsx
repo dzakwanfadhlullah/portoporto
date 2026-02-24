@@ -112,7 +112,7 @@ function IntroView() {
     return (
         <div className="w-full">
             <h1 className="text-[22px] sm:text-[26px] font-bold tracking-tight leading-snug mb-6">
-                Hello, my name is <span className="text-[#007AFF]">Dzakwan</span> — I&apos;m a <span className="text-[#FF3B30] bg-[#FFF0F0] px-1.5 py-0.5 rounded-md">creative designer.</span>
+                Hello, I&apos;m <span className="text-[#007AFF]">Dzakwan</span> — a <span className="text-[#FF3B30] bg-[#FFF0F0] px-1.5 py-0.5 rounded-md">Front-End & Mobile Developer.</span>
             </h1>
 
             <div className="grid grid-cols-3 gap-3 mb-8">
@@ -135,18 +135,14 @@ function IntroView() {
                     <div className="space-y-2">
                         <h3 className="text-[13px] font-bold text-black uppercase opacity-60">What I Do</h3>
                         <p className="text-[14px] text-black/80 leading-relaxed font-medium">
-                            I craft websites, visual identities, and interactive projects that are both
-                            beautiful and user-friendly. My work focuses on translating complex
-                            ideas into clear, engaging experiences.
+                            I build modern web and mobile applications using Next.js, React, Flutter, and Kotlin. My work focuses on creating high-performance, user-centered digital products with clean architecture and scalable solutions.
                         </p>
                     </div>
 
                     <div className="space-y-2">
                         <h3 className="text-[13px] font-bold text-black uppercase opacity-60">My Approach</h3>
                         <p className="text-[14px] text-black/80 leading-relaxed font-medium">
-                            I believe design should tell a story and solve problems. I start by
-                            understanding the user and project goals, then iterate concepts until I
-                            find the perfect balance of form and function.
+                            I combine UI/UX design with solid engineering. I start with structured design in Figma, then implement responsive and maintainable applications optimized for real-world performance.
                         </p>
                     </div>
                 </div>
