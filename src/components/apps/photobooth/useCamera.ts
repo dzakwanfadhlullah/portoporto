@@ -7,7 +7,7 @@ interface UseCameraContext {
     isRecording: boolean;
     startCamera: () => Promise<void>;
     stopCamera: () => void;
-    takePhoto: (videoRef: React.RefObject<HTMLVideoElement | null>) => string | null;
+    takePhoto: (videoRef: React.RefObject<HTMLVideoElement | null>, effectFilter?: string) => string | null;
     startRecording: () => void;
     stopRecording: () => Promise<string | null>;
     saveToLocal: (dataUrl: string, type: "photo" | "video") => void;
@@ -65,7 +65,7 @@ export function useCamera(): UseCameraContext {
     }, [isInitializing]);
 
     // Draw video frame to canvas to get a data URL base64 image
-    const takePhoto = useCallback((videoRef: React.RefObject<HTMLVideoElement | null>): string | null => {
+    const takePhoto = useCallback((videoRef: React.RefObject<HTMLVideoElement | null>, effectFilter?: string): string | null => {
         if (!videoRef.current || !stream) return null;
 
         const video = videoRef.current;
@@ -77,6 +77,11 @@ export function useCamera(): UseCameraContext {
 
         const ctx = canvas.getContext("2d");
         if (!ctx) return null;
+
+        // Apply external filter if provided and not 'none'
+        if (effectFilter && effectFilter !== 'none') {
+            ctx.filter = effectFilter;
+        }
 
         // Draw the current video frame
         // Photo Booth usually mirrors the video visually, so we might want to mirror the draw too

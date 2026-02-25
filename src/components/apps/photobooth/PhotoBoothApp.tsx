@@ -136,7 +136,7 @@ export default function PhotoBoothApp() {
 
     const handleTakeMedia = async () => {
         if (mode === "photo") {
-            const photoData = takePhoto(videoRef);
+            const photoData = takePhoto(videoRef, currentEffect.filter);
             if (photoData) {
                 setSnapshot(photoData);
                 saveToLocal(photoData, "photo");
