@@ -117,7 +117,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  /* background-attachment: fixed; -> Removed because it breaks on iOS Safari */
 }
 
 @utility safari-chrome {
@@ -175,9 +175,12 @@
   body {
     @apply bg-background text-foreground antialiased grain;
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
     /* System UI stack for that OS feel */
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    /* Remove blue tap highlight on mobile */
   }
 
   ::selection {

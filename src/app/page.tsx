@@ -15,7 +15,21 @@ import {
   Layout
 } from "lucide-react";
 
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { MobileShell } from "@/components/os/mobile/MobileShell";
+
 export default function Home() {
+  const isMobile = useIsMobile(768);
+
+  // If mobile, bypass the Safari frame and render the Mobile Shell directly
+  if (isMobile) {
+    return (
+      <main className="w-[100dvw] h-[100dvh] overflow-hidden bg-black text-white">
+        <MobileShell />
+      </main>
+    );
+  }
+
   return (
     <main className="relative h-screen w-screen overflow-hidden flex items-center justify-center bg-[#E5E5E5]">
       {/* ── Studio Background ────────────────────────────────────────── */}
