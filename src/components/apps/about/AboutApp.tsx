@@ -120,11 +120,12 @@ function IntroView() {
                     <div key={i} className="aspect-square relative rounded-xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
                         <div className="absolute inset-0 flex items-center justify-center text-black/10 text-[10px] font-bold uppercase">Portrait {i}</div>
                         <Image
-                            src={`https://images.unsplash.com/photo-${i === 1 ? '1534528741775-53994a69daeb' : i === 2 ? '1506794778202-cad84cf45f1d' : '1507003211169-0a1dd7228f2d'}?w=400&h=533&q=80&fit=crop`}
-                            alt="About image"
+                            src={`/assets/images/about/portrait-${i}.jpg`}
+                            alt={`Dzakwan Portrait ${i}`}
                             fill
                             className="object-cover relative z-10"
                             sizes="(max-width: 1024px) 30vw, 250px"
+                            priority={i === 1}
                         />
                     </div>
                 ))}
