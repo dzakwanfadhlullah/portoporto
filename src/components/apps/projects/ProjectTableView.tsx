@@ -14,9 +14,9 @@ export const ProjectTableView = ({ projects }: ProjectTableViewProps) => {
     const handleOpenDetail = (project: Project) => {
         openWindow(
             "project-detail",
-            `Project: ${project.name}`,
-            1024,
-            720,
+            `Information about: ${project.name}`,
+            360,
+            520,
             { projectId: project.id }
         );
     };
