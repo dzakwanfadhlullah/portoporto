@@ -230,13 +230,30 @@ function AwardsView() {
 }
 
 function ClientsView() {
+    const clients = [
+        { name: 'PT. Bukit Asam Tbk', logo: '/bukit-asam-logo.png' },
+        { name: 'Kelas Kampus', logo: '/kelas-kampus-clean.png' },
+        { name: 'Yayasan Maqdis', logo: '/maqdis-logo.png' }
+    ];
+
     return (
         <div className="w-full">
-            <h2 className="text-[22px] sm:text-[26px] font-bold mb-8 tracking-tight">Selected Clients</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-                {['PT. Bukit Asam Tbk', 'Kelas Kampus', 'Yayasan Maqdis'].map(client => (
-                    <div key={client} className="p-8 rounded-2xl bg-[#F5F5F7] border border-black/5 flex items-center justify-center font-bold text-[18px] text-black/30 grayscale hover:grayscale-0 hover:bg-white hover:shadow-md transition-all">
-                        {client}
+            <h2 className="text-[22px] sm:text-[26px] font-bold mb-6 tracking-tight">Selected Clients</h2>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-5">
+                {clients.map((client) => (
+                    <div
+                        key={client.name}
+                        className="relative w-full aspect-[4/3] rounded-2xl bg-[#F5F5F7] border border-black/5 flex items-center justify-center p-6 group transition-all duration-300 hover:bg-white hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:-translate-y-0.5"
+                    >
+                        <div className="relative w-full h-full opacity-50 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-300">
+                            <Image
+                                src={client.logo}
+                                alt={`${client.name} Logo`}
+                                fill
+                                className="object-contain"
+                                sizes="(max-width: 1024px) 50vw, 33vw"
+                            />
+                        </div>
                     </div>
                 ))}
             </div>

@@ -159,7 +159,13 @@ export const Dock = () => {
                    border border-white/30 shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
             >
                 {dockApps.map((app, i) => (
-                    <DockIcon key={app.id} appId={app.id} mouseX={mouseX} index={i} />
+                    <div key={app.id} className="flex items-end gap-2">
+                        <DockIcon appId={app.id} mouseX={mouseX} index={i} />
+                        {/* Natural Divider after Projects (index 1) */}
+                        {app.id === "projects" && (
+                            <div className="w-[1px] h-[36px] bg-gradient-to-b from-white/10 via-white/30 to-white/10 mx-0.5 self-center rounded-full" />
+                        )}
+                    </div>
                 ))}
             </div>
         </motion.div>

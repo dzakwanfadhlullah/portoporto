@@ -9,7 +9,6 @@ export type AppId =
     | "projects"
     | "about"
     | "lab"
-    | "leadership"
     | "contact"
     | "project-detail"
     | "photobooth";

@@ -43,14 +43,6 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
         resizable: true,
         draggable: true,
     },
-    leadership: {
-        minWidth: 480,
-        minHeight: 400,
-        defaultWidth: 700,
-        defaultHeight: 520,
-        resizable: true,
-        draggable: true,
-    },
     contact: {
         minWidth: 720,
         minHeight: 500,
@@ -89,9 +81,6 @@ const ProjectDetail = dynamic(
 );
 const AboutApp = dynamic(() => import("@/components/apps/about/AboutApp"), { ssr: false });
 const LabApp = dynamic(() => import("@/components/apps/lab/LabApp"), { ssr: false });
-const LeadershipApp = dynamic(
-    () => import("@/components/apps/leadership/LeadershipApp"), { ssr: false }
-);
 const MusicApp = dynamic(
     () => import("@/components/apps/music/MusicApp"), { ssr: false }
 );
@@ -139,18 +128,6 @@ const appRegistry = new Map<AppId, AppMetadata>([
         },
     ],
     [
-        "leadership",
-        {
-            id: "leadership",
-            name: "Leadership",
-            iconConfig: { image: "/trophyapple.png", style: "3d", color: "transparent", scale: 0.75, offsetY: 5 },
-            component: LeadershipApp,
-            defaultWindowConfig: defaultConfigs.leadership,
-            dockOrder: 4,
-            desktopPosition: { row: 1, col: 1 },
-        },
-    ],
-    [
         "contact",
         {
             id: "contact",
@@ -159,7 +136,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
             component: MusicApp,
             defaultWindowConfig: defaultConfigs.contact,
             dockOrder: 5,
-            desktopPosition: { row: 2, col: 0 },
+            desktopPosition: { row: 1, col: 1 },
         },
     ],
     [
@@ -173,7 +150,7 @@ const appRegistry = new Map<AppId, AppMetadata>([
             component: PhotoBoothApp,
             defaultWindowConfig: defaultConfigs.photobooth,
             dockOrder: 6,
-            desktopPosition: { row: 2, col: 1 },
+            desktopPosition: { row: 2, col: 0 },
         },
     ],
     [

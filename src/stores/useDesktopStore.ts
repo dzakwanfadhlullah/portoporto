@@ -48,14 +48,9 @@ const defaultIcons: DesktopIcon[] = [
         position: { x: 0, y: 72 + 130 * 2 },
     },
     {
-        appId: "leadership",
-        label: "KPI Dashboard",
-        position: { x: 120, y: 72 }, // Second column from the right
-    },
-    {
         appId: "contact",
         label: "Music",
-        position: { x: 120, y: 72 + 130 },
+        position: { x: 120, y: 72 }, // Second column from the right
     },
 ];
 
