@@ -50,9 +50,9 @@ export default function ProjectDetail() {
 
             <div className="px-3 pb-3 flex flex-col gap-3 pt-3">
                 {/* Main Description */}
-                <p className="text-[11px] leading-[1.4] font-medium text-black/70 font-sf-pro">
+                <div className="text-[11px] leading-[1.4] font-medium text-black/70 font-sf-pro">
                     {project.description}
-                </p>
+                </div>
 
                 {/* Details Accordion */}
                 <details className="group" open>

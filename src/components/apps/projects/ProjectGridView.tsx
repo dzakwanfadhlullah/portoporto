@@ -55,9 +55,9 @@ export const ProjectGridView = ({ projects }: ProjectGridViewProps) => {
                             </h3>
                         </div>
 
-                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                        <div className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                             {project.description}
-                        </p>
+                        </div>
 
                         <div className="flex flex-wrap gap-1.5 mt-1">
                             {project.tags.map((tag) => (

@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { X, Minus, Maximize2 } from "lucide-react";
+import { useCallback } from "react";
 
 import { useWindowStore } from "@/stores/useWindowStore";
 import type { WindowId } from "@/types/window";
@@ -28,7 +27,7 @@ export const WindowControls = ({
     const maximizeWindow = useWindowStore((s) => s.maximizeWindow);
     const restoreWindow = useWindowStore((s) => s.restoreWindow);
 
-    const [isHovering, setIsHovering] = useState(false);
+
 
     const handleClose = useCallback(
         (e: React.MouseEvent) => {
@@ -66,58 +65,29 @@ export const WindowControls = ({
             {/* ── Traffic Light Buttons ──────────────────────────────────── */}
             <div
                 className="flex items-center gap-[7px]"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
                 // Prevent drag from being triggered by clicking buttons
                 onMouseDown={(e) => e.stopPropagation()}
             >
                 {/* Close */}
                 <button
                     onClick={handleClose}
-                    className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-[#FF4136]
-                     flex items-center justify-center transition-colors duration-100"
+                    className="w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-[#FF4136] transition-colors duration-100"
                     aria-label="Close"
-                >
-                    {isHovering && (
-                        <X
-                            size={8}
-                            strokeWidth={2.5}
-                            className="text-[#4A0002] opacity-0 group-hover:opacity-100 transition-opacity"
-                        />
-                    )}
-                </button>
+                />
 
                 {/* Minimize */}
                 <button
                     onClick={handleMinimize}
-                    className="group w-3 h-3 rounded-full bg-[#FEBC2E] hover:bg-[#F5A623]
-                     flex items-center justify-center transition-colors duration-100"
+                    className="w-3 h-3 rounded-full bg-[#FEBC2E] hover:bg-[#F5A623] transition-colors duration-100"
                     aria-label="Minimize"
-                >
-                    {isHovering && (
-                        <Minus
-                            size={8}
-                            strokeWidth={2.5}
-                            className="text-[#6B3A00] opacity-0 group-hover:opacity-100 transition-opacity"
-                        />
-                    )}
-                </button>
+                />
 
                 {/* Maximize / Restore */}
                 <button
                     onClick={handleMaximizeToggle}
-                    className="group w-3 h-3 rounded-full bg-[#28C840] hover:bg-[#1AAB29]
-                     flex items-center justify-center transition-colors duration-100"
+                    className="w-3 h-3 rounded-full bg-[#28C840] hover:bg-[#1AAB29] transition-colors duration-100"
                     aria-label={isMaximized ? "Restore" : "Maximize"}
-                >
-                    {isHovering && (
-                        <Maximize2
-                            size={7}
-                            strokeWidth={2.5}
-                            className="text-[#0A5600] opacity-0 group-hover:opacity-100 transition-opacity"
-                        />
-                    )}
-                </button>
+                />
             </div>
 
             {/* ── Window Title ───────────────────────────────────────────── */}
