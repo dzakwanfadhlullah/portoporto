@@ -44,13 +44,6 @@ const builtInItems: SearchResult[] = [
         appId: "lab",
     },
     {
-        id: "app-leadership",
-        type: "app",
-        title: "Leadership",
-        description: "Leadership and organizational experience",
-        appId: "leadership",
-    },
-    {
         id: "app-contact",
         type: "app",
         title: "Contact",
