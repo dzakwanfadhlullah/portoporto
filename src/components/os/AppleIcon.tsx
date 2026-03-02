@@ -57,7 +57,7 @@ export const AppleIcon: FC<AppleIconProps> = ({
     if (style === "photo") {
         return (
             <motion.div
-                className="relative flex items-center justify-center p-[6px] bg-white shadow-[0_12px_24px_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.1)] rounded-[4px] border border-black/5"
+                className="relative flex items-center justify-center rounded-[14px] shadow-[0_4px_12px_rgba(0,0,0,0.15)] overflow-hidden"
                 style={{
                     width: "100%",
                     height: "100%",
@@ -65,27 +65,23 @@ export const AppleIcon: FC<AppleIconProps> = ({
                 whileHover={{ y: -2, scale: 1.04, rotate: -0.5 }}
                 whileTap={{ scale: 0.98 }}
             >
-                {/* Outer Frame (Polaroid-ish) */}
-                <div className="w-full h-full bg-slate-100 overflow-hidden rounded-[2px] border border-black/10 relative">
+                <div className="w-full h-full relative">
                     {image ? (
                         <Image
                             src={image}
                             alt="Project Thumbnail"
                             fill
                             unoptimized
-                            className="object-cover grayscale-[0.1] contrast-[1.05]"
+                            className="object-cover"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                        <div className="w-full h-full flex items-center justify-center bg-slate-800">
                             {icon && createElement(icon, { size: size * 1.5, className: "text-slate-400" })}
                         </div>
                     )}
-                    {/* Subtle Inner Gloss */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none" />
+                    {/* Subtle Inner Gloss / Border */}
+                    <div className="absolute inset-0 border-[0.5px] border-white/20 rounded-[14px] pointer-events-none" />
                 </div>
-
-                {/* Subtle Grain/Texture Overlay */}
-                <div className="absolute inset-0 pointer-events-none opacity-[0.08] mix-blend-overlay grain" />
             </motion.div>
         );
     }

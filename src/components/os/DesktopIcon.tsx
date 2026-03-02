@@ -77,21 +77,22 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
             <div
                 className={`
           relative flex items-center justify-center
-          w-[84px] h-[84px] rounded-lg
+          w-[84px] h-[84px] rounded-xl
           transition-all duration-300
           ${isSelected
-                        ? "shadow-[0_0_0_2px_rgba(255,255,255,0.8)] border-2 border-black/20"
+                        ? "bg-black/20"
                         : "group-hover:translate-y-[-2px]"
                     }
         `}
             >
                 {/* Premium Project Card (Photo Frame style) */}
-                <div className="w-[80px] h-[80px]">
+                <div className="w-[72px] h-[72px]">
                     <AppleIcon
                         {...app.iconConfig}
                         image={thumbnail}
                         style="photo"
                         size={40}
+                        isActive={isSelected}
                     />
                 </div>
             </div>
@@ -99,12 +100,12 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
             {/* Label */}
             <span
                 className={`
-          text-[13px] text-center font-bold tracking-tight
-          max-w-[90px] truncate select-none
-          transition-colors duration-200
+          text-[13px] text-center tracking-tight
+          max-w-[90px] truncate select-none leading-tight py-[1px] px-[4px]
+          transition-colors duration-200 rounded-[4px] font-medium
           ${isSelected
-                        ? "text-white bg-white/30 backdrop-blur-md px-2 py-0.5 rounded-md"
-                        : "text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] group-hover:text-white/90"
+                        ? "text-white bg-[#0B58DA]"
+                        : "text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.8),0_1px_1px_rgba(0,0,0,0.5)]"
                     }
         `}
             >
