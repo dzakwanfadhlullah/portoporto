@@ -11,8 +11,8 @@ export const MobileShell = () => {
 
     return (
         <div className="relative w-full h-full bg-black text-white overflow-hidden flex flex-col font-sans select-none">
-            {/* Status Bar is always visible at the top */}
-            <MobileStatusBar />
+            {/* Status Bar is hidden as requested */}
+            {/* <MobileStatusBar /> */}
 
             {/* Core View Area */}
             <div className="flex-1 relative overflow-hidden">

@@ -28,8 +28,8 @@ export const MobileDesktop = () => {
             <div className="absolute inset-0 vibrant-wallpaper opacity-40 pointer-events-none mix-blend-screen" />
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[20px] pointer-events-none" />
 
-            {/* App Grid */}
-            <div className="flex-1 grid grid-cols-4 content-start gap-y-6 gap-x-2 z-10">
+            {/* App Grid - Added padding-left to avoid overlap with side dock */}
+            <div className="flex-1 grid grid-cols-4 content-start gap-y-6 gap-x-2 z-10 pl-16">
                 {gridApps.map((app) => (
                     <motion.div
                         key={app.id}
@@ -51,9 +51,9 @@ export const MobileDesktop = () => {
                 ))}
             </div>
 
-            {/* Mobile Dock */}
-            <div className="shrink-0 w-full rounded-3xl bg-white/20 backdrop-blur-3xl border border-white/10 p-4 flex justify-around items-center z-10 mb-4">
-                {dockApps.slice(0, 4).map((app) => (
+            {/* Mobile Side Dock (Vertical) */}
+            <div className="absolute left-2 top-1/2 -translate-y-1/2 w-[72px] h-auto rounded-[32px] bg-white/10 backdrop-blur-3xl border border-white/10 py-6 flex flex-col gap-5 items-center z-20 shadow-2xl">
+                {dockApps.slice(0, 5).map((app) => (
                     <motion.div
                         key={`dock-${app.id}`}
                         whileTap={{ scale: 0.85 }}
