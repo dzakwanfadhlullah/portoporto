@@ -1,71 +1,53 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
-import { AppleIcon } from "./AppleIcon";
+import { MacWifiIcon, MacBatteryIcon, MacSearchIcon } from "./MacIcons";
 
-import { useWindowStore } from "@/stores/useWindowStore";
-import { useAppRegistry } from "@/stores/useAppRegistry";
 import { useSpotlightStore } from "@/stores/useSpotlightStore";
+import { useBattery } from "@/hooks/useBattery";
 import { Z_LAYERS } from "@/hooks/useZIndex";
-import type { AppId } from "@/types/app";
 
 // ─── Menu Bar ────────────────────────────────────────────────────────────────
 
-const NAV_ITEMS: { label: string; appId: AppId }[] = [
-    { label: "Projects", appId: "projects" },
-    { label: "About", appId: "about" },
-    { label: "Contact", appId: "contact" },
-];
-
 export const MenuBar = () => {
-    const openWindow = useWindowStore((s) => s.openWindow);
-    const getApp = useAppRegistry((s) => s.getApp);
     const toggleSpotlight = useSpotlightStore((s) => s.toggle);
+    const { level: batteryLevel, charging } = useBattery();
 
-    // Live clock
-    const [time, setTime] = useState("");
+    // Live clock with date
+    const [dateTime, setDateTime] = useState("");
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
         const updateClock = () => {
             const now = new Date();
-            setTime(
-                now.toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                })
-            );
+            const date = now.toLocaleDateString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+            });
+            const time = now.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+            });
+            setDateTime(`${date}  ${time}`);
         };
         updateClock();
         const interval = setInterval(updateClock, 10_000);
         return () => clearInterval(interval);
     }, []);
 
-    const handleNavClick = useCallback(
-        (appId: AppId) => {
-            const app = getApp(appId);
-            if (app) {
-                openWindow(
-                    appId,
-                    app.name,
-                    app.defaultWindowConfig.defaultWidth,
-                    app.defaultWindowConfig.defaultHeight
-                );
-            }
-        },
-        [getApp, openWindow]
-    );
-
-
     return (
         <motion.header
-            className="absolute top-0 left-0 right-0 h-10 flex items-center justify-between px-6
-                 bg-transparent backdrop-blur-sm border-b border-white/10"
-            style={{ zIndex: Z_LAYERS.MENUBAR }}
+            className="absolute top-0 left-0 right-0 h-7 flex items-center justify-between px-4
+                 backdrop-blur-xl backdrop-saturate-150"
+            style={{
+                zIndex: Z_LAYERS.MENUBAR,
+                backgroundColor: "rgba(0, 0, 0, 0.18)",
+                boxShadow: "inset 0 -0.5px 0 0 rgba(255, 255, 255, 0.12)",
+            }}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -77,38 +59,41 @@ export const MenuBar = () => {
                 </span>
             </div>
 
-            {/* ── Right: Navigation & Status ──────────────────────────── */}
-            <div className="flex items-center gap-6">
-                <nav className="flex items-center gap-5">
-                    {NAV_ITEMS.map((item) => (
-                        <button
-                            key={item.appId}
-                            onClick={() => handleNavClick(item.appId)}
-                            className="text-[12.5px] font-medium text-white/60
-                         hover:text-white/90 transition-colors duration-200"
-                        >
-                            {item.label}
-                        </button>
-                    ))}
-                </nav>
+            {/* ── Right: Status Icons ──────────────────────────────── */}
+            <div className="flex items-center gap-2.5">
+                {/* WiFi (static) */}
+                <div className="text-white/80 flex items-center">
+                    <MacWifiIcon size={13} />
+                </div>
 
-                <div className="flex items-center gap-3 pl-2 border-l border-white/10">
-                    {/* Spotlight */}
-                    <button
-                        onClick={toggleSpotlight}
-                        className="text-white/50 hover:text-white/80 transition-colors"
-                    >
-                        <AppleIcon icon={Search} style="symbol" size={14} />
-                    </button>
-
-
-                    {/* Clock */}
-                    {mounted && (
-                        <span className="text-[12px] font-semibold text-white/70 tabular-nums min-w-[36px] text-right">
-                            {time}
+                {/* Battery (dynamic) */}
+                <div className="flex items-center gap-1 text-white/80">
+                    {batteryLevel !== null && (
+                        <span className="text-[11px] font-medium tabular-nums">
+                            {batteryLevel}%
                         </span>
                     )}
+                    <MacBatteryIcon
+                        size={12}
+                        level={batteryLevel}
+                        charging={charging}
+                    />
                 </div>
+
+                {/* Spotlight Search */}
+                <button
+                    onClick={toggleSpotlight}
+                    className="text-white/80 hover:text-white transition-colors flex items-center"
+                >
+                    <MacSearchIcon size={13} />
+                </button>
+
+                {/* Date + Time */}
+                {mounted && (
+                    <span className="text-[12.5px] font-medium text-white/90 tabular-nums whitespace-nowrap ml-0.5">
+                        {dateTime}
+                    </span>
+                )}
             </div>
         </motion.header>
     );

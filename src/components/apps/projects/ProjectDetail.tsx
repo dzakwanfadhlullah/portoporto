@@ -50,8 +50,10 @@ export default function ProjectDetail() {
 
             <div className="px-3 pb-3 flex flex-col gap-3 pt-3">
                 {/* Main Description */}
-                <div className="text-[11px] leading-[1.4] font-medium text-black/70 font-sf-pro">
-                    {project.description}
+                <div className="bg-white/80 border border-black/[0.06] px-3 py-2.5 shadow-[0_0.5px_2px_rgba(0,0,0,0.04),inset_0_0.5px_0_rgba(255,255,255,0.8)]">
+                    <div className="text-[11px] leading-[1.5] font-medium text-black/70 font-sf-pro">
+                        {project.description}
+                    </div>
                 </div>
 
                 {/* Details Accordion */}
@@ -76,14 +78,63 @@ export default function ProjectDetail() {
                         <ChevronRight strokeWidth={2.5} className="w-2.5 h-2.5 transition-transform group-open:rotate-90 text-black/40" />
                         Preview:
                     </summary>
-                    <div className="pl-3.5 pr-1 pb-1">
+                    <div className="pl-3.5 pr-1 pb-3 flex flex-col gap-2">
+                        {/* Section 1: 1 Large Photo */}
                         <div className="relative w-full aspect-video rounded-sm overflow-hidden bg-white/20 border border-black/10 shadow-sm">
                             <Image
                                 src={project.thumbnail}
-                                alt={`${project.name} preview`}
+                                alt={`${project.name} preview 1`}
                                 fill
                                 className="object-cover"
                             />
+                        </div>
+
+                        {/* Section 2: 2 Photos */}
+                        <div className="grid grid-cols-2 gap-2 mt-1">
+                            <div className="relative w-full aspect-[4/5] rounded-sm overflow-hidden bg-white/20 border border-black/10 shadow-sm">
+                                <Image
+                                    src={project.thumbnail}
+                                    alt={`${project.name} preview 2`}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <div className="relative w-full aspect-[4/5] rounded-sm overflow-hidden bg-white/20 border border-black/10 shadow-sm">
+                                <Image
+                                    src={project.thumbnail}
+                                    alt={`${project.name} preview 3`}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Section 3: 3 Photos */}
+                        <div className="grid grid-cols-3 gap-2 mt-1">
+                            <div className="relative w-full aspect-square rounded-sm overflow-hidden bg-white/20 border border-black/10 shadow-sm">
+                                <Image
+                                    src={project.thumbnail}
+                                    alt={`${project.name} preview 4`}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <div className="relative w-full aspect-square rounded-sm overflow-hidden bg-white/20 border border-black/10 shadow-sm">
+                                <Image
+                                    src={project.thumbnail}
+                                    alt={`${project.name} preview 5`}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <div className="relative w-full aspect-square rounded-sm overflow-hidden bg-white/20 border border-black/10 shadow-sm">
+                                <Image
+                                    src={project.thumbnail}
+                                    alt={`${project.name} preview 6`}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
                         </div>
                     </div>
                 </details>
