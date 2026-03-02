@@ -144,26 +144,26 @@ export const Dock = () => {
 
     return (
         <motion.div
-            className="absolute bottom-6 left-1/2 -translate-x-1/2"
+            className="absolute right-4 top-1/2 -translate-y-1/2 sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:top-auto sm:translate-y-0"
             style={{ zIndex: Z_LAYERS.DOCK }}
-            initial={{ y: 80 }}
-            animate={{ y: 0 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.2 }}
             onMouseMove={(e) => mouseX.set(e.clientX)}
             onMouseLeave={() => mouseX.set(-MAGNIFICATION_DISTANCE * 2)}
         >
             {/* Glass container */}
             <div
-                className="flex items-end gap-2 px-3 pb-2 pt-2
+                className="flex flex-col sm:flex-row items-center sm:items-end gap-3 sm:gap-2 p-2 sm:px-3 sm:pb-2 sm:pt-2
                    bg-white/20 backdrop-blur-[40px] rounded-[24px]
                    border border-white/30 shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
             >
                 {dockApps.map((app, i) => (
-                    <div key={app.id} className="flex items-end gap-2">
+                    <div key={app.id} className="flex flex-col sm:flex-row items-center sm:items-end gap-2">
                         <DockIcon appId={app.id} mouseX={mouseX} index={i} />
                         {/* Natural Divider after Projects (index 1) */}
                         {app.id === "projects" && (
-                            <div className="w-[1px] h-[36px] bg-gradient-to-b from-white/10 via-white/30 to-white/10 mx-0.5 self-center rounded-full" />
+                            <div className="w-[24px] h-[1px] sm:w-[1px] sm:h-[36px] bg-gradient-to-r sm:bg-gradient-to-b from-white/10 via-white/30 to-white/10 my-1 sm:my-0 sm:mx-0.5 self-center rounded-full" />
                         )}
                     </div>
                 ))}
