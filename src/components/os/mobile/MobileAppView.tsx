@@ -2,8 +2,9 @@
 
 import { useWindowStore } from "@/stores/useWindowStore";
 import { useAppRegistry } from "@/stores/useAppRegistry";
+import { WindowContext } from "../WindowContext";
 import { ChevronLeft } from "lucide-react";
-import { Suspense } from "react";
+import { Suspense, useState, type ReactNode } from "react";
 import type { WindowId } from "@/types/window";
 import type { AppId } from "@/types/app";
 
@@ -15,6 +16,7 @@ export const MobileAppView = ({ windowId }: MobileAppViewProps) => {
     const win = useWindowStore((s) => s.windows[windowId]);
     const closeWindow = useWindowStore((s) => s.closeWindow);
     const getApp = useAppRegistry((s) => s.getApp);
+    const [headerActions, setHeaderActions] = useState<ReactNode>(null);
 
     if (!win) return null;
 
@@ -43,15 +45,17 @@ export const MobileAppView = ({ windowId }: MobileAppViewProps) => {
 
             {/* App Content Area */}
             <div className="flex-1 w-full overflow-y-auto overflow-x-hidden bg-background">
-                <Suspense
-                    fallback={
-                        <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                            Loading...
-                        </div>
-                    }
-                >
-                    <AppComponent />
-                </Suspense>
+                <WindowContext.Provider value={{ setHeaderActions, metadata: win.metadata }}>
+                    <Suspense
+                        fallback={
+                            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                                Loading...
+                            </div>
+                        }
+                    >
+                        <AppComponent />
+                    </Suspense>
+                </WindowContext.Provider>
             </div>
         </div>
     );

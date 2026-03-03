@@ -40,10 +40,10 @@ export default function AboutApp() {
     if (!win || !windowId) return null;
 
     return (
-        <div className="h-full bg-white flex flex-row overflow-hidden font-sans select-none">
+        <div className="h-full bg-white flex flex-col md:flex-row overflow-hidden font-sans select-none">
             {/* ── Sidebar ────────────────────────────────────────── */}
-            <div className="w-[200px] shrink-0 bg-[#EFEBE6] border-r border-black/5 flex flex-col pt-4 px-3 pb-2 window-drag-handle cursor-default">
-                <div className="flex items-center gap-[7px] mb-8 px-2 relative z-20">
+            <div className="w-full md:w-[200px] shrink-0 bg-[#EFEBE6] border-b md:border-b-0 md:border-r border-black/5 flex flex-col pt-4 px-3 pb-2 window-drag-handle cursor-default">
+                <div className="hidden md:flex items-center gap-[7px] mb-8 px-2 relative z-20">
                     <button
                         onClick={(e) => { e.stopPropagation(); closeWindow(windowId); }}
                         className="w-3 h-3 rounded-full bg-[#FF5F57] border border-black/5 hover:brightness-90 transition-all flex items-center justify-center cursor-pointer"
@@ -58,16 +58,16 @@ export default function AboutApp() {
                     />
                 </div>
 
-                <h2 className="text-[11px] font-bold tracking-tight text-black/25 uppercase px-2 mb-4">
+                <h2 className="text-[10px] md:text-[11px] font-bold tracking-tight text-black/25 uppercase px-2 mb-2 md:mb-4">
                     About me
                 </h2>
 
-                <nav className="flex flex-col gap-0.5 relative z-20">
+                <nav className="flex flex-row md:flex-col gap-1 md:gap-0.5 relative z-20 overflow-x-auto hide-scrollbar pb-2 md:pb-0">
                     {NAV_ITEMS.map((item) => (
                         <button
                             key={item.id}
                             onClick={(e) => { e.stopPropagation(); setActiveSection(item.id); }}
-                            className={`relative flex items-center px-4 py-1.5 transition-colors duration-200 group text-[13px] font-semibold rounded-md cursor-pointer ${activeSection === item.id ? "text-black" : "text-black/50 hover:text-black"}`}
+                            className={`relative flex items-center shrink-0 px-3 md:px-4 py-1.5 transition-colors duration-200 group text-[12px] md:text-[13px] font-semibold rounded-md cursor-pointer ${activeSection === item.id ? "text-black" : "text-black/50 hover:text-black"}`}
                         >
                             {activeSection === item.id && (
                                 <motion.div
@@ -93,7 +93,7 @@ export default function AboutApp() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
                         transition={{ duration: 0.15 }}
-                        className="h-full w-full px-10 py-10 overflow-y-auto hide-scrollbar"
+                        className="h-full w-full px-6 md:px-10 py-6 md:py-10 overflow-y-auto hide-scrollbar"
                     >
                         {activeSection === "intro" && <IntroView />}
                         {activeSection === "offer" && <OfferView />}
