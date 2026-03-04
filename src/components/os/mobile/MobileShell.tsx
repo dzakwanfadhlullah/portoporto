@@ -4,10 +4,20 @@ import { useWindowStore } from "@/stores/useWindowStore";
 import { MobileDesktop } from "./MobileDesktop";
 import { MobileAppView } from "./MobileAppView";
 import { MobileStatusBar } from "./MobileStatusBar";
+import { useEffect, useState } from "react";
 
 export const MobileShell = () => {
+    const [hasMounted, setHasMounted] = useState(false);
+
     // Determine active app
     const activeWindowId = useWindowStore((s) => s.activeWindowId);
+
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
+
+    // Prevent hydration mismatch and client-side crash by rendering nothing initially
+    if (!hasMounted) return null;
 
     return (
         <div className="relative w-full h-full bg-black text-white overflow-hidden flex flex-col font-sans select-none">
