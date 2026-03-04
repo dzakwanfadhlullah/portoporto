@@ -9,6 +9,7 @@ export interface Project {
     description: ReactNode;
     thumbnail: string;
     tags: string[];
+    detailImages?: string[];
 }
 
 export const projects: Project[] = [
@@ -26,6 +27,13 @@ export const projects: Project[] = [
         ),
         thumbnail: "https://images.unsplash.com/photo-1551288049-bbbda536339a?w=800&q=80",
         tags: ["Next.js", "Fullstack", "Dashboard"],
+        detailImages: [
+            "/assets/images/about/LoginBongkarOps.png",
+            "/assets/images/about/DashboarBongkarOps.png",
+            "/assets/images/about/RegistBongkarOps.png",
+            "/assets/images/about/identitasoperasiBongkarOps.png",
+            "/assets/images/about/ReviewHasilBongkarOps.png"
+        ],
     },
     {
         id: "luminacal",
