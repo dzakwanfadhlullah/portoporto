@@ -40,12 +40,11 @@ export const MobileDesktop = () => {
                             whileTap={{ scale: 0.9 }}
                             onClick={() => handleOpenProject(project.id, project.name)}
                         >
-                            <div className="w-[60px] h-[60px] flex items-center justify-center relative rounded-[14px] overflow-hidden bg-white shadow-sm border border-black/5">
-                                <Image
-                                    src={project.thumbnail}
-                                    alt={project.name}
-                                    fill
-                                    className="object-cover"
+                            <div className="w-[60px] h-[60px] flex items-center justify-center relative">
+                                <AppleIcon
+                                    image={project.thumbnail}
+                                    style="photo"
+                                    color="transparent"
                                 />
                             </div>
                             <span className="text-[11px] font-semibold text-white truncate w-full px-1 text-center drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">

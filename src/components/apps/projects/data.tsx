@@ -25,7 +25,7 @@ export const projects: Project[] = [
                 <p>{"The idea was to turn field operations into clarity. Instead of static spreadsheets, the platform translates unloading activity into visible patterns \u2014 performance trends, bottlenecks, and comparative metrics that reveal where time and efficiency intersect. It isn\u2019t just a monitoring dashboard; it becomes "}<i>{"an operational lens where complexity is distilled into measurable insight"}</i>{", allowing decisions to be grounded in visibility rather than assumption."}</p>
             </div>
         ),
-        thumbnail: "https://images.unsplash.com/photo-1551288049-bbbda536339a?w=800&q=80",
+        thumbnail: "/bukit-asam-logo.png",
         tags: ["Next.js", "Fullstack", "Dashboard"],
         detailImages: [
             "/assets/images/about/LoginBongkarOps.png",
@@ -84,7 +84,7 @@ export const projects: Project[] = [
                 <p>{"The idea was to turn preparation into visibility. CBT simulations mirror real exam pressure, while performance dashboards translate scores into patterns \u2014 strengths, gaps, progression. College recommendations extend that data into direction, grounding ambition in probability. Instead of being just another tryout platform, it becomes a structured pathway, where "}<i>{"readiness is not guessed, but gradually revealed"}</i>{"."}</p>
             </div>
         ),
-        thumbnail: "/kelas-kampus-logo.png",
+        thumbnail: "/kelas-kampus-clean.png",
         tags: ["React", "UI/UX", "Education"],
     },
     {

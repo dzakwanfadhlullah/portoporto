@@ -91,6 +91,7 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
                         {...app.iconConfig}
                         image={thumbnail}
                         style="photo"
+                        color="transparent"
                         size={40}
                         isActive={isSelected}
                     />

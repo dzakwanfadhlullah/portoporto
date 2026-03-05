@@ -57,7 +57,7 @@ export const AppleIcon: FC<AppleIconProps> = ({
     if (style === "photo") {
         return (
             <motion.div
-                className="relative flex items-center justify-center rounded-[14px] shadow-[0_4px_12px_rgba(0,0,0,0.15)] overflow-hidden"
+                className={`relative flex items-center justify-center rounded-[14px] ${color === "transparent" ? "" : "shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white overflow-hidden"}`}
                 style={{
                     width: "100%",
                     height: "100%",
@@ -72,15 +72,20 @@ export const AppleIcon: FC<AppleIconProps> = ({
                             alt="Project Thumbnail"
                             fill
                             unoptimized
-                            className="object-cover"
+                            className={color === "transparent" ? "object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]" : "object-cover"}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-slate-800">
-                            {icon && createElement(icon, { size: size * 1.5, className: "text-slate-400" })}
+                        <div className={`w-full h-full flex items-center justify-center ${color === "transparent" ? "" : "bg-slate-800"}`}>
+                            {icon && createElement(icon, {
+                                size: size * 1.5,
+                                className: color === "transparent" ? "text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]" : "text-slate-400"
+                            })}
                         </div>
                     )}
-                    {/* Subtle Inner Gloss / Border */}
-                    <div className="absolute inset-0 border-[0.5px] border-white/20 rounded-[14px] pointer-events-none" />
+                    {/* Subtle Inner Gloss / Border - Only if not transparent */}
+                    {color !== "transparent" && (
+                        <div className="absolute inset-0 border-[0.5px] border-white/20 rounded-[14px] pointer-events-none" />
+                    )}
                 </div>
             </motion.div>
         );
