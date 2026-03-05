@@ -43,6 +43,7 @@ export const MobileDesktop = () => {
                             <div className="w-[60px] h-[60px] flex items-center justify-center relative">
                                 <AppleIcon
                                     image={project.thumbnail}
+                                    {...project.iconConfig}
                                     style="photo"
                                     color="transparent"
                                 />

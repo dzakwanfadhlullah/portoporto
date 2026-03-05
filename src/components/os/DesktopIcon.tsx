@@ -89,6 +89,7 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
                 <div className="w-[72px] h-[72px]">
                     <AppleIcon
                         {...app.iconConfig}
+                        {...project?.iconConfig}
                         image={thumbnail}
                         style="photo"
                         color="transparent"

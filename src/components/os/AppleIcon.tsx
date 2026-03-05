@@ -66,22 +66,29 @@ export const AppleIcon: FC<AppleIconProps> = ({
                 whileTap={{ scale: 0.98 }}
             >
                 <div className="w-full h-full relative">
-                    {image ? (
-                        <Image
-                            src={image}
-                            alt="Project Thumbnail"
-                            fill
-                            unoptimized
-                            className={color === "transparent" ? "object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]" : "object-cover"}
-                        />
-                    ) : (
-                        <div className={`w-full h-full flex items-center justify-center ${color === "transparent" ? "" : "bg-slate-800"}`}>
-                            {icon && createElement(icon, {
-                                size: size * 1.5,
-                                className: color === "transparent" ? "text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]" : "text-slate-400"
-                            })}
-                        </div>
-                    )}
+                    <div
+                        className="relative w-full h-full"
+                        style={{
+                            transform: `scale(${scale ?? 1}) translateY(${offsetY ?? 0}px)`
+                        }}
+                    >
+                        {image ? (
+                            <Image
+                                src={image}
+                                alt="Project Thumbnail"
+                                fill
+                                unoptimized
+                                className={color === "transparent" ? "object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]" : "object-cover"}
+                            />
+                        ) : (
+                            <div className={`w-full h-full flex items-center justify-center ${color === "transparent" ? "" : "bg-slate-800"}`}>
+                                {icon && createElement(icon, {
+                                    size: size * 1.5,
+                                    className: color === "transparent" ? "text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]" : "text-slate-400"
+                                })}
+                            </div>
+                        )}
+                    </div>
                     {/* Subtle Inner Gloss / Border - Only if not transparent */}
                     {color !== "transparent" && (
                         <div className="absolute inset-0 border-[0.5px] border-white/20 rounded-[14px] pointer-events-none" />

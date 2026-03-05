@@ -10,6 +10,10 @@ export interface Project {
     thumbnail: string;
     tags: string[];
     detailImages?: string[];
+    iconConfig?: {
+        scale?: number;
+        offsetY?: number;
+    };
 }
 
 export const projects: Project[] = [
@@ -27,6 +31,7 @@ export const projects: Project[] = [
         ),
         thumbnail: "/bukit-asam-logo.png",
         tags: ["Next.js", "Fullstack", "Dashboard"],
+        iconConfig: { scale: 2.7, offsetY: 0 },
         detailImages: [
             "/assets/images/about/LoginBongkarOps.png",
             "/assets/images/about/DashboarBongkarOps.png",
@@ -49,6 +54,7 @@ export const projects: Project[] = [
         ),
         thumbnail: "/luminacal-logo.png",
         tags: ["React Native", "Mobile", "Productivity"],
+        iconConfig: { scale: 1.3, offsetY: 0 },
         detailImages: [
             "/assets/images/about/Home_LuminaCAL.png",
             "/assets/images/about/Camera_LuminaCal.png",
@@ -71,6 +77,7 @@ export const projects: Project[] = [
         ),
         thumbnail: "/liftnode-logo.png",
         tags: ["Mobile", "Health", "Fitness"],
+        iconConfig: { scale: 0.85, offsetY: 0 },
     },
     {
         id: "kelaskampus",
@@ -86,6 +93,7 @@ export const projects: Project[] = [
         ),
         thumbnail: "/kelas-kampus-clean.png",
         tags: ["React", "UI/UX", "Education"],
+        iconConfig: { scale: 1.1, offsetY: -1 },
     },
     {
         id: "verda",
@@ -98,6 +106,7 @@ export const projects: Project[] = [
         ),
         thumbnail: "/verda-logo.png",
         tags: ["Mobile", "Eco", "Sustainability"],
+        iconConfig: { scale: 1.7, offsetY: 0 },
     },
     {
         id: "arguardianforest",
@@ -110,5 +119,6 @@ export const projects: Project[] = [
         ),
         thumbnail: "/ar-guardian-forest-logo.png",
         tags: ["AR", "Game Design", "3D Assets"],
+        iconConfig: { scale: 1.25, offsetY: 0 },
     },
 ];
