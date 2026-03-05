@@ -631,3 +631,40 @@ export const SONGS: Song[] = [
     }
 ];
 
+export interface RadioStation {
+    id: string;
+    title: string;
+    logo: string;
+}
+
+export const RADIO_STATIONS: RadioStation[] = [
+    { id: "1", title: "Apple Music 1", logo: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/radio/am1.png" },
+    { id: "2", title: "Apple Music Hits", logo: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/radio/am_hits.png" },
+    { id: "3", title: "Apple Music Country", logo: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/radio/am_country.png" },
+    { id: "4", title: "Música Uno", logo: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/radio/musica_uno.png" },
+    { id: "5", title: "Radio Club", logo: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/radio/club.png" },
+    { id: "6", title: "Radio Chill", logo: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/radio/chill.png" },
+];
+
+export interface FeaturedShow {
+    id: string;
+    title: string;
+    artist: string;
+    image: string;
+}
+
+export const FEATURED_SHOWS: FeaturedShow[] = [
+    {
+        id: "1",
+        title: "The Matt Wilkinson Show",
+        artist: "Matt Wilkinson",
+        image: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/radio/matt_wilkinson.jpg"
+    },
+    {
+        id: "2",
+        title: "The Zane Lowe Show",
+        artist: "Zane Lowe",
+        image: "https://aoumvyjzxiucihncptnz.supabase.co/storage/v1/object/public/music/radio/zane_lowe.jpg"
+    }
+];
+
