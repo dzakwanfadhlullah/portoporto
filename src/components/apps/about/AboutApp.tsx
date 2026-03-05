@@ -111,11 +111,11 @@ export default function AboutApp() {
 function IntroView() {
     return (
         <div className="w-full">
-            <h1 className="text-[22px] sm:text-[26px] font-bold tracking-tight leading-snug mb-6">
-                Hello, I&apos;m <span className="text-[#007AFF]">Dzakwan</span> — a <span className="text-[#FF3B30] bg-[#FFF0F0] px-1.5 py-0.5 rounded-md">Front-End & Mobile Developer.</span>
+            <h1 className="text-[18px] sm:text-[22px] md:text-[26px] font-bold tracking-tight leading-[1.3] mb-6">
+                Hello, I&apos;m <span className="text-[#007AFF]">Dzakwan</span> — a <span className="text-[#FF3B30] bg-[#FFF0F0] px-1.5 py-0.5 rounded-md inline-block mt-1 sm:mt-0">Front-End & Mobile Developer.</span>
             </h1>
 
-            <div className="grid grid-cols-3 gap-3 mb-8">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-8">
                 {[1, 2, 3].map((i) => (
                     <div key={i} className="aspect-square relative rounded-xl overflow-hidden bg-gray-100 shadow-sm border border-black/5">
                         <div className="absolute inset-0 flex items-center justify-center text-black/10 text-[10px] font-bold uppercase">Portrait {i}</div>
