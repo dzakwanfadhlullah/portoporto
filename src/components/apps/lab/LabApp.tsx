@@ -26,10 +26,16 @@ export default function LabApp() {
     }, [closeWindow, getWindowByAppId]);
 
     const playAlertSound = useCallback(() => {
-        // Using a more reliable CDN for the alert sound
-        const audio = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
-        audio.volume = 0.4;
-        audio.play().catch(e => console.log("Audio play blocked", e));
+        // Using a more reliable open CDN for the alert sound (Apple-style Notification)
+        const audio = new Audio("https://raw.githubusercontent.com/Jin-Zhe/dzakos/main/public/assets/sounds/alert.mp3");
+        audio.volume = 0.5;
+        // Silent fail to prevent red errors if browser blocks autoplay
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                // Ignore autoplay block errors
+            });
+        }
     }, []);
 
     useEffect(() => {
