@@ -42,7 +42,7 @@ export default function AboutApp() {
     return (
         <div className="h-full bg-white flex flex-col md:flex-row overflow-hidden font-sans select-none">
             {/* ── Sidebar ────────────────────────────────────────── */}
-            <div className="w-full md:w-[200px] shrink-0 bg-[#EFEBE6] border-b md:border-b-0 md:border-r border-black/5 flex flex-col pt-4 px-3 pb-2 window-drag-handle cursor-default">
+            <div className="w-full md:w-[200px] shrink-0 bg-[#EFEBE6] border-b md:border-b-0 md:border-r border-black/5 flex flex-col pt-2 md:pt-4 px-3 pb-2 window-drag-handle cursor-default">
                 <div className="hidden md:flex items-center gap-[7px] mb-8 px-2 relative z-20">
                     <button
                         onClick={(e) => { e.stopPropagation(); closeWindow(windowId); }}
@@ -58,7 +58,7 @@ export default function AboutApp() {
                     />
                 </div>
 
-                <h2 className="text-[10px] md:text-[11px] font-bold tracking-tight text-black/25 uppercase px-2 mb-2 md:mb-4">
+                <h2 className="hidden md:block text-[10px] md:text-[11px] font-bold tracking-tight text-black/25 uppercase px-2 mb-2 md:mb-4">
                     About me
                 </h2>
 
