@@ -27,6 +27,7 @@ export default function ProjectDetail() {
     if (!project) return null;
 
     const displayImages = project.detailImages || [project.thumbnail];
+    const isMobileApp = project.tags.some(t => t.toLowerCase() === 'mobile');
 
     return (
         <div className="flex flex-col h-full bg-[#ECECEC] overflow-y-auto font-sans select-text text-black/90 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden relative">
@@ -82,7 +83,7 @@ export default function ProjectDetail() {
                         <ChevronRight strokeWidth={2.5} className="w-2.5 h-2.5 transition-transform group-open:rotate-90 text-black/40" />
                         Preview (Vertical Showcase):
                     </summary>
-                    <div className="pl-3.5 pr-1 flex flex-col gap-6 pt-1">
+                    <div className={`pl-3.5 pr-1 pt-1 ${isMobileApp ? 'grid grid-cols-2 gap-3' : 'flex flex-col gap-6'}`}>
                         {displayImages.map((img, idx) => (
                             <motion.div
                                 key={idx}
@@ -90,10 +91,10 @@ export default function ProjectDetail() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: idx * 0.05 }}
-                                className="group flex flex-col gap-2"
+                                className="group flex flex-col gap-1.5"
                             >
                                 <div
-                                    className="relative w-full aspect-video rounded-lg overflow-hidden bg-white shadow-md border border-black/5 cursor-zoom-in transition-transform duration-300 hover:scale-[1.005]"
+                                    className={`relative w-full ${isMobileApp ? 'aspect-[9/19]' : 'aspect-video'} rounded-lg overflow-hidden bg-white shadow-md border border-black/5 cursor-zoom-in transition-transform duration-300 hover:scale-[1.005]`}
                                     onClick={() => setSelectedImage(img)}
                                 >
                                     <Image
@@ -111,7 +112,7 @@ export default function ProjectDetail() {
                                 </div>
                                 <div className="flex items-center justify-between opacity-30 text-[9px] font-bold tracking-widest px-1">
                                     <span>VIEW 0{idx + 1}</span>
-                                    <span>{project.brand.toUpperCase()}</span>
+                                    <span className="truncate ml-2 text-right">{project.brand.toUpperCase()}</span>
                                 </div>
                             </motion.div>
                         ))}
@@ -141,7 +142,7 @@ export default function ProjectDetail() {
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="relative w-full max-w-[1200px] aspect-video rounded-3xl overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.25)] border border-white/50"
+                            className={`relative w-full ${isMobileApp ? 'max-w-[400px] aspect-[9/19]' : 'max-w-[1200px] aspect-video'} rounded-3xl overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.25)] border border-white/50`}
                             onClick={(e) => e.stopPropagation()}
                         >
                             <Image

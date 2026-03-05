@@ -49,6 +49,13 @@ export const projects: Project[] = [
         ),
         thumbnail: "/luminacal-logo.png",
         tags: ["React Native", "Mobile", "Productivity"],
+        detailImages: [
+            "/assets/images/about/Home_LuminaCAL.png",
+            "/assets/images/about/Camera_LuminaCal.png",
+            "/assets/images/about/Stats_LuminaCal.png",
+            "/assets/images/about/eXPLORE_lUMINACal (2).png",
+            "/assets/images/about/Profile_LuminaCAL.png"
+        ],
     },
     {
         id: "liftnode",
