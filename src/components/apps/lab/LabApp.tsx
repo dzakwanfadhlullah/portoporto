@@ -1,8 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Keyboard, Spade } from "lucide-react";
-import { useState } from "react";
+import { Keyboard, Spade, Monitor } from "lucide-react";
+import { useState, useEffect } from "react";
 import { TypingTestDemo } from "./demos/TypingTestDemo";
 import { BlackjackDemo } from "./demos/BlackjackDemo";
 import { AppleRunnerDemo } from "./demos/AppleRunnerDemo";
@@ -13,9 +13,57 @@ import { LabSidebar, LabSectionId } from "./LabSidebar";
 
 export default function LabApp() {
     const [activeSection, setActiveSection] = useState<LabSectionId>("typing");
+    const [showMobileWarning, setShowMobileWarning] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            if (window.innerWidth < 768) {
+                setShowMobileWarning(true);
+            }
+        };
+        checkMobile();
+    }, []);
 
     return (
-        <div className="h-full flex flex-row overflow-hidden font-sans select-none">
+        <div className="h-full flex flex-row overflow-hidden font-sans select-none relative">
+            {/* ── Mobile Warning Overlay ─────────────────────────── */}
+            <AnimatePresence>
+                {showMobileWarning && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center px-6 bg-black/20 backdrop-blur-sm md:hidden"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            className="bg-white/90 backdrop-blur-2xl p-8 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.2)] border border-white/50 max-w-sm w-full flex flex-col items-center text-center gap-6"
+                        >
+                            <div className="w-20 h-20 bg-[#007AFF]/10 rounded-3xl flex items-center justify-center text-[#007AFF] mb-2">
+                                <Monitor size={40} strokeWidth={1.5} />
+                            </div>
+
+                            <div className="space-y-2">
+                                <h2 className="text-2xl font-bold tracking-tight text-white md:text-black">Desktop Recommended</h2>
+                                <p className="text-[15px] text-white/50 md:text-black/50 leading-relaxed font-medium">
+                                    For the best gaming experience and performance, we recommend accessing Game Center from a desktop device.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => setShowMobileWarning(false)}
+                                className="w-full py-4 bg-[#007AFF] hover:bg-[#0071E3] text-white rounded-2xl font-bold text-sm transition-all active:scale-[0.98] shadow-lg shadow-[#007AFF]/20"
+                            >
+                                Got it
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* ── Sidebar ────────────────────────────────────────── */}
             <LabSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
 
