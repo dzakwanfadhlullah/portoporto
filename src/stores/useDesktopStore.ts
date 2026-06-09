@@ -19,6 +19,7 @@ interface DesktopState {
 
     // Actions
     moveIcon: (appId: AppId, position: Position) => void;
+    resetIconLayout: () => void;
     selectIcon: (appId: AppId) => void;
     toggleSelectIcon: (appId: AppId) => void;
     deselectAll: () => void;
@@ -54,8 +55,9 @@ const defaultIcons: DesktopIcon[] = [
     },
 ];
 
-const DEFAULT_WALLPAPER =
-    "linear-gradient(135deg, #F5EFE6 0%, #EDE4D3 50%, #E8DFD1 100%)";
+const DEFAULT_WALLPAPER = 'url("/macos-big.jpg")';
+
+type PersistedDesktopState = Partial<Pick<DesktopState, "icons" | "wallpaper">>;
 
 // ─── Store ───────────────────────────────────────────────────────────────────
 
@@ -72,6 +74,10 @@ export const useDesktopStore = create<DesktopState>()(
                         icon.appId === appId ? { ...icon, position } : icon
                     ),
                 });
+            },
+
+            resetIconLayout: () => {
+                set({ icons: defaultIcons });
             },
 
             selectIcon: (appId) => {
@@ -98,6 +104,11 @@ export const useDesktopStore = create<DesktopState>()(
         {
             name: "dzakos-desktop-v2",
             storage: createJSONStorage(() => localStorage),
+            version: 3,
+            migrate: (persistedState) => ({
+                ...(persistedState as PersistedDesktopState),
+                wallpaper: DEFAULT_WALLPAPER,
+            }),
             partialize: (state) => ({
                 icons: state.icons,
                 wallpaper: state.wallpaper,

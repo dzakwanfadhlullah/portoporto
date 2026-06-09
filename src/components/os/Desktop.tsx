@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useEffect } from "react";
+import { useCallback, useMemo, useRef, useEffect, useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import { useDesktopStore } from "@/stores/useDesktopStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { Z_LAYERS } from "@/hooks/useZIndex";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { DesktopIcon } from "./DesktopIcon";
 import { MenuBar } from "./MenuBar";
 import { Dock } from "./Dock";
@@ -13,16 +14,26 @@ import { InfoCard } from "./InfoCard";
 import { Window } from "./Window";
 import { SnapOverlay } from "./SnapOverlay";
 import { Spotlight } from "./Spotlight";
+import { ContextMenu } from "./ContextMenu";
+import type { DesktopIcon as DesktopIconType } from "@/stores/useDesktopStore";
+import type { AppId } from "@/types/app";
 
 // ─── Desktop Component ──────────────────────────────────────────────────────
 
 export const Desktop = () => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [contextMenu, setContextMenu] = useState<{
+        x: number;
+        y: number;
+        target: { type: "desktop" } | { type: "icon"; appId: AppId; label: string };
+    } | null>(null);
     const icons = useDesktopStore((s) => s.icons);
     const deselectAll = useDesktopStore((s) => s.deselectAll);
     const wallpaper = useDesktopStore((s) => s.wallpaper);
     const windows = useWindowStore((s) => s.windows);
     const setDesktopSize = useWindowStore((s) => s.setDesktopSize);
+
+    useKeyboardShortcuts();
 
     // Sync container size with store
     useEffect(() => {
@@ -47,6 +58,7 @@ export const Desktop = () => {
     const handleDesktopClick = useCallback(
         (e: React.MouseEvent) => {
             if (e.target === e.currentTarget) {
+                setContextMenu(null);
                 deselectAll();
             }
         },
@@ -56,6 +68,24 @@ export const Desktop = () => {
     const handleContextMenu = useCallback(
         (e: React.MouseEvent) => {
             e.preventDefault();
+            setContextMenu({
+                x: e.clientX,
+                y: e.clientY,
+                target: { type: "desktop" },
+            });
+        },
+        []
+    );
+
+    const handleIconContextMenu = useCallback(
+        (e: React.MouseEvent, icon: DesktopIconType) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setContextMenu({
+                x: e.clientX,
+                y: e.clientY,
+                target: { type: "icon", appId: icon.appId, label: icon.label },
+            });
         },
         []
     );
@@ -64,7 +94,7 @@ export const Desktop = () => {
         <div
             ref={containerRef}
             className="relative h-full w-full overflow-hidden select-none vibrant-wallpaper"
-            style={{ zIndex: Z_LAYERS.DESKTOP }}
+            style={{ zIndex: Z_LAYERS.DESKTOP, backgroundImage: wallpaper }}
         >
             {/* ── Desktop Texture Overlay ─────────────────────────────────────── */}
             <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] grain pointer-events-none" />
@@ -79,7 +109,7 @@ export const Desktop = () => {
                 onContextMenu={handleContextMenu}
             >
                 {icons.map((icon) => (
-                    <DesktopIcon key={icon.appId} icon={icon} />
+                    <DesktopIcon key={icon.appId} icon={icon} onContextMenu={handleIconContextMenu} />
                 ))}
             </div>
 
@@ -109,6 +139,14 @@ export const Desktop = () => {
             <SnapOverlay />
             <Dock />
             <Spotlight />
+            {contextMenu && (
+                <ContextMenu
+                    x={contextMenu.x}
+                    y={contextMenu.y}
+                    target={contextMenu.target}
+                    onClose={() => setContextMenu(null)}
+                />
+            )}
         </div>
     );
 };

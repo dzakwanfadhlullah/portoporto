@@ -8,17 +8,17 @@ import { useWindowStore } from "@/stores/useWindowStore";
 import { useAppRegistry } from "@/stores/useAppRegistry";
 import { AppleIcon } from "./AppleIcon";
 import { projects } from "../apps/projects/data";
-import type { AppId } from "@/types/app";
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
 interface DesktopIconProps {
     icon: DesktopIconType;
+    onContextMenu?: (event: React.MouseEvent, icon: DesktopIconType) => void;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export const DesktopIcon = ({ icon }: DesktopIconProps) => {
+export const DesktopIcon = ({ icon, onContextMenu }: DesktopIconProps) => {
     const { selectedIcons, selectIcon, deselectAll } = useDesktopStore();
     const { openWindow } = useWindowStore();
     const { getApp } = useAppRegistry();
@@ -70,6 +70,7 @@ export const DesktopIcon = ({ icon }: DesktopIconProps) => {
                 width: 100,
             }}
             onClick={handleClick}
+            onContextMenu={(event) => onContextMenu?.(event, icon)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
         >
