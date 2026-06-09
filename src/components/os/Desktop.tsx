@@ -15,6 +15,7 @@ import { Window } from "./Window";
 import { SnapOverlay } from "./SnapOverlay";
 import { Spotlight } from "./Spotlight";
 import { ContextMenu } from "./ContextMenu";
+import { ThemeBridge } from "./ThemeBridge";
 import type { DesktopIcon as DesktopIconType } from "@/stores/useDesktopStore";
 import type { AppId } from "@/types/app";
 
@@ -96,6 +97,7 @@ export const Desktop = () => {
             className="relative h-full w-full overflow-hidden select-none vibrant-wallpaper"
             style={{ zIndex: Z_LAYERS.DESKTOP, backgroundImage: wallpaper }}
         >
+            <ThemeBridge />
             {/* ── Desktop Texture Overlay ─────────────────────────────────────── */}
             <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] grain pointer-events-none" />
 
