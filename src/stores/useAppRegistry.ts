@@ -12,7 +12,8 @@ import {
     Archive,
     Award,
     Mail,
-    FileText
+    FileText,
+    Settings
 } from "lucide-react";
 
 // ─── Default Window Configs ──────────────────────────────────────────────────
@@ -67,6 +68,14 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
         resizable: true,
         draggable: true,
     },
+    settings: {
+        minWidth: 680,
+        minHeight: 460,
+        defaultWidth: 760,
+        defaultHeight: 540,
+        resizable: true,
+        draggable: true,
+    },
 };
 
 // ─── Lazy component loaders ──────────────────────────────────────────────────
@@ -86,6 +95,9 @@ const MusicApp = dynamic(
 );
 const PhotoBoothApp = dynamic(
     () => import("@/components/apps/photobooth/PhotoBoothApp"), { ssr: false }
+);
+const SettingsApp = dynamic(
+    () => import("@/components/apps/settings/SettingsApp"), { ssr: false }
 );
 
 // ─── App Registry ────────────────────────────────────────────────────────────
@@ -151,6 +163,18 @@ const appRegistry = new Map<AppId, AppMetadata>([
             defaultWindowConfig: defaultConfigs.photobooth,
             dockOrder: 6,
             desktopPosition: { row: 2, col: 0 },
+        },
+    ],
+    [
+        "settings",
+        {
+            id: "settings",
+            name: "System Settings",
+            iconConfig: { icon: Settings, style: "3d", color: "#8E8E93", scale: 0.95 },
+            component: SettingsApp,
+            defaultWindowConfig: defaultConfigs.settings,
+            dockOrder: 7,
+            desktopPosition: { row: 2, col: 1 },
         },
     ],
     [

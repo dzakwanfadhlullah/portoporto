@@ -53,6 +53,11 @@ const defaultIcons: DesktopIcon[] = [
         label: "Music",
         position: { x: 120, y: 72 }, // Second column from the right
     },
+    {
+        appId: "settings",
+        label: "Settings",
+        position: { x: 120, y: 72 + 130 },
+    },
 ];
 
 const DEFAULT_WALLPAPER = 'url("/macos-big.jpg")';
@@ -104,11 +109,23 @@ export const useDesktopStore = create<DesktopState>()(
         {
             name: "dzakos-desktop-v2",
             storage: createJSONStorage(() => localStorage),
-            version: 3,
-            migrate: (persistedState) => ({
-                ...(persistedState as PersistedDesktopState),
-                wallpaper: DEFAULT_WALLPAPER,
-            }),
+            version: 4,
+            migrate: (persistedState) => {
+                const state = persistedState as PersistedDesktopState;
+                const icons = Array.isArray(state.icons) ? state.icons : defaultIcons;
+                const mergedIcons = [
+                    ...icons,
+                    ...defaultIcons.filter(
+                        (defaultIcon) => !icons.some((icon) => icon.appId === defaultIcon.appId)
+                    ),
+                ];
+
+                return {
+                    ...state,
+                    icons: mergedIcons,
+                    wallpaper: state.wallpaper ?? DEFAULT_WALLPAPER,
+                };
+            },
             partialize: (state) => ({
                 icons: state.icons,
                 wallpaper: state.wallpaper,
