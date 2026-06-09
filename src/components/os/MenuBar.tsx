@@ -9,6 +9,9 @@ import { NotificationCenter } from "./NotificationCenter";
 import { useSpotlightStore } from "@/stores/useSpotlightStore";
 import { useBattery } from "@/hooks/useBattery";
 import { Z_LAYERS } from "@/hooks/useZIndex";
+import { useWindowStore } from "@/stores/useWindowStore";
+import { useAppRegistry } from "@/stores/useAppRegistry";
+import type { AppId } from "@/types/app";
 
 const formatMenuBarTime = () => {
     const now = new Date();
@@ -31,6 +34,11 @@ export const MenuBar = () => {
     const toggleSpotlight = useSpotlightStore((s) => s.toggle);
     const { level: batteryLevel, charging } = useBattery();
     const [isControlCenterOpen, setIsControlCenterOpen] = useState(false);
+    const activeWindowId = useWindowStore((s) => s.activeWindowId);
+    const activeWindow = useWindowStore((s) => activeWindowId ? s.windows[activeWindowId] : null);
+    const getApp = useAppRegistry((s) => s.getApp);
+    const activeApp = activeWindow ? getApp(activeWindow.appId as AppId) : null;
+    const appMenuName = activeApp?.name ?? "Dzakwan";
 
     // Live clock with date
     const [dateTime, setDateTime] = useState("");
@@ -59,10 +67,21 @@ export const MenuBar = () => {
             transition={{ duration: 0.5 }}
         >
             {/* ── Left: Brand ───────────────────────────────────────── */}
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
                 <span className="text-[13px] font-semibold tracking-tight text-white/90">
-                    Dzakwan
+                    {appMenuName}
                 </span>
+                <nav className="hidden items-center gap-4 text-[13px] font-medium text-white/70 lg:flex">
+                    {["File", "Edit", "View", "Window", "Help"].map((item) => (
+                        <button
+                            key={item}
+                            type="button"
+                            className="transition-colors hover:text-white"
+                        >
+                            {item}
+                        </button>
+                    ))}
+                </nav>
             </div>
 
             {/* ── Right: Status Icons ──────────────────────────────── */}
