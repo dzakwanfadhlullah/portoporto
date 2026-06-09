@@ -2,41 +2,47 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { SlidersHorizontal } from "lucide-react";
 import { MacWifiIcon, MacBatteryIcon, MacSearchIcon } from "./MacIcons";
+import { NotificationCenter } from "./NotificationCenter";
 
 import { useSpotlightStore } from "@/stores/useSpotlightStore";
 import { useBattery } from "@/hooks/useBattery";
 import { Z_LAYERS } from "@/hooks/useZIndex";
+
+const formatMenuBarTime = () => {
+    const now = new Date();
+    const date = now.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+    });
+    const time = now.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+    });
+    return `${date}  ${time}`;
+};
 
 // ─── Menu Bar ────────────────────────────────────────────────────────────────
 
 export const MenuBar = () => {
     const toggleSpotlight = useSpotlightStore((s) => s.toggle);
     const { level: batteryLevel, charging } = useBattery();
+    const [isControlCenterOpen, setIsControlCenterOpen] = useState(false);
 
     // Live clock with date
     const [dateTime, setDateTime] = useState("");
-    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
-        const updateClock = () => {
-            const now = new Date();
-            const date = now.toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-            });
-            const time = now.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true,
-            });
-            setDateTime(`${date}  ${time}`);
-        };
-        updateClock();
+        const updateClock = () => setDateTime(formatMenuBarTime());
+        const timeout = window.setTimeout(updateClock, 0);
         const interval = setInterval(updateClock, 10_000);
-        return () => clearInterval(interval);
+        return () => {
+            window.clearTimeout(timeout);
+            clearInterval(interval);
+        };
     }, []);
 
     return (
@@ -61,13 +67,13 @@ export const MenuBar = () => {
 
             {/* ── Right: Status Icons ──────────────────────────────── */}
             <div className="flex items-center gap-2.5">
-                {/* WiFi (static) */}
-                <div className="text-white/80 flex items-center">
+                <button
+                    type="button"
+                    onClick={() => setIsControlCenterOpen((value) => !value)}
+                    className="flex items-center gap-2 rounded-md px-1.5 py-0.5 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+                >
                     <MacWifiIcon size={13} />
-                </div>
 
-                {/* Battery (dynamic) */}
-                <div className="flex items-center gap-1 text-white/80">
                     {batteryLevel !== null && (
                         <span className="text-[11px] font-medium tabular-nums">
                             {batteryLevel}%
@@ -78,7 +84,8 @@ export const MenuBar = () => {
                         level={batteryLevel}
                         charging={charging}
                     />
-                </div>
+                    <SlidersHorizontal size={13} strokeWidth={2.2} />
+                </button>
 
                 {/* Spotlight Search */}
                 <button
@@ -89,12 +96,27 @@ export const MenuBar = () => {
                 </button>
 
                 {/* Date + Time */}
-                {mounted && (
-                    <span className="text-[12.5px] font-medium text-white/90 tabular-nums whitespace-nowrap ml-0.5">
-                        {dateTime}
-                    </span>
-                )}
+                <span className="text-[12.5px] font-medium text-white/90 tabular-nums whitespace-nowrap ml-0.5">
+                    {dateTime}
+                </span>
             </div>
+
+            {isControlCenterOpen && (
+                <>
+                    <button
+                        type="button"
+                        aria-label="Close Control Center"
+                        className="fixed inset-0 cursor-default"
+                        style={{ zIndex: Z_LAYERS.NOTIFICATIONS - 1 }}
+                        onClick={() => setIsControlCenterOpen(false)}
+                    />
+                    <NotificationCenter
+                        batteryLevel={batteryLevel}
+                        charging={charging}
+                        onClose={() => setIsControlCenterOpen(false)}
+                    />
+                </>
+            )}
         </motion.header>
     );
 };
