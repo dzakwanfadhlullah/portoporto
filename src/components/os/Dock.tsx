@@ -139,7 +139,11 @@ const DockIcon = ({ appId, mouseX }: DockIconProps) => {
 export const Dock = () => {
     const getDockApps = useAppRegistry((s) => s.getDockApps);
     const dockApps = useMemo(() => getDockApps(), [getDockApps]);
-    const minimizedWindows = useWindowStore((s) => Object.values(s.windows).filter((win) => win.isMinimized));
+    const windows = useWindowStore((s) => s.windows);
+    const minimizedWindows = useMemo(
+        () => Object.values(windows).filter((win) => win.isMinimized),
+        [windows]
+    );
     const mouseX = useMotionValue(-MAGNIFICATION_DISTANCE * 2);
 
     return (
