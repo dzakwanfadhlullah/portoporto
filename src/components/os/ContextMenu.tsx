@@ -3,9 +3,11 @@
 import { useEffect } from "react";
 import type { ElementType } from "react";
 import {
+    ArrowDownAZ,
     Brush,
     FolderPlus,
     Info,
+    Layers3,
     LayoutGrid,
     Maximize2,
     Monitor,
@@ -21,6 +23,7 @@ import { useSpotlightStore } from "@/stores/useSpotlightStore";
 import { useWindowStore } from "@/stores/useWindowStore";
 import { projects } from "@/components/apps/projects/data";
 import type { DesktopIcon } from "@/stores/useDesktopStore";
+import type { AppId } from "@/types/app";
 
 type DesktopContextMenuTarget =
     | { type: "desktop" }
@@ -45,6 +48,7 @@ export const ContextMenu = ({ x, y, target, onClose }: DesktopContextMenuProps) 
     const minimizeAll = useWindowStore((s) => s.minimizeAll);
     const closeAll = useWindowStore((s) => s.closeAll);
     const resetIconLayout = useDesktopStore((s) => s.resetIconLayout);
+    const arrangeIcons = useDesktopStore((s) => s.arrangeIcons);
     const setWallpaper = useDesktopStore((s) => s.setWallpaper);
     const toggleSpotlight = useSpotlightStore((s) => s.toggle);
 
@@ -62,39 +66,42 @@ export const ContextMenu = ({ x, y, target, onClose }: DesktopContextMenuProps) 
         };
     }, [onClose]);
 
-    const openTarget = () => {
-        if (target.type !== "icon") return;
-
-        const icon = target.icon;
-        if (icon.kind === "project") {
-            const project = icon.projectId
-                ? projects.find((item) => item.id === icon.projectId)
-                : projects.find((item) => item.name === icon.label);
-            const projectDetailApp = getApp("project-detail");
-            if (!project || !projectDetailApp) return;
-
-            openWindow(
-                "project-detail",
-                `Information about: ${project.name}`,
-                projectDetailApp.defaultWindowConfig.defaultWidth,
-                projectDetailApp.defaultWindowConfig.defaultHeight,
-                { projectId: project.id }
-            );
-            onClose();
-            return;
-        }
-
-        if (!icon.appId) return;
-        const app = getApp(icon.appId);
+    const openApp = (appId: AppId, metadata?: unknown, title?: string) => {
+        const app = getApp(appId);
         if (!app) return;
 
         openWindow(
             app.id,
-            app.name,
+            title ?? app.name,
             app.defaultWindowConfig.defaultWidth,
-            app.defaultWindowConfig.defaultHeight
+            app.defaultWindowConfig.defaultHeight,
+            metadata
         );
         onClose();
+    };
+
+    const openTarget = () => {
+        if (target.type !== "icon") return;
+        const icon = target.icon;
+
+        if (icon.kind === "project") {
+            const project = icon.projectId
+                ? projects.find((item) => item.id === icon.projectId)
+                : projects.find((item) => item.name === icon.label);
+            if (!project) return;
+
+            const projectDetailApp = getApp("project-detail");
+            if (!projectDetailApp) return;
+            openApp(
+                "project-detail",
+                { projectId: project.id },
+                `Information about: ${project.name}`
+            );
+            return;
+        }
+
+        if (!icon.appId) return;
+        openApp(icon.appId);
     };
 
     const rotateWallpaper = () => {
@@ -117,6 +124,9 @@ export const ContextMenu = ({ x, y, target, onClose }: DesktopContextMenuProps) 
                 <>
                     <MenuItem icon={Maximize2} label={`Open ${target.icon.label}`} onClick={openTarget} />
                     <MenuItem icon={Info} label="Get Info" onClick={openTarget} />
+                    {target.icon.kind === "project" && (
+                        <MenuItem icon={LayoutGrid} label="Show in Projects" onClick={() => openApp("projects")} />
+                    )}
                     <MenuSeparator />
                     <MenuItem icon={Search} label="Reveal in Spotlight" onClick={() => { toggleSpotlight(); onClose(); }} />
                 </>
@@ -124,13 +134,16 @@ export const ContextMenu = ({ x, y, target, onClose }: DesktopContextMenuProps) 
                 <>
                     <MenuItem icon={FolderPlus} label="New Folder" disabled />
                     <MenuItem icon={LayoutGrid} label="Clean Up Icons" onClick={() => { resetIconLayout(); onClose(); }} />
+                    <MenuItem icon={ArrowDownAZ} label="Sort by Name" onClick={() => { arrangeIcons("name"); onClose(); }} />
+                    <MenuItem icon={Layers3} label="Sort by Kind" onClick={() => { arrangeIcons("kind"); onClose(); }} />
                     <MenuItem icon={Brush} label="Change Wallpaper" onClick={rotateWallpaper} />
                     <MenuSeparator />
+                    <MenuItem icon={LayoutGrid} label="Open Projects Folder" onClick={() => openApp("projects")} />
                     <MenuItem icon={Search} label="Spotlight Search" onClick={() => { toggleSpotlight(); onClose(); }} />
                     <MenuItem icon={Monitor} label="Minimize All Windows" onClick={() => { minimizeAll(); onClose(); }} />
                     <MenuItem icon={RotateCcw} label="Close All Windows" onClick={() => { closeAll(); onClose(); }} />
                     <MenuSeparator />
-                    <MenuItem icon={Settings} label="Desktop View Options" disabled />
+                    <MenuItem icon={Settings} label="Desktop View Options" onClick={() => openApp("settings")} />
                 </>
             )}
         </div>

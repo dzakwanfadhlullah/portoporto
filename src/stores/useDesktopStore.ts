@@ -23,6 +23,7 @@ interface DesktopState {
 
     // Actions
     moveIcon: (id: string, position: Position) => void;
+    arrangeIcons: (mode: "kind" | "name") => void;
     resetIconLayout: () => void;
     selectIcon: (id: string) => void;
     toggleSelectIcon: (id: string) => void;
@@ -114,6 +115,10 @@ const defaultIcons: DesktopIcon[] = [
 ];
 
 const DEFAULT_WALLPAPER = 'url("/macos-big.jpg")';
+const ICON_ROW_GAP = 130;
+const ICON_COLUMN_GAP = 120;
+const ICON_TOP_PADDING = 72;
+const ICONS_PER_COLUMN = 3;
 
 type PersistedDesktopState = Partial<Pick<DesktopState, "icons" | "wallpaper">>;
 
@@ -124,6 +129,21 @@ type LegacyDesktopIcon = Partial<DesktopIcon> & {
 };
 
 const getDefaultIconById = (id: string) => defaultIcons.find((icon) => icon.id === id);
+
+const arrangeDesktopIcons = (icons: DesktopIcon[]) =>
+    icons.map((icon, index) => ({
+        ...icon,
+        position: {
+            x: Math.floor(index / ICONS_PER_COLUMN) * ICON_COLUMN_GAP,
+            y: ICON_TOP_PADDING + (index % ICONS_PER_COLUMN) * ICON_ROW_GAP,
+        },
+    }));
+
+const getKindOrder = (kind: DesktopIcon["kind"]) => {
+    if (kind === "project") return 0;
+    if (kind === "folder") return 1;
+    return 2;
+};
 
 const normalizeIcon = (icon: LegacyDesktopIcon, index: number): DesktopIcon | null => {
     if (!icon || !icon.label || !icon.position) return null;
@@ -181,8 +201,21 @@ export const useDesktopStore = create<DesktopState>()(
                 });
             },
 
+            arrangeIcons: (mode) => {
+                const sortedIcons = [...get().icons].sort((a, b) => {
+                    if (mode === "kind") {
+                        const kindDelta = getKindOrder(a.kind) - getKindOrder(b.kind);
+                        if (kindDelta !== 0) return kindDelta;
+                    }
+
+                    return a.label.localeCompare(b.label);
+                });
+
+                set({ icons: arrangeDesktopIcons(sortedIcons), selectedIcons: [] });
+            },
+
             resetIconLayout: () => {
-                set({ icons: defaultIcons });
+                set({ icons: defaultIcons, selectedIcons: [] });
             },
 
             selectIcon: (id) => {
