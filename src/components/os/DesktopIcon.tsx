@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useMotionValue } from "framer-motion";
 
 import { useDesktopStore, type DesktopIcon as DesktopIconType } from "@/stores/useDesktopStore";
 import { useWindowStore } from "@/stores/useWindowStore";
@@ -13,16 +13,21 @@ import { projects } from "../apps/projects/data";
 
 interface DesktopIconProps {
     icon: DesktopIconType;
+    desktopRef: React.RefObject<HTMLDivElement | null>;
     onContextMenu?: (event: React.MouseEvent, icon: DesktopIconType) => void;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export const DesktopIcon = ({ icon, onContextMenu }: DesktopIconProps) => {
-    const { selectedIcons, selectIcon, deselectAll } = useDesktopStore();
+export const DesktopIcon = ({ icon, desktopRef, onContextMenu }: DesktopIconProps) => {
+    const { selectedIcons, selectIcon, toggleSelectIcon, deselectAll, moveIcon } = useDesktopStore();
     const { openWindow } = useWindowStore();
     const { getApp } = useAppRegistry();
     const lastClickTime = useRef(0);
+    const iconRef = useRef<HTMLDivElement>(null);
+    const ignoreNextClick = useRef(false);
+    const dragX = useMotionValue(0);
+    const dragY = useMotionValue(0);
 
     const app = icon.appId ? getApp(icon.appId) : undefined;
     const project = icon.projectId
@@ -44,6 +49,10 @@ export const DesktopIcon = ({ icon, onContextMenu }: DesktopIconProps) => {
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
             e.stopPropagation();
+            if (ignoreNextClick.current) {
+                ignoreNextClick.current = false;
+                return;
+            }
 
             const now = Date.now();
             const timeSinceLastClick = now - lastClickTime.current;
@@ -71,25 +80,64 @@ export const DesktopIcon = ({ icon, onContextMenu }: DesktopIconProps) => {
                 return;
             }
 
-            selectIcon(icon.id);
+            if (e.metaKey || e.ctrlKey || e.shiftKey) {
+                toggleSelectIcon(icon.id);
+            } else {
+                selectIcon(icon.id);
+            }
         },
-        [app, icon.appId, icon.id, openWindow, deselectAll, selectIcon, project, projectDetailApp]
+        [app, icon.appId, icon.id, openWindow, deselectAll, selectIcon, toggleSelectIcon, project, projectDetailApp]
+    );
+
+    const handleDragEnd = useCallback(
+        (_event: MouseEvent | TouchEvent | PointerEvent, info: { offset: { x: number; y: number } }) => {
+            if (Math.abs(info.offset.x) > 4 || Math.abs(info.offset.y) > 4) {
+                ignoreNextClick.current = true;
+            }
+
+            const desktopBounds = desktopRef.current?.getBoundingClientRect();
+            const iconBounds = iconRef.current?.getBoundingClientRect();
+            if (!desktopBounds || !iconBounds) return;
+
+            const nextX = Math.max(
+                0,
+                Math.min(desktopBounds.width - 124, desktopBounds.right - iconBounds.right - 48)
+            );
+            const nextY = Math.max(
+                44,
+                Math.min(desktopBounds.height - 150, iconBounds.top - desktopBounds.top)
+            );
+
+            dragX.set(0);
+            dragY.set(0);
+            moveIcon(icon.id, { x: Math.round(nextX), y: Math.round(nextY) });
+        },
+        [desktopRef, dragX, dragY, icon.id, moveIcon]
     );
 
     if (!iconConfig) return null;
 
     return (
         <motion.div
-            className="absolute flex flex-col items-center gap-2 cursor-pointer group"
+            ref={iconRef}
+            className="absolute flex flex-col items-center gap-2 cursor-default group"
             style={{
                 right: icon.position.x + 48, // Now relative to the right edge
                 top: icon.position.y,
                 width: 100,
+                x: dragX,
+                y: dragY,
             }}
+            drag
+            dragConstraints={desktopRef}
+            dragElastic={0}
+            dragMomentum={false}
+            onDragEnd={handleDragEnd}
             onClick={handleClick}
             onContextMenu={(event) => onContextMenu?.(event, icon)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            whileDrag={{ scale: 1.07 }}
         >
             {/* Project Card Container */}
             <div

@@ -22,6 +22,7 @@ import type { DesktopIcon as DesktopIconType } from "@/stores/useDesktopStore";
 
 export const Desktop = () => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const iconLayerRef = useRef<HTMLDivElement>(null);
     const [contextMenu, setContextMenu] = useState<{
         x: number;
         y: number;
@@ -102,6 +103,7 @@ export const Desktop = () => {
 
             {/* ── Desktop Icon Area ─────────────────────────────────────────── */}
             <div
+                ref={iconLayerRef}
                 className="absolute inset-0"
                 style={{
                     zIndex: Z_LAYERS.DESKTOP_ICONS,
@@ -110,7 +112,12 @@ export const Desktop = () => {
                 onContextMenu={handleContextMenu}
             >
                 {icons.map((icon) => (
-                    <DesktopIcon key={icon.id} icon={icon} onContextMenu={handleIconContextMenu} />
+                    <DesktopIcon
+                        key={icon.id}
+                        icon={icon}
+                        desktopRef={iconLayerRef}
+                        onContextMenu={handleIconContextMenu}
+                    />
                 ))}
             </div>
 
