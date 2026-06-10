@@ -16,6 +16,7 @@ import { SnapOverlay } from "./SnapOverlay";
 import { Spotlight } from "./Spotlight";
 import { ContextMenu } from "./ContextMenu";
 import { ThemeBridge } from "./ThemeBridge";
+import { AssetPreloader } from "./AssetPreloader";
 import type { DesktopIcon as DesktopIconType } from "@/stores/useDesktopStore";
 
 // ─── Desktop Component ──────────────────────────────────────────────────────
@@ -98,8 +99,9 @@ export const Desktop = () => {
             style={{ zIndex: Z_LAYERS.DESKTOP, backgroundImage: wallpaper }}
         >
             <ThemeBridge />
+            <AssetPreloader />
             {/* ── Desktop Texture Overlay ─────────────────────────────────────── */}
-            <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] grain pointer-events-none" />
+            <div className="absolute inset-0 bg-white/5 grain pointer-events-none" />
 
             {/* ── Desktop Icon Area ─────────────────────────────────────────── */}
             <div

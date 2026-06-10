@@ -112,7 +112,7 @@ export const ContextMenu = ({ x, y, target, onClose }: DesktopContextMenuProps) 
 
     return (
         <div
-            className="fixed min-w-[220px] overflow-hidden rounded-xl border border-white/30 bg-white/70 p-1.5 text-[13px] font-medium text-black/80 shadow-[0_18px_45px_rgba(0,0,0,0.22)] backdrop-blur-2xl"
+            className="fixed min-w-[220px] overflow-hidden rounded-xl border border-white/30 bg-white/80 p-1.5 text-[13px] font-medium text-black/80 shadow-[0_18px_45px_rgba(0,0,0,0.18)] backdrop-blur-lg"
             style={{
                 left: x,
                 top: y,

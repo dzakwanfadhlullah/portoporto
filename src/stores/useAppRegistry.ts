@@ -1,20 +1,10 @@
 import { create } from "zustand";
-import { createElement } from "react";
+import type { ComponentType } from "react";
 import dynamic from "next/dynamic";
-import { AppleIcon } from "@/components/os/AppleIcon";
 
 import type { AppId, AppMetadata } from "@/types/app";
 import type { WindowConfig } from "@/types/window";
-import {
-    LayoutGrid,
-    Folder,
-    UserCircle,
-    Archive,
-    Award,
-    Mail,
-    FileText,
-    Settings
-} from "lucide-react";
+import { Settings } from "lucide-react";
 
 // ─── Default Window Configs ──────────────────────────────────────────────────
 
@@ -82,23 +72,29 @@ const defaultConfigs: Record<AppId, WindowConfig> = {
 // We use dynamic imports so app bundles are code-split automatically.
 // The `component` field stores a lazy-loaded React component.
 
-const ProjectsApp = dynamic(
-    () => import("@/components/apps/projects/ProjectsApp"), { ssr: false }
-);
-const ProjectDetail = dynamic(
-    () => import("@/components/apps/projects/ProjectDetail"), { ssr: false }
-);
-const AboutApp = dynamic(() => import("@/components/apps/about/AboutApp"), { ssr: false });
-const LabApp = dynamic(() => import("@/components/apps/lab/LabApp"), { ssr: false });
-const MusicApp = dynamic(
-    () => import("@/components/apps/music/MusicApp"), { ssr: false }
-);
-const PhotoBoothApp = dynamic(
-    () => import("@/components/apps/photobooth/PhotoBoothApp"), { ssr: false }
-);
-const SettingsApp = dynamic(
-    () => import("@/components/apps/settings/SettingsApp"), { ssr: false }
-);
+type AppLoader = () => Promise<{ default: ComponentType }>;
+
+const appLoaders: Record<AppId, AppLoader> = {
+    projects: () => import("@/components/apps/projects/ProjectsApp"),
+    "project-detail": () => import("@/components/apps/projects/ProjectDetail"),
+    about: () => import("@/components/apps/about/AboutApp"),
+    lab: () => import("@/components/apps/lab/LabApp"),
+    contact: () => import("@/components/apps/music/MusicApp"),
+    photobooth: () => import("@/components/apps/photobooth/PhotoBoothApp"),
+    settings: () => import("@/components/apps/settings/SettingsApp"),
+};
+
+const ProjectsApp = dynamic(appLoaders.projects, { ssr: false });
+const ProjectDetail = dynamic(appLoaders["project-detail"], { ssr: false });
+const AboutApp = dynamic(appLoaders.about, { ssr: false });
+const LabApp = dynamic(appLoaders.lab, { ssr: false });
+const MusicApp = dynamic(appLoaders.contact, { ssr: false });
+const PhotoBoothApp = dynamic(appLoaders.photobooth, { ssr: false });
+const SettingsApp = dynamic(appLoaders.settings, { ssr: false });
+
+export const preloadAppComponent = (appId: AppId) => {
+    void appLoaders[appId]?.();
+};
 
 // ─── App Registry ────────────────────────────────────────────────────────────
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Z_LAYERS } from "@/hooks/useZIndex";
 
 // ─── Info Card Widget ────────────────────────────────────────────────────────
@@ -15,12 +16,20 @@ export const InfoCard = () => {
             transition={{ duration: 0.6, delay: 0.5 }}
         >
             <div
-                className="bg-white/20 backdrop-blur-[40px] rounded-[32px] p-8 border border-white/30 shadow-xl transition-all duration-300"
+                className="bg-white/24 backdrop-blur-[24px] rounded-[32px] p-8 border border-white/30 shadow-xl transition-all duration-300"
             >
                 {/* Avatar & Basic Info */}
                 <div className="flex items-center gap-5">
                     {/* High quality avatar style */}
-                    <img src="/profile.png" alt="Profile" className="w-[64px] h-[64px] object-cover drop-shadow-lg" />
+                    <Image
+                        src="/profile.png"
+                        alt="Profile"
+                        width={64}
+                        height={64}
+                        priority
+                        sizes="64px"
+                        className="object-cover drop-shadow-lg"
+                    />
                     <div className="flex flex-col">
                         <span className="text-[19px] font-extrabold text-white/95 leading-tight tracking-[0.01em]">
                             Dzakwan — <span className="font-semibold text-white/50">Frontend Engineer</span>

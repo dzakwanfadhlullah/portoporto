@@ -15,6 +15,8 @@ import { Z_LAYERS } from "@/hooks/useZIndex";
 import { AppleIcon } from "./AppleIcon";
 import type { AppId } from "@/types/app";
 import type { WindowId } from "@/types/window";
+import { preloadAppComponent } from "@/stores/useAppRegistry";
+import { preloadImages } from "@/lib/performance";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -27,24 +29,19 @@ const MAGNIFICATION_DISTANCE = 140;
 interface DockIconProps {
     appId: AppId;
     mouseX: MotionValue<number>;
+    windowState: {
+        hasOpenWindow: boolean;
+        hasMinimized: boolean;
+        hasActive: boolean;
+    };
 }
 
-const DockIcon = ({ appId, mouseX }: DockIconProps) => {
+const DockIcon = ({ appId, mouseX, windowState }: DockIconProps) => {
     const ref = useRef<HTMLDivElement>(null);
     const getApp = useAppRegistry((s) => s.getApp);
     const openWindow = useWindowStore((s) => s.openWindow);
-    const windows = useWindowStore((s) => s.windows);
 
     const app = getApp(appId);
-
-    // Check if this app has open windows
-    const windowState = useMemo(() => {
-        const appWindows = Object.values(windows).filter((w) => w.appId === appId);
-        const hasOpenWindow = appWindows.length > 0;
-        const hasMinimized = appWindows.some((w) => w.isMinimized);
-        const hasActive = appWindows.some((w) => w.isFocused);
-        return { hasOpenWindow, hasMinimized, hasActive };
-    }, [windows, appId]);
 
     // Magnification based on mouse distance
     const distance = useTransform(mouseX, (val: number) => {
@@ -83,6 +80,11 @@ const DockIcon = ({ appId, mouseX }: DockIconProps) => {
         }
     }, [app, appId, openWindow]);
 
+    const handlePointerEnter = useCallback(() => {
+        preloadAppComponent(appId);
+        preloadImages([app?.iconConfig.image]);
+    }, [app?.iconConfig.image, appId]);
+
     if (!app) return null;
 
     return (
@@ -90,6 +92,7 @@ const DockIcon = ({ appId, mouseX }: DockIconProps) => {
             ref={ref}
             className="relative flex flex-col items-center cursor-pointer group"
             onClick={handleClick}
+            onPointerEnter={handlePointerEnter}
             whileTap={{ scale: 0.85 }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
         >
@@ -113,6 +116,7 @@ const DockIcon = ({ appId, mouseX }: DockIconProps) => {
                         {...app.iconConfig}
                         isActive={windowState.hasOpenWindow}
                         style="3d"
+                        priority
                     />
                 </div>
             </motion.div>
@@ -144,6 +148,20 @@ export const Dock = () => {
         () => Object.values(windows).filter((win) => win.isMinimized),
         [windows]
     );
+    const windowStateByApp = useMemo(() => {
+        const state = new Map<AppId, { hasOpenWindow: boolean; hasMinimized: boolean; hasActive: boolean }>();
+
+        for (const app of dockApps) {
+            const appWindows = Object.values(windows).filter((win) => win.appId === app.id);
+            state.set(app.id, {
+                hasOpenWindow: appWindows.length > 0,
+                hasMinimized: appWindows.some((win) => win.isMinimized),
+                hasActive: appWindows.some((win) => win.isFocused),
+            });
+        }
+
+        return state;
+    }, [dockApps, windows]);
     const mouseX = useMotionValue(-MAGNIFICATION_DISTANCE * 2);
 
     return (
@@ -159,12 +177,20 @@ export const Dock = () => {
             {/* Glass container */}
             <div
                 className="flex flex-col sm:flex-row items-center sm:items-end gap-3 sm:gap-2 p-2 sm:px-3 sm:pb-2 sm:pt-2
-                   bg-white/20 backdrop-blur-[40px] rounded-[24px]
+                   bg-white/25 backdrop-blur-[24px] rounded-[24px]
                    border border-white/30 shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
             >
                 {dockApps.map((app) => (
                     <div key={app.id} className="flex flex-col sm:flex-row items-center sm:items-end gap-2">
-                        <DockIcon appId={app.id} mouseX={mouseX} />
+                        <DockIcon
+                            appId={app.id}
+                            mouseX={mouseX}
+                            windowState={windowStateByApp.get(app.id) ?? {
+                                hasOpenWindow: false,
+                                hasMinimized: false,
+                                hasActive: false,
+                            }}
+                        />
                         {/* Natural Divider after Projects (index 1) */}
                         {app.id === "projects" && (
                             <div className="w-[24px] h-[1px] sm:w-[1px] sm:h-[36px] bg-gradient-to-r sm:bg-gradient-to-b from-white/10 via-white/30 to-white/10 my-1 sm:my-0 sm:mx-0.5 self-center rounded-full" />
@@ -213,7 +239,7 @@ function MinimizedWindowTile({
         >
             <div className="absolute inset-x-1 bottom-1 h-1 rounded-full bg-white/35 blur-[2px]" />
             <div className="h-8 w-8">
-                <AppleIcon {...app.iconConfig} style="3d" />
+                <AppleIcon {...app.iconConfig} style="3d" priority />
             </div>
             <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground/80 px-2 py-0.5 text-[10px] font-medium text-background opacity-0 transition-opacity group-hover:opacity-100">
                 {title}

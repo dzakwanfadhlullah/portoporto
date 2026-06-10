@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement, type FC } from "react";
+import { createElement, memo, type FC } from "react";
 import { motion } from "framer-motion";
 import { LucideIcon } from "lucide-react";
 import Image from "next/image";
@@ -24,14 +24,18 @@ interface AppleIconProps {
     scale?: number;
     /** Custom vertical offset (nudge) */
     offsetY?: number;
+    /** Hint for above-the-fold icons that should be fetched immediately */
+    priority?: boolean;
 }
+
+const ICON_IMAGE_SIZES = "(max-width: 768px) 56px, 96px";
 
 /**
  * A premium icon component that provides Apple-style visuals.
  * Style "3d": Rich gradients, inner shadows, and squircle shape for Dock/Desktop.
  * Style "symbol": Minimalist, thin-stroke symbols for MenuBar/System.
  */
-export const AppleIcon: FC<AppleIconProps> = ({
+const AppleIconBase: FC<AppleIconProps> = ({
     icon,
     char,
     image,
@@ -41,6 +45,7 @@ export const AppleIcon: FC<AppleIconProps> = ({
     isActive = false,
     scale,
     offsetY,
+    priority = false,
 }) => {
     if (style === "symbol" && icon) {
         return (
@@ -77,7 +82,10 @@ export const AppleIcon: FC<AppleIconProps> = ({
                                 src={image}
                                 alt="Project Thumbnail"
                                 fill
-                                unoptimized
+                                sizes={ICON_IMAGE_SIZES}
+                                quality={85}
+                                priority={priority}
+                                draggable={false}
                                 className={color === "transparent" ? "object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]" : "object-cover"}
                             />
                         ) : (
@@ -156,7 +164,10 @@ export const AppleIcon: FC<AppleIconProps> = ({
                             src={image}
                             alt="Icon"
                             fill
-                            unoptimized
+                            sizes={ICON_IMAGE_SIZES}
+                            quality={85}
+                            priority={priority}
+                            draggable={false}
                             className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.4)]"
                         />
                     </div>
@@ -203,3 +214,5 @@ function getDarkerColor(hex: string): string {
     if (hex === "#AF52DE") return "#8929AD"; // Purple
     return hex;
 }
+
+export const AppleIcon = memo(AppleIconBase);

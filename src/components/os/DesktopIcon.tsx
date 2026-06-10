@@ -5,9 +5,10 @@ import { motion, useMotionValue } from "framer-motion";
 
 import { useDesktopStore, type DesktopIcon as DesktopIconType } from "@/stores/useDesktopStore";
 import { useWindowStore } from "@/stores/useWindowStore";
-import { useAppRegistry } from "@/stores/useAppRegistry";
+import { preloadAppComponent, useAppRegistry } from "@/stores/useAppRegistry";
 import { AppleIcon } from "./AppleIcon";
 import { projects } from "../apps/projects/data";
+import { preloadImages } from "@/lib/performance";
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -115,6 +116,19 @@ export const DesktopIcon = ({ icon, desktopRef, onContextMenu }: DesktopIconProp
         [desktopRef, dragX, dragY, icon.id, moveIcon]
     );
 
+    const handlePointerEnter = useCallback(() => {
+        if (project) {
+            preloadAppComponent("project-detail");
+            preloadImages([project.thumbnail, ...(project.detailImages ?? [])]);
+            return;
+        }
+
+        if (icon.appId) {
+            preloadAppComponent(icon.appId);
+            preloadImages([app?.iconConfig.image]);
+        }
+    }, [app?.iconConfig.image, icon.appId, project]);
+
     if (!iconConfig) return null;
 
     return (
@@ -133,6 +147,7 @@ export const DesktopIcon = ({ icon, desktopRef, onContextMenu }: DesktopIconProp
             dragElastic={0}
             dragMomentum={false}
             onDragEnd={handleDragEnd}
+            onPointerEnter={handlePointerEnter}
             onClick={handleClick}
             onContextMenu={(event) => onContextMenu?.(event, icon)}
             whileHover={{ scale: 1.02 }}
