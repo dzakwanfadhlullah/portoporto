@@ -17,7 +17,6 @@ import { Spotlight } from "./Spotlight";
 import { ContextMenu } from "./ContextMenu";
 import { ThemeBridge } from "./ThemeBridge";
 import type { DesktopIcon as DesktopIconType } from "@/stores/useDesktopStore";
-import type { AppId } from "@/types/app";
 
 // ─── Desktop Component ──────────────────────────────────────────────────────
 
@@ -26,7 +25,7 @@ export const Desktop = () => {
     const [contextMenu, setContextMenu] = useState<{
         x: number;
         y: number;
-        target: { type: "desktop" } | { type: "icon"; appId: AppId; label: string };
+        target: { type: "desktop" } | { type: "icon"; icon: DesktopIconType };
     } | null>(null);
     const icons = useDesktopStore((s) => s.icons);
     const deselectAll = useDesktopStore((s) => s.deselectAll);
@@ -85,7 +84,7 @@ export const Desktop = () => {
             setContextMenu({
                 x: e.clientX,
                 y: e.clientY,
-                target: { type: "icon", appId: icon.appId, label: icon.label },
+                target: { type: "icon", icon },
             });
         },
         []
@@ -111,7 +110,7 @@ export const Desktop = () => {
                 onContextMenu={handleContextMenu}
             >
                 {icons.map((icon) => (
-                    <DesktopIcon key={icon.appId} icon={icon} onContextMenu={handleIconContextMenu} />
+                    <DesktopIcon key={icon.id} icon={icon} onContextMenu={handleIconContextMenu} />
                 ))}
             </div>
 

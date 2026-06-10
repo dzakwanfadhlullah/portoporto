@@ -24,12 +24,22 @@ export const DesktopIcon = ({ icon, onContextMenu }: DesktopIconProps) => {
     const { getApp } = useAppRegistry();
     const lastClickTime = useRef(0);
 
-    const app = getApp(icon.appId);
-    const isSelected = selectedIcons.includes(icon.appId);
+    const app = icon.appId ? getApp(icon.appId) : undefined;
+    const project = icon.projectId
+        ? projects.find((item) => item.id === icon.projectId)
+        : projects.find((item) => item.name === icon.label);
+    const projectDetailApp = getApp("project-detail");
+    const isSelected = selectedIcons.includes(icon.id);
 
-    // Find matching project thumbnail for "photo" style
-    const project = projects.find(p => p.name === icon.label);
-    const thumbnail = project?.thumbnail;
+    const iconConfig = project
+        ? {
+            ...projectDetailApp?.iconConfig,
+            ...project.iconConfig,
+            image: project.thumbnail,
+            style: "photo" as const,
+            color: "transparent",
+        }
+        : app?.iconConfig;
 
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
@@ -41,25 +51,32 @@ export const DesktopIcon = ({ icon, onContextMenu }: DesktopIconProps) => {
 
             // Double-click detection (< 400ms)
             if (timeSinceLastClick < 400) {
-                if (app) {
+                if (project && projectDetailApp) {
+                    openWindow(
+                        "project-detail",
+                        `Information about: ${project.name}`,
+                        projectDetailApp.defaultWindowConfig.defaultWidth,
+                        projectDetailApp.defaultWindowConfig.defaultHeight,
+                        { projectId: project.id }
+                    );
+                } else if (app && icon.appId) {
                     openWindow(
                         icon.appId,
                         app.name,
                         app.defaultWindowConfig.defaultWidth,
                         app.defaultWindowConfig.defaultHeight,
-                        project ? { projectId: project.id } : undefined
                     );
                 }
                 deselectAll();
                 return;
             }
 
-            selectIcon(icon.appId);
+            selectIcon(icon.id);
         },
-        [app, icon.appId, openWindow, deselectAll, selectIcon, project]
+        [app, icon.appId, icon.id, openWindow, deselectAll, selectIcon, project, projectDetailApp]
     );
 
-    if (!app) return null;
+    if (!iconConfig) return null;
 
     return (
         <motion.div
@@ -89,11 +106,7 @@ export const DesktopIcon = ({ icon, onContextMenu }: DesktopIconProps) => {
                 {/* Premium Project Card (Photo Frame style) */}
                 <div className="w-[72px] h-[72px]">
                     <AppleIcon
-                        {...app.iconConfig}
-                        {...project?.iconConfig}
-                        image={thumbnail}
-                        style="photo"
-                        color="transparent"
+                        {...iconConfig}
                         size={40}
                         isActive={isSelected}
                     />

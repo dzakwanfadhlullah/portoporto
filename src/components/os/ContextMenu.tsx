@@ -19,11 +19,12 @@ import { useAppRegistry } from "@/stores/useAppRegistry";
 import { useDesktopStore } from "@/stores/useDesktopStore";
 import { useSpotlightStore } from "@/stores/useSpotlightStore";
 import { useWindowStore } from "@/stores/useWindowStore";
-import type { AppId } from "@/types/app";
+import { projects } from "@/components/apps/projects/data";
+import type { DesktopIcon } from "@/stores/useDesktopStore";
 
 type DesktopContextMenuTarget =
     | { type: "desktop" }
-    | { type: "icon"; appId: AppId; label: string };
+    | { type: "icon"; icon: DesktopIcon };
 
 interface DesktopContextMenuProps {
     x: number;
@@ -61,10 +62,30 @@ export const ContextMenu = ({ x, y, target, onClose }: DesktopContextMenuProps) 
         };
     }, [onClose]);
 
-    const openTargetApp = () => {
+    const openTarget = () => {
         if (target.type !== "icon") return;
 
-        const app = getApp(target.appId);
+        const icon = target.icon;
+        if (icon.kind === "project") {
+            const project = icon.projectId
+                ? projects.find((item) => item.id === icon.projectId)
+                : projects.find((item) => item.name === icon.label);
+            const projectDetailApp = getApp("project-detail");
+            if (!project || !projectDetailApp) return;
+
+            openWindow(
+                "project-detail",
+                `Information about: ${project.name}`,
+                projectDetailApp.defaultWindowConfig.defaultWidth,
+                projectDetailApp.defaultWindowConfig.defaultHeight,
+                { projectId: project.id }
+            );
+            onClose();
+            return;
+        }
+
+        if (!icon.appId) return;
+        const app = getApp(icon.appId);
         if (!app) return;
 
         openWindow(
@@ -94,8 +115,8 @@ export const ContextMenu = ({ x, y, target, onClose }: DesktopContextMenuProps) 
         >
             {target.type === "icon" ? (
                 <>
-                    <MenuItem icon={Maximize2} label={`Open ${target.label}`} onClick={openTargetApp} />
-                    <MenuItem icon={Info} label="Get Info" onClick={openTargetApp} />
+                    <MenuItem icon={Maximize2} label={`Open ${target.icon.label}`} onClick={openTarget} />
+                    <MenuItem icon={Info} label="Get Info" onClick={openTarget} />
                     <MenuSeparator />
                     <MenuItem icon={Search} label="Reveal in Spotlight" onClick={() => { toggleSpotlight(); onClose(); }} />
                 </>
